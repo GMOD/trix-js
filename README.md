@@ -1,0 +1,10 @@
+# trix-js
+Read UCSC Trix indexes in pure JavaScript
+
+### Test the USCS TrixSearch - Requires Unix
+First, clone this repo.
+To run test searches on a track hub using the USCS `TrixSearch`, navigate to `tests/testdata/test#` and run `bash test#script.sh` where # is the test number.
+To change search terms, edit `searchterms.txt`.
+
+**Wondering what to search for?**<br>
+Open up `tests/testdata/test#/input.txt`.

@@ -1,0 +1,18 @@
+hub quickSearch
+shortLabel Search indexed bigBeds
+longLabel An example hub that features searching bigBed items on hg38
+email genome-www@soe.ucsc.edu
+useOneFile on
+descriptionUrl hubDescription.html
+
+genome hg38
+
+track bigBedSearchable
+bigDataUrl gencode.v32.lncRNAs.bb
+shortLabel searchable bigBed
+longLabel bigBed search example quick start hub
+type bigBed 12
+visibility pack
+searchIndex name
+searchTrix out.ix
+
