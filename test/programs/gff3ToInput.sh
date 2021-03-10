@@ -1,4 +1,13 @@
 #!/bin/sh
+if [ "$#" -ne 2 ]; then
+  echo "Invalid arguments. Usage: $0 <.gff3.gz FILE> <NAME>" >&2
+  exit 1
+fi
+if ! [ -e "$1" ]; then
+  echo "$1 not found" >&2
+  exit 1
+fi
+
 echo "Formatting data for $1 with name $2"
 echo 
 
@@ -8,6 +17,8 @@ echo "Creating input.$2.txt"
 cat gencode.$2.genePred | awk '{print $1, $12, $1}' > input.$2.txt
 echo "Creating genecode.$2.bed"
 ../../programs/genePredToBed gencode.$2.genePred gencode.$2.bed
+echo "Creating out.ix and out.ixx"
+../../programs/ixIxx input.$2.txt out.ix out.ixx
 
 echo
 echo "Done"
