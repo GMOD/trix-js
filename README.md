@@ -10,6 +10,6 @@ To change search terms, edit `searchterms.txt`.
 Open up `tests/testdata/test#/input.txt`.
 
 
-**How to test my own .gff.gz data?**
+**How to test my own .gff.gz data?**<br>
 Navigate to `/test/rawGenomes` and create a directory with your .gff.gz file in it. From within that directory, run `bash ../../programs/gff3ToInput.sh <.gff3.gz FILE> <OUTPUT NAME>`.
 
