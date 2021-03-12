@@ -1,82 +1,122 @@
-// Specify number of bits
-const off_t: number = 64;
+const off_t: number = 64; // Specify number of bits
 const trixPrefixSize = 5;
+const unhexTable = {
+  '0': 0,
+  '1': 1,
+  '2': 2,
+  '3': 3,
+  '4': 4,
+  '5': 5,
+  '6': 6,
+  '7': 7,
+  '8': 8,
+  '9': 9,
+  'A': 10,
+  'B': 11,
+  'C': 12,
+  'D': 13,
+  'E': 14,
+  'F': 15,
+};
 
 type Trix = {
   lineFile: LineFile;
-  ixx: TrixIxx;
-  ixxSize: number;
+  ixx: TrixIxx; // The position and prefix string
+  ixxSize: number; //
   ixxAlloc: number;
   // wordHitHash: Hash;
   useUdc: boolean;
-}
+};
 
+// Used as a file description object in Trix.c, not sure if this is exactly needed for ts.
 type LineFile = {
-
-}
+  filename: string,
+  bufsize: number,
+  buf: string
+};
 
 type TrixIxx = {
-  pos: number;  // Technically should by off_t type (64 vs. 32 bit)
+  // Position where prefix first occurs in file.
+  pos: number; // Technically should by off_t type (64 vs. 32 bit)
+
+  // Space padded first five letters of what we're indexing.
   prefix: string; // TODO: should be array of char of length trixPrefixSize
-}
-
-// type Hash = {}
+};
 
 
-
+// Create a new Trix objet and return it.
 function trixNew(): Trix {
-  let lf: LineFile = {}
+  let lf: LineFile = {
+    filename: "",
+    bufsize: 64*1024,
+    buf: ""
+  };
   let ix: TrixIxx = {
     pos: 0,
-    prefix: ""
-  }
+    prefix: '',
+  };
   let trix: Trix = {
     lineFile: lf,
     ixx: ix,
     ixxSize: 0,
-    ixxAlloc: 0,
-    useUdc: false
-  }
+    ixxAlloc: 8 * 1024,
+    useUdc: false,
+  };
   return trix;
 }
 
-
-
-function openTrix() {
-  let trix: Trix = trixNew();
+// Returns if the given filePath is a url.
+function hasProtocol(urlOrPath: string): boolean {
+  return urlOrPath.includes('://');
 }
 
+// Open up index.  Load second level index in memory.
+function trixOpen(ixFile: string) {
+  let trix: Trix = trixNew();
+  trix.useUdc = hasProtocol(ixFile);
+  let ixxFile: string = ixFile + 'x';
+  let lf: LineFile = {
+    filename: ixxFile,
+    bufsize: 64*128,
+    buf: ""
+  }
+
+  // TODO: Start parsing the file! Use LineFile.C as reference
+  // while ()
+
+  
 
 
 
-function trixSearchCommand(ixFile: string, wordCount: number, words: Array<string>) {
+}
 
+function trixSearchCommand(
+  ixFile: string,
+  wordCount: number,
+  words: Array<string>
+) {
   // TODO: Start the Trix Search
-  for (let i=0; i<words.length; i++)
-    words[i] = words[i].toLowerCase();
+  for (let i = 0; i < words.length; i++) words[i] = words[i].toLowerCase();
 
-  console.log(`${ixFile} ${wordCount} ${words}`);
+  trixOpen(ixFile);
 
-
-  return ["ENST00000445051.1", "ENST00000439876.1"];
+  return ['ENST00000445051.1', 'ENST00000439876.1'];
 }
 
 export const search = (searchTerm: string) => {
   if ('development' === process.env.NODE_ENV) {
     console.log(`Search test for ${searchTerm}.`);
   }
-  const ixFile: string = "../test/testData/test1/myTrix.ix";
+  const ixFile: string = '../test/testData/test1/myTrix.ix';
   const wordCount: number = 1;
-  const words: Array<string> = ["This", "tYme"];
+  const words: Array<string> = ['This', 'tYme'];
   const r = trixSearchCommand(ixFile, wordCount, words);
   return r;
 };
 
 
-
-
-
 /*
+Note about safef() function:
 
 One weakness of C in the string handling.  It is very easy using standard C 
 library functions like sprintf and strcat to write past the end of the
