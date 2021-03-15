@@ -1,3 +1,5 @@
+import { LocalFile, RemoteFile, BlobFile } from 'generic-filehandle';
+
 const off_t: number = 64; // Specify number of bits
 const trixPrefixSize = 5;
 const unhexTable = {
@@ -30,9 +32,10 @@ type Trix = {
 
 // Used as a file description object in Trix.c, not sure if this is exactly needed for ts.
 type LineFile = {
-  filename: string,
-  bufsize: number,
-  buf: string
+  filename: string;
+  bufsize: number;
+  buf: string;
+  buffOffsetInFile?: number;
 };
 
 type TrixIxx = {
@@ -43,13 +46,12 @@ type TrixIxx = {
   prefix: string; // TODO: should be array of char of length trixPrefixSize
 };
 
-
 // Create a new Trix objet and return it.
 function trixNew(): Trix {
   let lf: LineFile = {
-    filename: "",
-    bufsize: 64*1024,
-    buf: ""
+    filename: '',
+    bufsize: 64 * 1024,
+    buf: '',
   };
   let ix: TrixIxx = {
     pos: 0,
@@ -71,52 +73,51 @@ function hasProtocol(urlOrPath: string): boolean {
 }
 
 // Open up index.  Load second level index in memory.
-function trixOpen(ixFile: string) {
+async function trixOpen(ixFile: string) {
   let trix: Trix = trixNew();
   trix.useUdc = hasProtocol(ixFile);
   let ixxFile: string = ixFile + 'x';
   let lf: LineFile = {
     filename: ixxFile,
-    bufsize: 64*128,
-    buf: ""
-  }
+    bufsize: 64 * 128,
+    buf: '',
+  };
 
-  // TODO: Start parsing the file! Use LineFile.C as reference
-  // while ()
+  // Load .ixx file into buffer buf
+  const local = new LocalFile(ixxFile);
+  const buf = await local.readFile();
+  console.log(buf);
 
-  
-
-
-
+  // TODO: Save prefixes and ixx sizes
 }
 
-function trixSearchCommand(
+async function trixSearchCommand(
   ixFile: string,
   wordCount: number,
   words: Array<string>
 ) {
-  // TODO: Start the Trix Search
   for (let i = 0; i < words.length; i++) words[i] = words[i].toLowerCase();
 
-  trixOpen(ixFile);
+  await trixOpen(ixFile);
 
   return ['ENST00000445051.1', 'ENST00000439876.1'];
 }
 
-export const search = (searchTerm: string) => {
+export const search = async (searchTerm: string) => {
   if ('development' === process.env.NODE_ENV) {
     console.log(`Search test for ${searchTerm}.`);
   }
-  const ixFile: string = '../test/testData/test1/myTrix.ix';
+  const ixFile: string = './test/testData/test1/myTrix.ix';
   const wordCount: number = 1;
   const words: Array<string> = ['This', 'tYme'];
-  const r = trixSearchCommand(ixFile, wordCount, words);
+  const r = await trixSearchCommand(ixFile, wordCount, words);
   return r;
 };
 
 
+
 /*
-Note about safef() function:
+Note about safef() function in kent:
 
 One weakness of C in the string handling.  It is very easy using standard C 
 library functions like sprintf and strcat to write past the end of the
