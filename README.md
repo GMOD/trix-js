@@ -2,11 +2,11 @@
 Read UCSC Trix indexes in pure JavaScript
 
 ### Test trix-js
-First, clone this repo.
-Install npm packages.
-Run `npm test`. 
+First, clone this repo and install npm packages. <br>
+Then, run `npm test`. 
 
-#### Test the USCS TrixSearch - Requires Linux
+<br>
+### Test the USCS TrixSearch - Requires Linux
 First, clone this repo.
 To run test searches on a track hub using the USCS `TrixSearch`, navigate to `tests/testdata/test#` and run `bash test#script.sh` where # is the test number.
 To change search terms, edit `searchterms.txt`.
