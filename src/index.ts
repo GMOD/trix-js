@@ -115,7 +115,6 @@ export const search = async (searchTerm: string) => {
 };
 
 
-
 /*
 Note about safef() function in kent:
 
