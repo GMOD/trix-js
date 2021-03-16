@@ -11,8 +11,8 @@ describe(`Searching for ${searchTerm}`, () => {
 });
 
 
-describe('Demo of the binary parser', () => {
-  it('Demo', async () => {
-    expect(demoParse()).toEqual(1);
-  });
-});
+// describe('Demo of the binary parser', () => {
+//   it('Demo', async () => {
+//     expect(demoParse()).toEqual(1);
+//   });
+// });

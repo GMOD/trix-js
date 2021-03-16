@@ -1,25 +1,6 @@
 import { LocalFile, RemoteFile, BlobFile } from 'generic-filehandle';
 
-const off_t: number = 64; // Specify number of bits
 const trixPrefixSize = 5;
-const unhexTable = {
-  '0': 0,
-  '1': 1,
-  '2': 2,
-  '3': 3,
-  '4': 4,
-  '5': 5,
-  '6': 6,
-  '7': 7,
-  '8': 8,
-  '9': 9,
-  'A': 10,
-  'B': 11,
-  'C': 12,
-  'D': 13,
-  'E': 14,
-  'F': 15,
-};
 
 type Trix = {
   lineFile: LineFile;
@@ -46,7 +27,7 @@ type TrixIxx = {
   prefix: string; // TODO: should be array of char of length trixPrefixSize
 };
 
-// Create a new Trix objet and return it.
+// Create a new Trix object and return it.
 function trixNew(): Trix {
   let lf: LineFile = {
     filename: '',
@@ -83,25 +64,41 @@ async function trixOpen(ixFile: string) {
     buf: '',
   };
 
-  // Load .ixx file into buffer buf
+  // Load the ixxFile into ixxData object
   const local = new LocalFile(ixxFile);
-  const buf = await local.readFile();
+  // const buf = await local.readFile();
+  const buf = Buffer.alloc(15);
+  const { bytesRead } = await local.read(buf, 0, 15);
+  console.log(buf.toString());
+
   console.log(buf);
 
-  // TODO: Save prefixes and ixx sizes
+  var Parser = require("@gmod/binary-parser").Parser;
+  var ixxData = new Parser()
+    .string("prefix", {
+      length: 3
+    })
+    .int64("loc");
+
+  // Parse buffer and show result
+  console.log(ixxData.parse(buf));
 }
 
+
+// Search for each word in the words array.
 async function trixSearchCommand(
   ixFile: string,
   wordCount: number,
   words: Array<string>
 ) {
-  for (let i = 0; i < words.length; i++) words[i] = words[i].toLowerCase();
+  for (let i = 0; i < words.length; i++) 
+    words[i] = words[i].toLowerCase();
 
   await trixOpen(ixFile);
 
   return ['ENST00000445051.1', 'ENST00000439876.1'];
 }
+
 
 export const search = async (searchTerm: string) => {
   if ('development' === process.env.NODE_ENV) {
@@ -113,6 +110,8 @@ export const search = async (searchTerm: string) => {
   const r = await trixSearchCommand(ixFile, wordCount, words);
   return r;
 };
+
+
 
 
 /*
