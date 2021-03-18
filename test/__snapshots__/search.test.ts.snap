@@ -1,0 +1,29 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Test the parsing of test1 ixx file Parse test1/myTrix.ixx 1`] = `
+Map {
+  "for  " => 0,
+}
+`;
+
+exports[`Test the parsing of test2 ixx file Parse test2/out.ixx 1`] = `
+Map {
+  "a1bg-" => 0,
+  "ac008" => 61706,
+  "ac015" => 129243,
+  "ac027" => 193731,
+  "ac090" => 261827,
+  "ac103" => 325384,
+  "ac136" => 392173,
+  "al121" => 454548,
+  "al357" => 523062,
+  "ap000" => 582260,
+  "cu639" => 656147,
+  "enst0" => 673037,
+  "entpd" => 2510607,
+  "linc0" => 2562546,
+  "linc2" => 2816649,
+  "pcbp2" => 2885361,
+  "tfap2" => 2954357,
+}
+`;
