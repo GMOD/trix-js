@@ -1,40 +1,23 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Test a search of test1 ix file Search for "searchTerm" in test1/myTrix.ix 1`] = `
+exports[`Test a search of test1 ix file Search for "for" in test1/myTrix.ix 1`] = `
 Array [
   Object {
     "itemId": "id1",
-    "wordIx": 1,
+    "wordIx": 4,
   },
   Object {
     "itemId": "id2",
-    "wordIx": 1,
+    "wordIx": 4,
   },
   Object {
     "itemId": "id3",
-    "wordIx": 1,
+    "wordIx": 4,
   },
 ]
 `;
 
-exports[`Test a search of test1 ix file Search for "searchTerm" in test1/myTrix.ix 2`] = `
-Array [
-  Object {
-    "itemId": "id1",
-    "wordIx": 2,
-  },
-  Object {
-    "itemId": "id2",
-    "wordIx": 2,
-  },
-  Object {
-    "itemId": "id3",
-    "wordIx": 2,
-  },
-]
-`;
-
-exports[`Test a search of test1 ix file Search for "searchTerm" in test1/myTrix.ix 3`] = `
+exports[`Test a search of test1 ix file Search for "id1" in test1/myTrix.ix 1`] = `
 Array [
   Object {
     "itemId": "id1",
@@ -43,9 +26,43 @@ Array [
 ]
 `;
 
-exports[`Test a search of test1 ix file Search for "searchTerm" in test1/myTrix.ix 4`] = `Array []`;
+exports[`Test a search of test1 ix file Search for "is" in test1/myTrix.ix 1`] = `
+Array [
+  Object {
+    "itemId": "id1",
+    "wordIx": 2,
+  },
+  Object {
+    "itemId": "id2",
+    "wordIx": 2,
+  },
+  Object {
+    "itemId": "id3",
+    "wordIx": 2,
+  },
+]
+`;
 
-exports[`Test a search of test2 ix file Search for "searchTerm" in test2/out.ix 1`] = `
+exports[`Test a search of test1 ix file Search for "nope" in test1/myTrix.ix 1`] = `Array []`;
+
+exports[`Test a search of test1 ix file Search for "this" in test1/myTrix.ix 1`] = `
+Array [
+  Object {
+    "itemId": "id1",
+    "wordIx": 1,
+  },
+  Object {
+    "itemId": "id2",
+    "wordIx": 1,
+  },
+  Object {
+    "itemId": "id3",
+    "wordIx": 1,
+  },
+]
+`;
+
+exports[`Test a search of test2 ix file Search for "focad" in test2/out.ix 1`] = `
 Array [
   Object {
     "itemId": "ENST00000439876.1",
@@ -58,7 +75,7 @@ Array [
 ]
 `;
 
-exports[`Test a search of test2 ix file Search for "searchTerm" in test2/out.ix 2`] = `
+exports[`Test a search of test2 ix file Search for "linc" in test2/out.ix 1`] = `
 Array [
   Object {
     "itemId": "ENST00000416999.1",
@@ -151,7 +168,7 @@ Array [
 ]
 `;
 
-exports[`Test a search of test2 ix file Search for "searchTerm" in test2/out.ix 3`] = `Array []`;
+exports[`Test a search of test2 ix file Search for "none" in test2/out.ix 1`] = `Array []`;
 
 exports[`Test parsing a hit on test1 Parse hit string 1`] = `
 Array [

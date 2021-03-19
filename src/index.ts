@@ -97,6 +97,20 @@ export async function trixSearch(
   // 1. Check if searchWord is already in hashTable
   // 2. Seek ahead to byte `trix.index` of `ixFile`
 
+  // For each ixx in trix, compare ixx->prefix and word prefix
+  // If we get a hit, return the position
+
+  const indexes = (await trix.index);
+  indexes.forEach((value, key, map) => {
+    if (key.startsWith(searchWord)) {
+      console.log(`${key} - ${value}`);  
+    }
+  });
+
+  // console.log(idx);
+
+
+
   // 3. Loop through each line of `ixFile`
   // const fs = require('fs');
   // const stream = fs.createReadStream(ixFile, { highWaterMark: 1000 });
@@ -180,7 +194,7 @@ export const search = async (searchTerm: string) => {
   // if ('development' === process.env.NODE_ENV) {
   //   console.log(`Search test for ${searchTerm}.`);
   // }
-  
+
   const filePath: string = './test/testData/test2/out.ix';
   // const ixFile: string = './test/testData/test1/myTrix.ix';
   const ixFile = new LocalFile(filePath);
