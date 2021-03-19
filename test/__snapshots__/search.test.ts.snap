@@ -1,5 +1,50 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Test a search of test1 ix file Search for "searchTerm" in test1/myTrix.ix 1`] = `
+Array [
+  Object {
+    "itemId": "id1",
+    "wordIx": 1,
+  },
+  Object {
+    "itemId": "id2",
+    "wordIx": 1,
+  },
+  Object {
+    "itemId": "id3",
+    "wordIx": 1,
+  },
+]
+`;
+
+exports[`Test a search of test1 ix file Search for "searchTerm" in test1/myTrix.ix 2`] = `
+Array [
+  Object {
+    "itemId": "id1",
+    "wordIx": 2,
+  },
+  Object {
+    "itemId": "id2",
+    "wordIx": 2,
+  },
+  Object {
+    "itemId": "id3",
+    "wordIx": 2,
+  },
+]
+`;
+
+exports[`Test a search of test1 ix file Search for "searchTerm" in test1/myTrix.ix 3`] = `
+Array [
+  Object {
+    "itemId": "id1",
+    "wordIx": 5,
+  },
+]
+`;
+
+exports[`Test a search of test1 ix file Search for "searchTerm" in test1/myTrix.ix 4`] = `Array []`;
+
 exports[`Test parsing a hit on test1 Parse hit string 1`] = `
 Array [
   Object {

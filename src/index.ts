@@ -125,14 +125,13 @@ export async function trixSearch(
       }
     }
   }
-  console.log(arr);
 
   // TODO: Use buffer with offset to read in from the file.
 
   // 5. If it does, get the number of leftoverLetters and add searchWord to hash
+  
   // 6. If it does, return the hitList [list of trixHitPos (itemId: string, wordIx: int, leftoverLetters: int)]
-  // 7. Return word and hitlist
-  return [];
+  return arr;
 }
 
 export function parseHitList(line: string) {

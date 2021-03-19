@@ -4,13 +4,14 @@ import Trix from '../src/index';
 import { LocalFile } from 'generic-filehandle';
 import { trixSearch } from '../src/index';
 
-const searchTerm: string = 'focad';
-describe(`Searching for ${searchTerm}`, () => {
-  it('Search', async () => {
-    const results = await search(searchTerm);
-    expect(results).toEqual(['ENST00000445051.1', 'ENST00000439876.1']);
-  });
-});
+
+// describe(`Searching for term.`, () => {
+//   const searchTerm: string = 'focad';
+//   it('Search', async () => {
+//     const results = await search(searchTerm);
+//     expect(results).toEqual(['ENST00000445051.1', 'ENST00000439876.1']);
+//   });
+// });
 
 describe(`Test the parsing of test1 ixx file`, () => {
   it('Parse test1/myTrix.ixx', async () => {
@@ -47,17 +48,44 @@ describe('Test parsing a hit on test2', () => {
   });
 });
 
+const ixxFile: string = './test/testData/test1/myTrix.ixx';
+const localIxx = new LocalFile(ixxFile);
+const ixFile: string = './test/testData/test1/myTrix.ix';
+const localIx = new LocalFile(ixFile);
+const trix = new Trix(localIx);
+
 describe('Test a search of test1 ix file', () => {
-  it('Search for \"this\" in test1/myTrix.ix', async () => {
-    const ixxFile: string = './test/testData/test1/myTrix.ixx';
-    const localIxx = new LocalFile(ixxFile);
-    const ixFile: string = './test/testData/test1/myTrix.ix';
-    const localIx = new LocalFile(ixFile);
-    const trix = new Trix(localIx);
-    const hitList = await trixSearch("this", trix, localIx);
-    expect(hitList).toEqual(['id3', 'id2', 'id1']);
+  const searchTerm: string = "this";
+  it('Search for \"searchTerm\" in test1/myTrix.ix', async () => {
+    const hitList = await trixSearch(searchTerm, trix, localIx);
+    expect(hitList).toMatchSnapshot();
   });
 });
+
+describe('Test a search of test1 ix file', () => {
+  const searchTerm: string = "is";
+  it('Search for \"searchTerm\" in test1/myTrix.ix', async () => {
+    const hitList = await trixSearch(searchTerm, trix, localIx);
+    expect(hitList).toMatchSnapshot();
+  });
+});
+
+describe('Test a search of test1 ix file', () => {
+  const searchTerm: string = "id1";
+  it('Search for \"searchTerm\" in test1/myTrix.ix', async () => {
+    const hitList = await trixSearch(searchTerm, trix, localIx);
+    expect(hitList).toMatchSnapshot();
+  });
+});
+
+describe('Test a search of test1 ix file', () => {
+  const searchTerm: string = "nope";
+  it('Search for \"searchTerm\" in test1/myTrix.ix', async () => {
+    const hitList = await trixSearch(searchTerm, trix, localIx);
+    expect(hitList).toMatchSnapshot();
+  });
+});
+
 
 // describe('Demo of the binary parser', () => {
 //   it('Demo', async () => {
