@@ -129,7 +129,7 @@ export async function trixSearch(
   // TODO: Use buffer with offset to read in from the file.
 
   // 5. If it does, get the number of leftoverLetters and add searchWord to hash
-  
+
   // 6. If it does, return the hitList [list of trixHitPos (itemId: string, wordIx: int, leftoverLetters: int)]
   return arr;
 }
@@ -177,9 +177,10 @@ async function trixSearchCommand(
 }
 
 export const search = async (searchTerm: string) => {
-  if ('development' === process.env.NODE_ENV) {
-    console.log(`Search test for ${searchTerm}.`);
-  }
+  // if ('development' === process.env.NODE_ENV) {
+  //   console.log(`Search test for ${searchTerm}.`);
+  // }
+  
   const filePath: string = './test/testData/test2/out.ix';
   // const ixFile: string = './test/testData/test1/myTrix.ix';
   const ixFile = new LocalFile(filePath);
