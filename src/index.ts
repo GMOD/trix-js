@@ -84,6 +84,41 @@ export default class Trix {
 }
 
 
+// Search the .ix file for the searchWord.
+// Returns list of hit words
+export async function trixSearch(searchWord: string, trix: Trix, ixFile: anyFile) {
+
+  // 1. Check if searchWord is already in hashTable
+  // 2. Seek ahead to byte `trix.index` of `ixFile`
+
+  // 3. Loop through each line of `ixFile`
+  // const fs = require('fs');
+  // const stream = fs.createReadStream(ixFile, { highWaterMark: 1000 });
+  // for await(const data of stream) {
+  //     // do something with data 
+  //     console.log(data);
+  //     break;
+  // }
+
+  // const buf = new Buffer();
+  // await ixFile.read();
+  // console.log(buf.toString())
+
+  // TODO: Use buffer with offset to read in from the file.
+
+    // 4. Get first word in line and check if it has the same start as searchWord
+    // 5. If it does, get the number of leftoverLetters and add searchWord to hash
+    // 6. If it does, return the hitList [list of trixHitPos (itemId: string, wordIx: int, leftoverLetters: int)]
+  // 7. Return word and hitlist
+  return [];
+}
+
+
+
+
+
+
+
 // Returns if the given filePath is a url.
 function hasProtocol(urlOrPath: string): boolean {
   return urlOrPath.includes('://');
