@@ -50,7 +50,6 @@ type TrixIxx = {
 //   return trix;
 // }
 
-
 type ParsedIxx = Map<string, number>;
 
 export default class Trix {
@@ -83,11 +82,18 @@ export default class Trix {
   }
 }
 
+type hit = {
+  itemId: string,
+  wordIx: number
+}
 
 // Search the .ix file for the searchWord.
 // Returns list of hit words
-export async function trixSearch(searchWord: string, trix: Trix, ixFile: anyFile) {
-
+export async function trixSearch(
+  searchWord: string,
+  trix: Trix,
+  ixFile: anyFile
+) {
   // 1. Check if searchWord is already in hashTable
   // 2. Seek ahead to byte `trix.index` of `ixFile`
 
@@ -95,7 +101,7 @@ export async function trixSearch(searchWord: string, trix: Trix, ixFile: anyFile
   // const fs = require('fs');
   // const stream = fs.createReadStream(ixFile, { highWaterMark: 1000 });
   // for await(const data of stream) {
-  //     // do something with data 
+  //     // do something with data
   //     console.log(data);
   //     break;
   // }
@@ -104,20 +110,47 @@ export async function trixSearch(searchWord: string, trix: Trix, ixFile: anyFile
   // await ixFile.read();
   // console.log(buf.toString())
 
+  const buf = await ixFile.readFile();
+  const lines = buf.toString('utf8').split('\n');
+  // console.log(lines);
+
+  let arr: Array<hit> = [];
+
+  for (const line of lines) {
+    if (line.length > 0) {
+      // 4. Get first word in line and check if it has the same start as searchWord
+      if (line.startsWith(searchWord)) {
+        arr = parseHitList(line);
+        break;
+      }
+    }
+  }
+  console.log(arr);
+
   // TODO: Use buffer with offset to read in from the file.
 
-    // 4. Get first word in line and check if it has the same start as searchWord
-    // 5. If it does, get the number of leftoverLetters and add searchWord to hash
-    // 6. If it does, return the hitList [list of trixHitPos (itemId: string, wordIx: int, leftoverLetters: int)]
+  // 5. If it does, get the number of leftoverLetters and add searchWord to hash
+  // 6. If it does, return the hitList [list of trixHitPos (itemId: string, wordIx: int, leftoverLetters: int)]
   // 7. Return word and hitlist
   return [];
 }
 
-
-
-
-
-
+export function parseHitList(line: string) {
+  let arr: Array<hit> = []
+  const parts = line.split(' ');
+  for (const part of parts) {
+    const pair = part.split(',');
+    if (pair.length == 2) {
+      const itemId: string = pair[0];
+      const wordIx: number = Number.parseInt(pair[1]);
+      const obj: hit = { itemId: itemId, wordIx: wordIx };
+      arr.push(obj);
+    } else if (pair.length > 1) {
+      throw 'Invalid index file.';
+    }
+  }
+  return arr;
+}
 
 // Returns if the given filePath is a url.
 function hasProtocol(urlOrPath: string): boolean {
