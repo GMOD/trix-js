@@ -77,7 +77,7 @@ export async function trixSearch(
   if (seekPosEnd == -1) {
     // set buf to length of file in bytes - seekPosStart
     const stat = await ixFile.stat();
-    bufLength = stat.size;
+    bufLength = stat.size - seekPosStart;
   } else {
     bufLength = seekPosEnd - seekPosStart;
   }
@@ -121,20 +121,22 @@ export async function trixSearch(
         startsWith = false;
       }
       else if (i < linePtr + searchWord.length && searchWord[i - linePtr] < cur) {
-        let ls = buf.slice(linePtr, linePtr + 5);
-        // console.log(`${cur} - ${ls}`);
-        startsWith = false;
-        // done = true;  // We are alphabetically ahead so we can break out of the loop
+        if (i < linePtr + 1)
+          done = true;  // We are alphabetically ahead so we can break out of the loop
+        else
+          startsWith = false;
       }
       i++;
       cur = String.fromCharCode(buf[i]);
     }
 
+    // for  
+    // this
+
     if (done) break;
 
     if (startsWith) {
       const line: string = buf.slice(linePtr, i).toString();
-      // console.log(`Here is the line: ${line}`);
 
       arr.push.apply(arr, parseHitList(line));
     }

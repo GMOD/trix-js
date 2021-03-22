@@ -29,4 +29,27 @@ Test a search of test2 ix file
     ✓ Search for "tim" in test2/out.ix (40ms)
     ✓ Search for "znf8" in test2/out.ix (66ms)
 
+Scanning ahead in the .ix file:
 
+  Test a search of test1 ix file
+    ✓ Search for "this" in test1/myTrix.ix (2ms)
+    ✓ Search for "is" in test1/myTrix.ix (2ms)
+    ✓ Search for "id1" in test1/myTrix.ix (1ms)
+    ✓ Search for "nope" in test1/myTrix.ix (1ms)
+    ✓ Search for "for" in test1/myTrix.ix (1ms)
+  Test a search of test2 ix file
+    ✓ Search for "focad" in test2/out.ix (10ms)
+    ✓ Search for "linc" in test2/out.ix (28ms)
+    ✓ Search for "none" in test2/out.ix (19ms)
+    ✓ Search for "prickle" in test2/out.ix (7ms)
+    ✓ Search for "tim" in test2/out.ix (7ms)
+
+ › 1 snapshot obsolete.
+   • Test a search of test2 ix file Search for "znf8" in test2/out.ix 1
+Snapshot Summary
+ › 1 snapshot obsolete from 1 test suite. To remove it, re-run jest with `-u`.
+   ↳ test/search.test.ts
+       • Test a search of test2 ix file Search for "znf8" in test2/out.ix 1
+
+
+       
