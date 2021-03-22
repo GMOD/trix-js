@@ -4,52 +4,6 @@ type anyFile = LocalFile | RemoteFile | BlobFile;
 
 const trixPrefixSize = 5;
 
-// type Trix = {
-//   lineFile: LineFile;
-//   ixx: TrixIxx; // The position and prefix string
-//   ixxSize: number; //
-//   ixxAlloc: number;
-//   // wordHitHash: Hash;
-//   useUdc: boolean;
-// };
-
-// Used as a file description object in Trix.c, not sure if this is exactly needed for ts.
-type LineFile = {
-  filename: string;
-  bufsize: number;
-  buf: string;
-  buffOffsetInFile?: number;
-};
-
-type TrixIxx = {
-  // Position where prefix first occurs in file.
-  pos: number; // Technically should by off_t type (64 vs. 32 bit)
-
-  // Space padded first five letters of what we're indexing.
-  prefix: string; // TODO: should be array of char of length trixPrefixSize
-};
-
-// Create a new Trix object and return it.
-// function trixNew(): Trix {
-//   let lf: LineFile = {
-//     filename: '',
-//     bufsize: 64 * 1024,
-//     buf: '',
-//   };
-//   let ix: TrixIxx = {
-//     pos: 0,
-//     prefix: '',
-//   };
-//   let trix: Trix = {
-//     lineFile: lf,
-//     ixx: ix,
-//     ixxSize: 0,
-//     ixxAlloc: 8 * 1024,
-//     useUdc: false,
-//   };
-//   return trix;
-// }
-
 type ParsedIxx = Map<string, number>;
 
 export default class Trix {
@@ -83,9 +37,11 @@ export default class Trix {
 }
 
 type hit = {
-  itemId: string,
-  wordIx: number
-}
+  itemId: string;
+  wordIx: number;
+};
+
+// TODO: add these as methods to the trix object
 
 // Search the .ix file for the searchWord.
 // Returns list of hit words
@@ -101,14 +57,37 @@ export async function trixSearch(
   // If we get a hit, return the position
 
   // Get position to seek to in .ix file
-  let seekPos = 0;
-  const indexes = (await trix.index);
-  indexes.forEach((value, key, map) => {
-    if (key < searchWord)
-      seekPos = value;
-  });
+  let seekPosStart = 0;
+  let seekPosEnd = -1;
+  const indexes = await trix.index;
+  for (let [key, value] of indexes) {
+    if (key > searchWord) {
+      seekPosEnd = value - 1;
+      break;
+    }
+    seekPosStart = value;
+  }
 
+  // console.log(`${seekPosStart} ${seekPosEnd}`);
 
+  // TODO: Use buffer with offset to read in from the file.
+
+  let bufLength: number;
+
+  if (seekPosEnd == -1) {
+    // set buf to length of file in bytes - seekPosStart
+    const stat = await ixFile.stat();
+    bufLength = stat.size;
+  } else {
+    bufLength = seekPosEnd - seekPosStart;
+  }
+
+  let buf = Buffer.alloc(bufLength);
+
+  await ixFile.read(buf, 0, bufLength, seekPosStart);
+
+  // const buf = await ixFile.readFile();
+  // const lines = buf.toString('utf8').split('\n');
 
   // 3. Loop through each line of `ixFile`
   // const fs = require('fs');
@@ -119,35 +98,57 @@ export async function trixSearch(
   //     break;
   // }
 
-  // const buf = new Buffer();
-  // await ixFile.read();
-  // console.log(buf.toString())
-
-  const buf = await ixFile.readFile();
-  const lines = buf.toString('utf8').split('\n');
-  // console.log(lines);
-
   let arr: Array<hit> = [];
 
-  for (const line of lines) {
-    if (line.length > 0) {
-      // 4. Get first word in line and check if it has the same start as searchWord
-      if (line.startsWith(searchWord)) {
-        arr.push.apply(arr, parseHitList(line));
-      }
-      else if (searchWord < line) {
-        // console.log(`${searchWord} - ${line}`);
-        break;
-      }
+  let linePtr = 0;
 
-      if (arr.length >= 20)
-        break;
+  // Iterate through the entire buffer
+  while (linePtr < bufLength) {
+    // const lineEndPos = buf.indexOf('\n'.charCodeAt(0));
 
+    let startsWith = true;
+    let done = false;
+
+    let i = linePtr;
+    let cur = String.fromCharCode(buf[i]);
+
+    // 4. Get first word in line and check if it has the same start as searchWord
+    // Iterate through each char of the line in the buffer
+    // break out of loop when we hit a \n
+    while (cur != '\n') {
+      // TODO: subtract linePtr from i
+      if (i < linePtr + searchWord.length && searchWord[i - linePtr] > cur) {
+        startsWith = false;
+      }
+      else if (i < linePtr + searchWord.length && searchWord[i - linePtr] < cur) {
+        let ls = buf.slice(linePtr, linePtr + 5);
+        // console.log(`${cur} - ${ls}`);
+        startsWith = false;
+        // done = true;  // We are alphabetically ahead so we can break out of the loop
+      }
+      i++;
+      cur = String.fromCharCode(buf[i]);
     }
+
+    if (done) break;
+
+    if (startsWith) {
+      const line: string = buf.slice(linePtr, i).toString();
+      // console.log(`Here is the line: ${line}`);
+
+      arr.push.apply(arr, parseHitList(line));
+    }
+
+    // else if (searchWord < line) {
+    //   // console.log(`${searchWord} - ${line}`);
+    //   break;
+    // }
+
+    // Limit results to 20 for now.
+    if (arr.length >= 20) break;
+
+    linePtr = i + 1;
   }
-
-
-  // TODO: Use buffer with offset to read in from the file.
 
   // 5. If it does, get the number of leftoverLetters and add searchWord to hash
 
@@ -157,8 +158,10 @@ export async function trixSearch(
 
 // Takes in a hit string and returns an array of result terms.
 export function parseHitList(line: string) {
-  let arr: Array<hit> = []
+  let arr: Array<hit> = [];
   const parts = line.split(' ');
+  // Each result is of format: "{itemId},{wordIx}"
+  // Parse the entire line of these and return
   for (const part of parts) {
     const pair = part.split(',');
     if (pair.length == 2) {
@@ -212,23 +215,3 @@ export const search = async (searchTerm: string) => {
   const r = await trixSearchCommand(ixFile, ixxFile, wordCount, words);
   return r;
 };
-
-/*
-Note about safef() function in kent:
-
-One weakness of C in the string handling.  It is very easy using standard C 
-library functions like sprintf and strcat to write past the end of the
-character array that holds a string.  For this reason instead of sprintf
-we use the "safef" function, which takes an additional parameter, the size
-of the character array.  So
-   char buffer[50];
-   sprintf(buf, "My name is %s", name);
-becomes
-   char buffer[50];
-   safef(buf, sizeof(buf), "My name is %s", name);
-Instead of just silently overflowing the buffer and crashing cryptically
-in many cases if the string is too long, say "Sahar Barjesteh van Waalwijk van Doorn-Khosrovani"
-which is actually a real scientists name!
-
-
-*/
