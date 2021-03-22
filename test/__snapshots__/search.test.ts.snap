@@ -170,6 +170,73 @@ Array [
 
 exports[`Test a search of test2 ix file Search for "none" in test2/out.ix 1`] = `Array []`;
 
+exports[`Test a search of test2 ix file Search for "prickle" in test2/out.ix 1`] = `
+Array [
+  Object {
+    "itemId": "ENST00000460946.1",
+    "wordIx": 1,
+  },
+  Object {
+    "itemId": "ENST00000476308.1",
+    "wordIx": 1,
+  },
+  Object {
+    "itemId": "ENST00000484703.1",
+    "wordIx": 1,
+  },
+  Object {
+    "itemId": "ENST00000473434.1",
+    "wordIx": 1,
+  },
+  Object {
+    "itemId": "ENST00000487097.1",
+    "wordIx": 1,
+  },
+  Object {
+    "itemId": "ENST00000659263.1",
+    "wordIx": 1,
+  },
+]
+`;
+
+exports[`Test a search of test2 ix file Search for "tim" in test2/out.ix 1`] = `
+Array [
+  Object {
+    "itemId": "ENST00000429104.1",
+    "wordIx": 1,
+  },
+  Object {
+    "itemId": "ENST00000444438.2",
+    "wordIx": 1,
+  },
+  Object {
+    "itemId": "ENST00000651208.1",
+    "wordIx": 1,
+  },
+  Object {
+    "itemId": "ENST00000651763.1",
+    "wordIx": 1,
+  },
+]
+`;
+
+exports[`Test a search of test2 ix file Search for "znf8" in test2/out.ix 1`] = `
+Array [
+  Object {
+    "itemId": "ENST00000591325.1",
+    "wordIx": 1,
+  },
+  Object {
+    "itemId": "ENST00000443154.3",
+    "wordIx": 1,
+  },
+  Object {
+    "itemId": "ENST00000592296.5",
+    "wordIx": 1,
+  },
+]
+`;
+
 exports[`Test parsing a hit on test1 Parse hit string 1`] = `
 Array [
   Object {

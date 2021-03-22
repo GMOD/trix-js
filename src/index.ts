@@ -103,11 +103,12 @@ export async function trixSearch(
   const indexes = (await trix.index);
   indexes.forEach((value, key, map) => {
     if (key.startsWith(searchWord)) {
-      console.log(`${key} - ${value}`);  
+      // console.log(`${key} - ${value}`);  
     }
   });
 
   // console.log(idx);
+
 
 
 
@@ -134,11 +135,19 @@ export async function trixSearch(
     if (line.length > 0) {
       // 4. Get first word in line and check if it has the same start as searchWord
       if (line.startsWith(searchWord)) {
-        arr = parseHitList(line);
+        arr.push.apply(arr, parseHitList(line));
+      }
+      else if (searchWord < line) {
+        // console.log(`${searchWord} - ${line}`);
         break;
       }
+
+      if (arr.length >= 20)
+        break;
+        
     }
   }
+
 
   // TODO: Use buffer with offset to read in from the file.
 
@@ -148,6 +157,7 @@ export async function trixSearch(
   return arr;
 }
 
+// Takes in a hit string and returns an array of result terms.
 export function parseHitList(line: string) {
   let arr: Array<hit> = []
   const parts = line.split(' ');

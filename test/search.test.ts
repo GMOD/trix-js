@@ -106,6 +106,7 @@ describe('Test a search of test2 ix file', () => {
   const searchTerm: string = "focad";
   it(`Search for \"${searchTerm}\" in test2/out.ix`, async () => {
     const hitList = await trixSearch(searchTerm, trix2, localIx2);
+    // console.log(hitList);
     expect(hitList).toMatchSnapshot();
   });
 });
@@ -114,6 +115,7 @@ describe('Test a search of test2 ix file', () => {
   const searchTerm: string = "linc";
   it(`Search for \"${searchTerm}\" in test2/out.ix`, async () => {
     const hitList = await trixSearch(searchTerm, trix2, localIx2);
+    // console.log(hitList);
     expect(hitList).toMatchSnapshot();
   });
 });
@@ -122,11 +124,45 @@ describe('Test a search of test2 ix file', () => {
   const searchTerm: string = "none";
   it(`Search for \"${searchTerm}\" in test2/out.ix`, async () => {
     const hitList = await trixSearch(searchTerm, trix2, localIx2);
+    // console.log(hitList);
     expect(hitList).toMatchSnapshot();
   });
 });
 
+describe('Test a search of test2 ix file', () => {
+  const searchTerm: string = "prickle";
+  it(`Search for \"${searchTerm}\" in test2/out.ix`, async () => {
+    const hitList = await trixSearch(searchTerm, trix2, localIx2);
+    // console.log(hitList);
+    expect(hitList).toMatchSnapshot();
+  });
+});
 
+describe('Test a search of test2 ix file', () => {
+  const searchTerm: string = "tim";
+  it(`Search for \"${searchTerm}\" in test2/out.ix`, async () => {
+    const hitList = await trixSearch(searchTerm, trix2, localIx2);
+    // console.log(hitList);
+    expect(hitList).toMatchSnapshot();
+  });
+});
+
+describe('Test a search of test2 ix file', () => {
+  const searchTerm: string = "znf8";
+  it(`Search for \"${searchTerm}\" in test2/out.ix`, async () => {
+    const hitList = await trixSearch(searchTerm, trix2, localIx2);
+    console.log(hitList);
+    expect(hitList).toMatchSnapshot();
+  });
+});
+
+// describe('Test a search of test2 ix file', () => {
+//   const searchTerm: string = "enst";
+//   it(`Search for \"${searchTerm}\" in test2/out.ix`, async () => {
+//     const hitList = await trixSearch(searchTerm, trix2, localIx2);
+//     expect(hitList).toMatchSnapshot();
+//   });
+// });
 
 // describe('Demo of the binary parser', () => {
 //   it('Demo', async () => {
