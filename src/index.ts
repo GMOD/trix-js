@@ -100,15 +100,13 @@ export async function trixSearch(
   // For each ixx in trix, compare ixx->prefix and word prefix
   // If we get a hit, return the position
 
+  // Get position to seek to in .ix file
+  let seekPos = 0;
   const indexes = (await trix.index);
   indexes.forEach((value, key, map) => {
-    if (key.startsWith(searchWord)) {
-      // console.log(`${key} - ${value}`);  
-    }
+    if (key < searchWord)
+      seekPos = value;
   });
-
-  // console.log(idx);
-
 
 
 
@@ -144,7 +142,7 @@ export async function trixSearch(
 
       if (arr.length >= 20)
         break;
-        
+
     }
   }
 

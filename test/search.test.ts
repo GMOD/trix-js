@@ -151,7 +151,7 @@ describe('Test a search of test2 ix file', () => {
   const searchTerm: string = "znf8";
   it(`Search for \"${searchTerm}\" in test2/out.ix`, async () => {
     const hitList = await trixSearch(searchTerm, trix2, localIx2);
-    console.log(hitList);
+    // console.log(hitList);
     expect(hitList).toMatchSnapshot();
   });
 });
