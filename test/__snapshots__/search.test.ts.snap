@@ -62,6 +62,91 @@ Array [
 ]
 `;
 
+exports[`Test a search of test2 ix file Search for "enst" in test2/out.ix 1`] = `
+Array [
+  Object {
+    "itemId": "ENST00000229465.10",
+    "wordIx": 2,
+  },
+  Object {
+    "itemId": "ENST00000230113.5",
+    "wordIx": 2,
+  },
+  Object {
+    "itemId": "ENST00000235290.7",
+    "wordIx": 2,
+  },
+  Object {
+    "itemId": "ENST00000242109.5",
+    "wordIx": 2,
+  },
+  Object {
+    "itemId": "ENST00000244820.2",
+    "wordIx": 2,
+  },
+  Object {
+    "itemId": "ENST00000244906.6",
+    "wordIx": 2,
+  },
+  Object {
+    "itemId": "ENST00000248980.9",
+    "wordIx": 2,
+  },
+  Object {
+    "itemId": "ENST00000250776.5",
+    "wordIx": 2,
+  },
+  Object {
+    "itemId": "ENST00000250805.5",
+    "wordIx": 2,
+  },
+  Object {
+    "itemId": "ENST00000253838.3",
+    "wordIx": 2,
+  },
+  Object {
+    "itemId": "ENST00000253848.3",
+    "wordIx": 2,
+  },
+  Object {
+    "itemId": "ENST00000255183.8",
+    "wordIx": 2,
+  },
+  Object {
+    "itemId": "ENST00000262354.5",
+    "wordIx": 2,
+  },
+  Object {
+    "itemId": "ENST00000276770.8",
+    "wordIx": 2,
+  },
+  Object {
+    "itemId": "ENST00000276779.8",
+    "wordIx": 2,
+  },
+  Object {
+    "itemId": "ENST00000279067.3",
+    "wordIx": 2,
+  },
+  Object {
+    "itemId": "ENST00000289890.7",
+    "wordIx": 2,
+  },
+  Object {
+    "itemId": "ENST00000291374.11",
+    "wordIx": 2,
+  },
+  Object {
+    "itemId": "ENST00000292748.7",
+    "wordIx": 2,
+  },
+  Object {
+    "itemId": "ENST00000294715.6",
+    "wordIx": 2,
+  },
+]
+`;
+
 exports[`Test a search of test2 ix file Search for "focad" in test2/out.ix 1`] = `
 Array [
   Object {
