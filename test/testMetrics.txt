@@ -52,4 +52,20 @@ Snapshot Summary
        • Test a search of test2 ix file Search for "znf8" in test2/out.ix 1
 
 
-       
+Fix issue with enst scan:
+      
+  Test a search of test1 ix file
+    ✓ Search for "this" in test1/myTrix.ix (2ms)
+    ✓ Search for "is" in test1/myTrix.ix (1ms)
+    ✓ Search for "id1" in test1/myTrix.ix (1ms)
+    ✓ Search for "nope" in test1/myTrix.ix (1ms)
+    ✓ Search for "for" in test1/myTrix.ix (1ms)
+  Test a search of test2 ix file
+    ✓ Search for "focad" in test2/out.ix (7ms)
+    ✕ Search for "linc" in test2/out.ix (11ms)
+    ✓ Search for "none" in test2/out.ix (20ms)
+    ✓ Search for "prickle" in test2/out.ix (6ms)
+    ✓ Search for "tim" in test2/out.ix (5ms)
+    ✓ Search for "znf8" in test2/out.ix (24ms)
+    ✕ Search for "enst" in test2/out.ix (3ms)
+

@@ -61,9 +61,13 @@ export async function trixSearch(
   let seekPosEnd = -1;
   const indexes = await trix.index;
   for (let [key, value] of indexes) {
-    if (key > searchWord) {
+    let x = key.substr(0, searchWord.length)
+    if (x > searchWord || seekPosEnd === -2) {
       seekPosEnd = value - 1;
       break;
+    }
+    else if (x === searchWord) {
+      seekPosEnd = -2;
     }
     seekPosStart = value;
   }
@@ -74,7 +78,7 @@ export async function trixSearch(
 
   let bufLength: number;
 
-  if (seekPosEnd == -1) {
+  if (seekPosEnd == -1 || seekPosEnd === -2) {
     // set buf to length of file in bytes - seekPosStart
     const stat = await ixFile.stat();
     bufLength = stat.size - seekPosStart;
