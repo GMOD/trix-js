@@ -44,6 +44,7 @@ export default class Trix {
     return ixx;
   }
 
+
   // Search the .ix file for the searchWord.
   // Returns list of hit words
   async trixSearch(searchWord: string) {
@@ -55,6 +56,66 @@ export default class Trix {
 
     searchWord = searchWord.toLowerCase()
 
+    // Load the section of .ix data to search into the buffer
+    const buf: Buffer = await this._getBuffer(searchWord);
+
+    let arr: Array<hit> = [];
+
+    let linePtr = 0;
+
+    // Iterate through the entire buffer
+    while (linePtr < buf.byteLength) {
+      let startsWith = true;
+      let done = false;
+
+      let i = linePtr;
+
+      // 4. Get first word in line and check if it has the same start as searchWord
+      // Iterate through each char of the line in the buffer
+      // break out of loop when we hit a \n (which = unicode char 10)
+      while (buf[i] != 10) {
+        if (startsWith) {
+          let cur = String.fromCharCode(buf[i]);
+          if (i < linePtr + searchWord.length && searchWord[i - linePtr] > cur) {
+            startsWith = false;
+          } else if (
+            i < linePtr + searchWord.length &&
+            searchWord[i - linePtr] < cur
+          ) {
+            if (i < linePtr + 1) {
+              done = true;
+              break;
+            }
+  
+            // We are alphabetically ahead so we can break out of the loop
+            else startsWith = false;
+          }
+        }
+
+        i++;
+      }
+
+      if (done) break;
+
+      if (startsWith) {
+        const line: string = buf.slice(linePtr, i).toString();
+
+        arr.push.apply(arr, this._parseHitList(line));
+      }
+
+      // Limit results to 20.
+      if (arr.length >= this.maxResults) break;
+
+      linePtr = i + 1;
+    }
+
+    // 5. If it does, get the number of leftoverLetters and add searchWord to hash
+
+    // 6. If it does, return the hitList [list of trixHitPos (itemId: string, wordIx: int, leftoverLetters: int)]
+    return arr;
+  }
+
+  async _getBuffer(searchWord: string) {
     // Get position to seek to in .ix file
     let seekPosStart = 0;
     let seekPosEnd = -1;
@@ -87,54 +148,7 @@ export default class Trix {
 
     await this.ixFile.read(buf, 0, bufLength, seekPosStart);
 
-    let arr: Array<hit> = [];
-
-    let linePtr = 0;
-
-    // Iterate through the entire buffer
-    while (linePtr < bufLength) {
-      let startsWith = true;
-      let done = false;
-
-      let i = linePtr;
-      let cur = String.fromCharCode(buf[i]);
-
-      // 4. Get first word in line and check if it has the same start as searchWord
-      // Iterate through each char of the line in the buffer
-      // break out of loop when we hit a \n
-      while (cur != '\n') {
-        if (i < linePtr + searchWord.length && searchWord[i - linePtr] > cur) {
-          startsWith = false;
-        } else if (
-          i < linePtr + searchWord.length &&
-          searchWord[i - linePtr] < cur
-        ) {
-          if (i < linePtr + 1) done = true;
-          // We are alphabetically ahead so we can break out of the loop
-          else startsWith = false;
-        }
-        i++;
-        cur = String.fromCharCode(buf[i]);
-      }
-
-      if (done) break;
-
-      if (startsWith) {
-        const line: string = buf.slice(linePtr, i).toString();
-
-        arr.push.apply(arr, this._parseHitList(line));
-      }
-
-      // Limit results to 20.
-      if (arr.length >= this.maxResults) break;
-
-      linePtr = i + 1;
-    }
-
-    // 5. If it does, get the number of leftoverLetters and add searchWord to hash
-
-    // 6. If it does, return the hitList [list of trixHitPos (itemId: string, wordIx: int, leftoverLetters: int)]
-    return arr;
+    return buf;
   }
 
   // Takes in a hit string and returns an array of result terms.

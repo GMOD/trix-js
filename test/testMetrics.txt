@@ -44,13 +44,6 @@ Scanning ahead in the .ix file:
     ✓ Search for "prickle" in test2/out.ix (7ms)
     ✓ Search for "tim" in test2/out.ix (7ms)
 
- › 1 snapshot obsolete.
-   • Test a search of test2 ix file Search for "znf8" in test2/out.ix 1
-Snapshot Summary
- › 1 snapshot obsolete from 1 test suite. To remove it, re-run jest with `-u`.
-   ↳ test/search.test.ts
-       • Test a search of test2 ix file Search for "znf8" in test2/out.ix 1
-
 
 Fix issue with enst scan:
       
@@ -88,6 +81,9 @@ Update to catch edge case:
     ✓ Search for "znf8" in test2/out.ix (10ms)
     ✓ Search for "enst" in test2/out.ix (5ms)
 
+
+
+// 3/24/2021:
 
 After adding trixSearch() to class:
 
@@ -137,3 +133,55 @@ After adding all properties and methods to class:
     ✓ Search for "prickle" in test3/out.ix (19ms)
     ✓ Search for "oca" in test3/out.ix (27ms)
     ✓ Search for "zzz" in test3/out.ix (23ms)
+
+
+After making a getBuffer() function:
+
+  Test a search of test1 ix file
+    ✓ Search for "this" in test1/myTrix.ix (3ms)
+    ✓ Search for "is" in test1/myTrix.ix (1ms)
+    ✓ Search for "id1" in test1/myTrix.ix (1ms)
+    ✓ Search for "nope" in test1/myTrix.ix (1ms)
+    ✓ Search for "fOR" in test1/myTrix.ix (1ms)
+  Test a search of test2 ix file
+    ✓ Search for "FocAd" in test2/out.ix (19ms)
+    ✓ Search for "LINC" in test2/out.ix (29ms)
+    ✓ Search for "none" in test2/out.ix (20ms)
+    ✓ Search for "prickle" in test2/out.ix (7ms)
+    ✓ Search for "tim" in test2/out.ix (5ms)
+    ✓ Search for "znf8" in test2/out.ix (13ms)
+    ✓ Search for "enst" in test2/out.ix (6ms)
+  Test a search of test3 ix file
+    ✓ Search for "focad" in test3/out.ix (15ms)
+    ✓ Search for "nothing" in test3/out.ix (16ms)
+    ✓ Search for "tim" in test3/out.ix (11ms)
+    ✓ Search for "prickle" in test3/out.ix (19ms)
+    ✓ Search for "oca" in test3/out.ix (30ms)
+    ✓ Search for "zzz" in test3/out.ix (14ms)
+
+
+Only convert to byte char if startsWith is true:
+
+  Test a search of test1 ix file
+    ✓ Search for "this" in test1/myTrix.ix (3ms)
+    ✓ Search for "is" in test1/myTrix.ix (1ms)
+    ✓ Search for "id1" in test1/myTrix.ix (1ms)
+    ✓ Search for "nope" in test1/myTrix.ix
+    ✓ Search for "fOR" in test1/myTrix.ix (1ms)
+  Test a search of test2 ix file
+    ✓ Search for "FocAd" in test2/out.ix (1ms)
+    ✓ Search for "LINC" in test2/out.ix (5ms)
+    ✓ Search for "none" in test2/out.ix (3ms)
+    ✓ Search for "prickle" in test2/out.ix (2ms)
+    ✓ Search for "tim" in test2/out.ix (2ms)
+    ✓ Search for "znf8" in test2/out.ix (2ms)
+    ✓ Search for "enst" in test2/out.ix (3ms)
+  Test a search of test3 ix file
+    ✓ Search for "focad" in test3/out.ix (2ms)
+    ✓ Search for "nothing" in test3/out.ix (1ms)
+    ✓ Search for "tim" in test3/out.ix (2ms)
+    ✓ Search for "prickle" in test3/out.ix (3ms)
+    ✓ Search for "oca" in test3/out.ix (2ms)
+    ✓ Search for "zzz" in test3/out.ix (2ms)
+  Test maxResults for search of test3 ix file
+    ✓ Search for "tim" with a max of 5 results (1ms)
