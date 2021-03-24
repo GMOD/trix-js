@@ -5,10 +5,8 @@ type anyFile = LocalFile | RemoteFile | BlobFile;
 const trixPrefixSize = 5;
 
 // TODO:
-//    > convert searchWord to lowercase
 //    > refactor trixSearch()
-//    > update to use trixPrefixSize
-//    > specify maximum number of results as a class variable
+//    > add docstring
 //    > specify minimum number of characters as a class variable?
 
 type ParsedIxx = Map<string, number>;
@@ -16,10 +14,12 @@ type ParsedIxx = Map<string, number>;
 export default class Trix {
   index: Promise<ParsedIxx>;
   ixFile: anyFile;
+  maxResults: number;
 
-  constructor(ixxFile: anyFile, ixFile: anyFile) {
+  constructor(ixxFile: anyFile, ixFile: anyFile, maxResults: number = 20) {
     this.index = this._parseIxx(ixxFile);
     this.ixFile = ixFile;
+    this.maxResults = maxResults;
   }
 
   // Parses ixx file and returns a ParsedIxx
@@ -33,8 +33,8 @@ export default class Trix {
       if (line.length > 0) {
         // Parse the ixx line
         // Format: 5 characters prefix, 10 characters hex
-        const prefix = line.substr(0, 5);
-        const posStr = line.substr(5);
+        const prefix = line.substr(0, trixPrefixSize);
+        const posStr = line.substr(trixPrefixSize);
         const pos = Number.parseInt(posStr, 16);
 
         ixx.set(prefix, pos);
@@ -52,6 +52,8 @@ export default class Trix {
 
     // For each ixx in trix, compare ixx->prefix and word prefix
     // If we get a hit, return the position
+
+    searchWord = searchWord.toLowerCase()
 
     // Get position to seek to in .ix file
     let seekPosStart = 0;
@@ -91,8 +93,6 @@ export default class Trix {
 
     // Iterate through the entire buffer
     while (linePtr < bufLength) {
-      // const lineEndPos = buf.indexOf('\n'.charCodeAt(0));
-
       let startsWith = true;
       let done = false;
 
@@ -126,7 +126,7 @@ export default class Trix {
       }
 
       // Limit results to 20.
-      if (arr.length >= 20) break;
+      if (arr.length >= this.maxResults) break;
 
       linePtr = i + 1;
     }

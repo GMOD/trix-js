@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Test a search of test1 ix file Search for "for" in test1/myTrix.ix 1`] = `
+exports[`Test a search of test1 ix file Search for "fOR" in test1/myTrix.ix 1`] = `
 Array [
   Object {
     "itemId": "id1",
@@ -62,92 +62,7 @@ Array [
 ]
 `;
 
-exports[`Test a search of test2 ix file Search for "enst" in test2/out.ix 1`] = `
-Array [
-  Object {
-    "itemId": "ENST00000229465.10",
-    "wordIx": 2,
-  },
-  Object {
-    "itemId": "ENST00000230113.5",
-    "wordIx": 2,
-  },
-  Object {
-    "itemId": "ENST00000235290.7",
-    "wordIx": 2,
-  },
-  Object {
-    "itemId": "ENST00000242109.5",
-    "wordIx": 2,
-  },
-  Object {
-    "itemId": "ENST00000244820.2",
-    "wordIx": 2,
-  },
-  Object {
-    "itemId": "ENST00000244906.6",
-    "wordIx": 2,
-  },
-  Object {
-    "itemId": "ENST00000248980.9",
-    "wordIx": 2,
-  },
-  Object {
-    "itemId": "ENST00000250776.5",
-    "wordIx": 2,
-  },
-  Object {
-    "itemId": "ENST00000250805.5",
-    "wordIx": 2,
-  },
-  Object {
-    "itemId": "ENST00000253838.3",
-    "wordIx": 2,
-  },
-  Object {
-    "itemId": "ENST00000253848.3",
-    "wordIx": 2,
-  },
-  Object {
-    "itemId": "ENST00000255183.8",
-    "wordIx": 2,
-  },
-  Object {
-    "itemId": "ENST00000262354.5",
-    "wordIx": 2,
-  },
-  Object {
-    "itemId": "ENST00000276770.8",
-    "wordIx": 2,
-  },
-  Object {
-    "itemId": "ENST00000276779.8",
-    "wordIx": 2,
-  },
-  Object {
-    "itemId": "ENST00000279067.3",
-    "wordIx": 2,
-  },
-  Object {
-    "itemId": "ENST00000289890.7",
-    "wordIx": 2,
-  },
-  Object {
-    "itemId": "ENST00000291374.11",
-    "wordIx": 2,
-  },
-  Object {
-    "itemId": "ENST00000292748.7",
-    "wordIx": 2,
-  },
-  Object {
-    "itemId": "ENST00000294715.6",
-    "wordIx": 2,
-  },
-]
-`;
-
-exports[`Test a search of test2 ix file Search for "focad" in test2/out.ix 1`] = `
+exports[`Test a search of test2 ix file Search for "FocAd" in test2/out.ix 1`] = `
 Array [
   Object {
     "itemId": "ENST00000439876.1",
@@ -160,7 +75,7 @@ Array [
 ]
 `;
 
-exports[`Test a search of test2 ix file Search for "linc" in test2/out.ix 1`] = `
+exports[`Test a search of test2 ix file Search for "LINC" in test2/out.ix 1`] = `
 Array [
   Object {
     "itemId": "ENST00000416999.1",
@@ -249,6 +164,91 @@ Array [
   Object {
     "itemId": "ENST00000647388.1",
     "wordIx": 1,
+  },
+]
+`;
+
+exports[`Test a search of test2 ix file Search for "enst" in test2/out.ix 1`] = `
+Array [
+  Object {
+    "itemId": "ENST00000229465.10",
+    "wordIx": 2,
+  },
+  Object {
+    "itemId": "ENST00000230113.5",
+    "wordIx": 2,
+  },
+  Object {
+    "itemId": "ENST00000235290.7",
+    "wordIx": 2,
+  },
+  Object {
+    "itemId": "ENST00000242109.5",
+    "wordIx": 2,
+  },
+  Object {
+    "itemId": "ENST00000244820.2",
+    "wordIx": 2,
+  },
+  Object {
+    "itemId": "ENST00000244906.6",
+    "wordIx": 2,
+  },
+  Object {
+    "itemId": "ENST00000248980.9",
+    "wordIx": 2,
+  },
+  Object {
+    "itemId": "ENST00000250776.5",
+    "wordIx": 2,
+  },
+  Object {
+    "itemId": "ENST00000250805.5",
+    "wordIx": 2,
+  },
+  Object {
+    "itemId": "ENST00000253838.3",
+    "wordIx": 2,
+  },
+  Object {
+    "itemId": "ENST00000253848.3",
+    "wordIx": 2,
+  },
+  Object {
+    "itemId": "ENST00000255183.8",
+    "wordIx": 2,
+  },
+  Object {
+    "itemId": "ENST00000262354.5",
+    "wordIx": 2,
+  },
+  Object {
+    "itemId": "ENST00000276770.8",
+    "wordIx": 2,
+  },
+  Object {
+    "itemId": "ENST00000276779.8",
+    "wordIx": 2,
+  },
+  Object {
+    "itemId": "ENST00000279067.3",
+    "wordIx": 2,
+  },
+  Object {
+    "itemId": "ENST00000289890.7",
+    "wordIx": 2,
+  },
+  Object {
+    "itemId": "ENST00000291374.11",
+    "wordIx": 2,
+  },
+  Object {
+    "itemId": "ENST00000292748.7",
+    "wordIx": 2,
+  },
+  Object {
+    "itemId": "ENST00000294715.6",
+    "wordIx": 2,
   },
 ]
 `;
@@ -592,6 +592,31 @@ Array [
   },
   Object {
     "itemId": "ENSMUST00000200570.5",
+    "wordIx": 1,
+  },
+]
+`;
+
+exports[`Test maxResults for search of test3 ix file Search for "tim" with a max of 5 results 1`] = `
+Array [
+  Object {
+    "itemId": "ENSMUST00000055102.13",
+    "wordIx": 1,
+  },
+  Object {
+    "itemId": "ENSMUST00000109225.9",
+    "wordIx": 1,
+  },
+  Object {
+    "itemId": "ENSMUST00000125008.2",
+    "wordIx": 1,
+  },
+  Object {
+    "itemId": "ENSMUST00000169584.8",
+    "wordIx": 1,
+  },
+  Object {
+    "itemId": "ENSMUST00000068877.7",
     "wordIx": 1,
   },
 ]
