@@ -597,56 +597,6 @@ Array [
 ]
 `;
 
-exports[`Test parsing a hit on test1 Parse hit string 1`] = `
-Array [
-  Object {
-    "itemId": "id1",
-    "wordIx": 1,
-  },
-  Object {
-    "itemId": "id2",
-    "wordIx": 1,
-  },
-  Object {
-    "itemId": "id3",
-    "wordIx": 1,
-  },
-]
-`;
-
-exports[`Test parsing a hit on test2 Parse hit string 1`] = `
-Array [
-  Object {
-    "itemId": "ENST00000458677.1",
-    "wordIx": 1,
-  },
-  Object {
-    "itemId": "ENST00000627453.2",
-    "wordIx": 1,
-  },
-  Object {
-    "itemId": "ENST00000627596.2",
-    "wordIx": 1,
-  },
-  Object {
-    "itemId": "ENST00000627957.2",
-    "wordIx": 1,
-  },
-  Object {
-    "itemId": "ENST00000629311.1",
-    "wordIx": 1,
-  },
-  Object {
-    "itemId": "ENST00000630575.2",
-    "wordIx": 1,
-  },
-  Object {
-    "itemId": "ENST00000630625.1",
-    "wordIx": 1,
-  },
-]
-`;
-
 exports[`Test the parsing of test1 ixx file Parse test1/myTrix.ixx 1`] = `
 Map {
   "for  " => 0,

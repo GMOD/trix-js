@@ -87,3 +87,53 @@ Update to catch edge case:
     ✓ Search for "tim" in test2/out.ix (4ms)
     ✓ Search for "znf8" in test2/out.ix (10ms)
     ✓ Search for "enst" in test2/out.ix (5ms)
+
+
+After adding trixSearch() to class:
+
+  Test a search of test1 ix file
+    ✓ Search for "this" in test1/myTrix.ix (5ms)
+    ✓ Search for "is" in test1/myTrix.ix (4ms)
+    ✓ Search for "id1" in test1/myTrix.ix (4ms)
+    ✓ Search for "nope" in test1/myTrix.ix (4ms)
+    ✓ Search for "for" in test1/myTrix.ix (4ms)
+  Test a search of test2 ix file
+    ✓ Search for "focad" in test2/out.ix (14ms)
+    ✓ Search for "linc" in test2/out.ix (29ms)
+    ✓ Search for "none" in test2/out.ix (37ms)
+    ✓ Search for "prickle" in test2/out.ix (9ms)
+    ✓ Search for "tim" in test2/out.ix (19ms)
+    ✓ Search for "znf8" in test2/out.ix (36ms)
+    ✓ Search for "enst" in test2/out.ix (6ms)
+  Test a search of test3 ix file
+    ✓ Search for "focad" in test3/out.ix (15ms)
+    ✓ Search for "nothing" in test3/out.ix (16ms)
+    ✓ Search for "tim" in test3/out.ix (9ms)
+    ✓ Search for "prickle" in test3/out.ix (20ms)
+    ✓ Search for "oca" in test3/out.ix (30ms)
+    ✓ Search for "zzz" in test3/out.ix (17ms)
+
+
+After adding all properties and methods to class:
+
+  Test a search of test1 ix file
+    ✓ Search for "this" in test1/myTrix.ix (2ms)
+    ✓ Search for "is" in test1/myTrix.ix (1ms)
+    ✓ Search for "id1" in test1/myTrix.ix (1ms)
+    ✓ Search for "nope" in test1/myTrix.ix (1ms)
+    ✓ Search for "for" in test1/myTrix.ix (1ms)
+  Test a search of test2 ix file
+    ✓ Search for "focad" in test2/out.ix (9ms)
+    ✓ Search for "linc" in test2/out.ix (23ms)
+    ✓ Search for "none" in test2/out.ix (29ms)
+    ✓ Search for "prickle" in test2/out.ix (6ms)
+    ✓ Search for "tim" in test2/out.ix (5ms)
+    ✓ Search for "znf8" in test2/out.ix (10ms)
+    ✓ Search for "enst" in test2/out.ix (7ms)
+  Test a search of test3 ix file
+    ✓ Search for "focad" in test3/out.ix (15ms)
+    ✓ Search for "nothing" in test3/out.ix (16ms)
+    ✓ Search for "tim" in test3/out.ix (8ms)
+    ✓ Search for "prickle" in test3/out.ix (19ms)
+    ✓ Search for "oca" in test3/out.ix (27ms)
+    ✓ Search for "zzz" in test3/out.ix (23ms)
