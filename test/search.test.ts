@@ -164,8 +164,77 @@ describe('Test a search of test2 ix file', () => {
   });
 });
 
-// describe('Demo of the binary parser', () => {
-//   it('Demo', async () => {
-//     expect(demoParse()).toEqual(1);
-//   });
-// });
+
+
+
+
+const ixxFile3: string = './test/testData/test3/out.ixx';
+const localIxx3 = new LocalFile(ixxFile3);
+const ixFile3: string = './test/testData/test3/out.ix';
+const localIx3 = new LocalFile(ixFile3);
+const trix3 = new Trix(localIxx3);
+
+describe('Test a search of test3 ix file', () => {
+  const searchTerm: string = "focad";
+  it(`Search for \"${searchTerm}\" in test3/out.ix`, async () => {
+    const hitList = await trixSearch(searchTerm, trix3, localIx3);
+    // console.log(hitList);
+    expect(hitList).toMatchSnapshot();
+  });
+});
+
+
+describe('Test a search of test3 ix file', () => {
+  const searchTerm: string = "nothing";
+  it(`Search for \"${searchTerm}\" in test3/out.ix`, async () => {
+    const hitList = await trixSearch(searchTerm, trix3, localIx3);
+    // console.log(hitList);
+    expect(hitList).toMatchSnapshot();
+  });
+});
+
+
+describe('Test a search of test3 ix file', () => {
+  const searchTerm: string = "tim";
+  it(`Search for \"${searchTerm}\" in test3/out.ix`, async () => {
+    const hitList = await trixSearch(searchTerm, trix3, localIx3);
+    // console.log(hitList);
+    expect(hitList).toMatchSnapshot();
+  });
+});
+
+
+describe('Test a search of test3 ix file', () => {
+  const searchTerm: string = "prickle";
+  it(`Search for \"${searchTerm}\" in test3/out.ix`, async () => {
+    const hitList = await trixSearch(searchTerm, trix3, localIx3);
+    // console.log(hitList);
+    expect(hitList).toMatchSnapshot();
+  });
+});
+
+
+describe('Test a search of test3 ix file', () => {
+  const searchTerm: string = "oca";
+  it(`Search for \"${searchTerm}\" in test3/out.ix`, async () => {
+    const hitList = await trixSearch(searchTerm, trix3, localIx3);
+    // console.log(hitList);
+    expect(hitList).toMatchSnapshot();
+  });
+});
+
+
+describe('Test a search of test3 ix file', () => {
+  const searchTerm: string = "zzz";
+  it(`Search for \"${searchTerm}\" in test3/out.ix`, async () => {
+    const hitList = await trixSearch(searchTerm, trix3, localIx3);
+    // console.log(hitList);
+    expect(hitList).toMatchSnapshot();
+  });
+});
+
+
+
+
+
+
