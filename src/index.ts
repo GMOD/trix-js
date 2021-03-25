@@ -10,9 +10,11 @@ type hit = {
 };
 
 // TODO:
-//    > use a hashTable
-//    > Find leftoverletters?
+//    > Implement reasonable prefix instead of direct match.
 //    > specify minimum number of characters as a class variable?
+//    > test with RemoteFile:
+//      https://hgdownload.soe.ucsc.edu/gbdb/hg38/knownGene.ix
+//      https://hgdownload.soe.ucsc.edu/gbdb/hg38/knownGene.ixx
 
 type ParsedIxx = Map<string, number>;
 
@@ -44,7 +46,7 @@ export default class Trix {
    * @param searchWord [string]
    * @returns results [Array<hit>]. Each hit contains the itemId [string], and wordPos [number] (which is the word number in the sentence).
    */
-  async trixSearch(searchWord: string) {
+  async search(searchWord: string) {
     searchWord = searchWord.toLowerCase();
     
     // 1. Check if searchWord is already in hashTable
@@ -126,7 +128,7 @@ export default class Trix {
    * @param searchWord [string]
    * @returns a Buffer holding the sections we want to search.
    */
-  async _getBuffer(searchWord: string) {
+  private async _getBuffer(searchWord: string) {
     // Get position to seek to in .ix file from indexes.
     let seekPosStart = 0;
     let seekPosEnd = -1;
@@ -167,7 +169,7 @@ export default class Trix {
    * @param line [string] The line of .ix that is a hit.
    * @returns results [Array<hit>]. Each hit contains the itemId [string], and wordPos [number].
    */
-  _parseHitList(line: string) {
+  private _parseHitList(line: string) {
     let arr: Array<hit> = [];
     const parts = line.split(' ');
     // Each result is of format: "{itemId},{wordPos}"
@@ -193,7 +195,7 @@ export default class Trix {
    * @param ixxFile [anyFile] second level index that is produced by ixIxx.
    * @returns a ParsedIxx map.
    */
-  async _parseIxx(ixxFile: anyFile): Promise<ParsedIxx> {
+  private async _parseIxx(ixxFile: anyFile): Promise<ParsedIxx> {
     const ixx = new Map();
 
     // Load the ixxFile into ixxData object
