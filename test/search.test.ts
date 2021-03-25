@@ -37,6 +37,7 @@ describe(`Test the parsing of test2 ixx file`, () => {
 
 
 // -----------------------------------------------------------------
+// Search trix1:
 
 describe('Test a search of test1 ix file', () => {
   const searchTerm: string = "this";
@@ -79,6 +80,7 @@ describe('Test a search of test1 ix file', () => {
 });
 
 // ----------------------------------------------------------------------
+// Search trix2:
 
 describe('Test a search of test2 ix file', () => {
   const searchTerm: string = "FocAd";
@@ -144,6 +146,7 @@ describe('Test a search of test2 ix file', () => {
 
 
 // --------------------------------------------------
+// Search trix3:
 
 
 describe('Test a search of test3 ix file', () => {
@@ -207,6 +210,7 @@ describe('Test a search of test3 ix file', () => {
 
 
 // ------------------------
+// Test maxResults:
 
 const trix3B = new Trix(localIxx3, localIx3, 5);
 

@@ -5,8 +5,8 @@ type anyFile = LocalFile | RemoteFile | BlobFile;
 const trixPrefixSize = 5;
 
 type hit = {
-  itemId: string;
-  wordIx: number;
+  itemId: string;   // The id string.
+  wordPos: number;   // The number the searchWord is in the sentence (1 is first, 2 is second word...).
 };
 
 // TODO:
@@ -42,7 +42,7 @@ export default class Trix {
    * This method matches each word's prefix against searchWord. It does not do fuzzy matching.
    *
    * @param searchWord [string]
-   * @returns results [Array<hit>]. Each hit contains the itemId [string], and wordIx [number].
+   * @returns results [Array<hit>]. Each hit contains the itemId [string], and wordPos [number] (which is the word number in the sentence).
    */
   async trixSearch(searchWord: string) {
     searchWord = searchWord.toLowerCase();
@@ -112,7 +112,7 @@ export default class Trix {
     // so trim to this.maxResults length.
     if (arr.length > this.maxResults) arr.slice(0, this.maxResults);
 
-    // 6. Return the hitList [list of trixHitPos (itemId: string, wordIx: int, leftoverLetters: int)]
+    // 6. Return the hitList [list of trixHitPos (itemId: string, wordPos: int, leftoverLetters: int)]
     return arr;
   }
 
@@ -165,19 +165,19 @@ export default class Trix {
    * Takes in a hit string and returns an array of result terms.
    * 
    * @param line [string] The line of .ix that is a hit.
-   * @returns results [Array<hit>]. Each hit contains the itemId [string], and wordIx [number].
+   * @returns results [Array<hit>]. Each hit contains the itemId [string], and wordPos [number].
    */
   _parseHitList(line: string) {
     let arr: Array<hit> = [];
     const parts = line.split(' ');
-    // Each result is of format: "{itemId},{wordIx}"
+    // Each result is of format: "{itemId},{wordPos}"
     // Parse the entire line of these and return
     for (const part of parts) {
       const pair = part.split(',');
       if (pair.length == 2) {
         const itemId: string = pair[0];
-        const wordIx: number = Number.parseInt(pair[1]);
-        const obj: hit = { itemId: itemId, wordIx: wordIx };
+        const wordPos: number = Number.parseInt(pair[1]);
+        const obj: hit = { itemId: itemId, wordPos: wordPos };
         arr.push(obj);
       } else if (pair.length > 1) {
         throw 'Invalid index file.';
