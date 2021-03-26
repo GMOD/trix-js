@@ -1,5 +1,6 @@
 import Trix from '../src/index';
-import { LocalFile } from 'generic-filehandle';
+import { LocalFile, RemoteFile } from 'generic-filehandle';
+// import fetch from 'node-fetch'
 
 const ixxFile1: string = './test/testData/test1/myTrix.ixx';
 const localIxx1 = new LocalFile(ixxFile1);
@@ -18,6 +19,12 @@ const localIxx3 = new LocalFile(ixxFile3);
 const ixFile3: string = './test/testData/test3/out.ix';
 const localIx3 = new LocalFile(ixFile3);
 const trix3 = new Trix(localIxx3, localIx3);
+
+const ixxFile4: string = './test/testData/test4/out.ixx';
+const localIxx4 = new LocalFile(ixxFile4);
+const ixFile4: string = './test/testData/test4/out.ix';
+const localIx4 = new LocalFile(ixFile4);
+const trix4 = new Trix(localIxx4, localIx4);
 
 describe(`Test the parsing of test1 ixx file`, () => {
   it('Parse test1/myTrix.ixx', async () => {
@@ -209,6 +216,18 @@ describe('Test a search of test3 ix file', () => {
   });
 });
 
+// ---------------------
+describe('Test a search of test4 ix file', () => {
+  const searchTerm: string = "pista";
+  it(`Search for \"${searchTerm}\" in test4/out.ix`, async () => {
+    const hitList = await trix4.search(searchTerm);
+    // console.log(hitList);
+    expect(hitList).toMatchSnapshot();
+  });
+});
+
+
+
 
 // ------------------------
 // Test maxResults:
@@ -223,9 +242,5 @@ describe('Test maxResults for search of test3 ix file', () => {
     expect(hitList).toMatchSnapshot();
   });
 });
-
-
-
-
 
 

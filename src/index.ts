@@ -182,7 +182,7 @@ export default class Trix {
         const obj: hit = { itemId: itemId, wordPos: wordPos };
         arr.push(obj);
       } else if (pair.length > 1) {
-        throw 'Invalid index file.';
+        throw `Error in index format at word ${parts[0]}`;
       }
     }
     return arr;
