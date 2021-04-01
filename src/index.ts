@@ -10,11 +10,11 @@ type hit = {
 };
 
 // TODO:
-//    > Implement reasonable prefix instead of direct match.
+//    > Implement reasonable prefix to filter results?
 //    > specify minimum number of characters as a class variable?
 //    > test with RemoteFile:
 //      https://hgdownload.soe.ucsc.edu/gbdb/hg38/knownGene.ix
-//      https://hgdownload.soe.ucsc.edu/gbdb/hg38/knownGene.ixx
+//      
 
 type ParsedIxx = Map<string, number>;
 
@@ -56,36 +56,50 @@ export default class Trix {
 
     let arr: Array<hit> = [];
     let linePtr = 0;
+    let numValues = 0;
 
     // 3. Iterate through the entire buffer
     while (linePtr < buf.byteLength) {
       let startsWith = true;
       let done = false;
       let i = linePtr;
-
+      
       // 4. Get first word in the line and check if it has the same prefix as searchWord.
-
+      
       // Iterate through each char of the line in the buffer.
       // break out of loop when we hit a \n (unicode char 10) or the searchWord does not match the line.
       while (buf[i] != 10) {
+        if (i >= buf.byteLength) {
+          done = true;
+          break;
+        }
         if (startsWith) {
           let cur = String.fromCharCode(buf[i]);
-          if (
-            i < linePtr + searchWord.length &&
-            searchWord[i - linePtr] > cur
-          ) {
+          if (i < linePtr + searchWord.length &&
+              searchWord[i - linePtr] > cur) {
+            // searchWord[i] > cur, so keep looping
             startsWith = false;
-          } else if (
-            i < linePtr + searchWord.length &&
-            searchWord[i - linePtr] < cur
-          ) {
-            if (i < linePtr + 1) {
-              done = true;
-              break;
-            }
 
-            // Else we are alphabetically ahead so we can break out of the loop.
-            else startsWith = false;
+          } 
+          else if (i < linePtr + searchWord.length &&
+                  searchWord[i - linePtr] < cur) {
+              startsWith = false;
+              done = true;
+              break;        
+          }
+          else {
+            if (buf[i] === 44) {
+              numValues++;
+              // const linex: string = buf.slice(linePtr, i).toString();
+              debugger;
+              if (numValues >= this.maxResults) {
+                while (buf[i] != 32)
+                  i++;
+
+                break;
+              }
+            }
+            
           }
         }
 
@@ -109,10 +123,6 @@ export default class Trix {
     }
 
     // 5. If we have a result, get the number of leftoverLetters and add searchWord to hash
-
-    // Sometimes there are more than maxResults if a line has multiple results,
-    // so trim to this.maxResults length.
-    if (arr.length > this.maxResults) arr.slice(0, this.maxResults);
 
     // 6. Return the hitList [list of trixHitPos (itemId: string, wordPos: int, leftoverLetters: int)]
     return arr;

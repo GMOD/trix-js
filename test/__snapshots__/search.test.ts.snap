@@ -157,14 +157,6 @@ Array [
     "itemId": "ENST00000646587.1",
     "wordPos": 1,
   },
-  Object {
-    "itemId": "ENST00000647288.1",
-    "wordPos": 1,
-  },
-  Object {
-    "itemId": "ENST00000647388.1",
-    "wordPos": 1,
-  },
 ]
 `;
 
