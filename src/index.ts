@@ -2,12 +2,15 @@ import { LocalFile, RemoteFile, BlobFile } from 'generic-filehandle';
 
 type anyFile = LocalFile | RemoteFile | BlobFile;
 
-const trixPrefixSize = 5;
+type ParsedIxx = Map<string, number>;
 
 type hit = {
   itemId: string;   // The id string.
-  wordPos: number;   // The number the searchWord is in the sentence (1 is first, 2 is second word...).
+  wordPos: number;   // Where the searchWord is in the sentence (1 is first, 2 is the second word...).
 };
+
+
+const trixPrefixSize = 5;
 
 // TODO:
 //    > Implement reasonable prefix to filter results?
@@ -16,11 +19,14 @@ type hit = {
 //      https://hgdownload.soe.ucsc.edu/gbdb/hg38/knownGene.ix
 //      
 
-type ParsedIxx = Map<string, number>;
-
 // Define this object with .ixx and .ix files.
 // Then use the trixSearch() function to search for a word.
 export default class Trix {
+
+  index: Promise<ParsedIxx>;
+  ixFile: anyFile;
+  maxResults: number;
+
 
   /**
    * @param ixxFile [anyFile] the second-level trix index file produced by ixIxx.
@@ -34,37 +40,30 @@ export default class Trix {
   }
 
 
-  index: Promise<ParsedIxx>;
-  ixFile: anyFile;
-  maxResults: number;
-
-
   /**
    * Search trix for the given searchWord. Return up to {this.maxResults} results.
    * This method matches each word's prefix against searchWord. It does not do fuzzy matching.
    *
-   * @param searchWord [string]
+   * @param searchWord [string] term to search for its id(s).
    * @returns results [Array<hit>]. Each hit contains the itemId [string], and wordPos [number] (which is the word number in the sentence).
    */
   async search(searchWord: string) {
     searchWord = searchWord.toLowerCase();
-    
-    // 1. Check if searchWord is already in hashTable
-    
-    // 2. Seek ahead to byte `this.index` of `ixFile`. Load this section of .ix data into the buffer.
+        
+    // 1. Seek ahead to byte `this.index` of `ixFile`. Load this section of .ix data into the buffer.
     const buf: Buffer = await this._getBuffer(searchWord);
 
-    let arr: Array<hit> = [];
+    let resultArr: Array<hit> = [];
     let linePtr = 0;
     let numValues = 0;
 
-    // 3. Iterate through the entire buffer
+    // 2. Iterate through the entire buffer
     while (linePtr < buf.byteLength) {
       let startsWith = true;
       let done = false;
       let i = linePtr;
       
-      // 4. Get first word in the line and check if it has the same prefix as searchWord.
+      // 3. Check if the first word in the line has the same prefix as searchWord.
       
       // Iterate through each char of the line in the buffer.
       // break out of loop when we hit a \n (unicode char 10) or the searchWord does not match the line.
@@ -77,21 +76,22 @@ export default class Trix {
           let cur = String.fromCharCode(buf[i]);
           if (i < linePtr + searchWord.length &&
               searchWord[i - linePtr] > cur) {
-            // searchWord[i] > cur, so keep looping
+            // searchWord[i] > cur, so keep looping.
             startsWith = false;
 
           } 
           else if (i < linePtr + searchWord.length &&
                   searchWord[i - linePtr] < cur) {
-              startsWith = false;
-              done = true;
-              break;        
+            // searchWord[i] < cur, so we lexicographically will not find any more results.
+            startsWith = false;
+            done = true;
+            break;        
           }
           else {
+            // this condition indicates we found a match.
             if (buf[i] === 44) {
+              // we found a ',' so increment numValues by one.
               numValues++;
-              // const linex: string = buf.slice(linePtr, i).toString();
-              debugger;
               if (numValues >= this.maxResults) {
                 while (buf[i] != 32)
                   i++;
@@ -99,7 +99,6 @@ export default class Trix {
                 break;
               }
             }
-            
           }
         }
 
@@ -113,19 +112,17 @@ export default class Trix {
 
         // Parse the line and add results to arr.
         const line: string = buf.slice(linePtr, i).toString();
-        arr.push.apply(arr, this._parseHitList(line));
+        resultArr.push.apply(resultArr, this._parseHitString(line));
       }
 
       // Once we have enough results, stop searching.
-      if (arr.length >= this.maxResults) break;
+      if (resultArr.length >= this.maxResults) break;
 
       linePtr = i + 1;
     }
 
-    // 5. If we have a result, get the number of leftoverLetters and add searchWord to hash
-
-    // 6. Return the hitList [list of trixHitPos (itemId: string, wordPos: int, leftoverLetters: int)]
-    return arr;
+    // 4. Return the hitList [list of trixHitPos (itemId: string, wordPos: int]
+    return resultArr;
   }
 
 
@@ -179,7 +176,7 @@ export default class Trix {
    * @param line [string] The line of .ix that is a hit.
    * @returns results [Array<hit>]. Each hit contains the itemId [string], and wordPos [number].
    */
-  private _parseHitList(line: string) {
+  private _parseHitString(line: string) {
     let arr: Array<hit> = [];
     const parts = line.split(' ');
     // Each result is of format: "{itemId},{wordPos}"
@@ -189,10 +186,13 @@ export default class Trix {
       if (pair.length == 2) {
         const itemId: string = pair[0];
         const wordPos: number = Number.parseInt(pair[1]);
+        if (typeof wordPos !== "number" || isNaN(wordPos))
+          throw `Error in ix index format at term ${itemId} for word ${parts[0]}`;
+
         const obj: hit = { itemId: itemId, wordPos: wordPos };
         arr.push(obj);
       } else if (pair.length > 1) {
-        throw `Error in index format at word ${parts[0]}`;
+        throw `Error in ix index format at word ${parts[0]}`;
       }
     }
     return arr;
@@ -218,6 +218,8 @@ export default class Trix {
         const prefix = line.substr(0, trixPrefixSize);
         const posStr = line.substr(trixPrefixSize);
         const pos = Number.parseInt(posStr, 16);
+        if (typeof pos !== "number" || isNaN(pos))
+          throw `Error in ixx index format at word ${prefix}`;
 
         ixx.set(prefix, pos);
       }
