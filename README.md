@@ -23,7 +23,7 @@ async function doStuff() {
 The Trix class constructor accepts arguments:
 - `ixxFile` - a LocalFile, RemoteFile, or BlobFile object output from ixIxx
 - `ixFile` - a LocalFile, RemoteFile, or BlobFile object output from ixIxx
-- `maxResults = 20` - an optional number specifying the maximum number of results to return on search()
+- `maxResults = 20` - an optional number specifying the maximum number of results to return on `trix.search()`
 
 
 ### Trix search
