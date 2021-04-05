@@ -218,7 +218,7 @@ describe('Test a search of test3 ix file', () => {
 
 // ---------------------
 describe('Test a search of test4 ix file', () => {
-  const searchTerm: string = "pista";
+  const searchTerm: string = "ek";
   it(`Search for \"${searchTerm}\" in test4/out.ix`, async () => {
     const hitList = await trix4.search(searchTerm);
     // console.log(hitList);

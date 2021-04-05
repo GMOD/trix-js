@@ -589,10 +589,86 @@ Array [
 ]
 `;
 
-exports[`Test a search of test4 ix file Search for "pista" in test4/out.ix 1`] = `
+exports[`Test a search of test4 ix file Search for "ek" in test4/out.ix 1`] = `
 Array [
   Object {
+    "itemId": "id11",
+    "wordPos": 1,
+  },
+  Object {
+    "itemId": "id8",
+    "wordPos": 1,
+  },
+  Object {
+    "itemId": "id12",
+    "wordPos": 1,
+  },
+  Object {
+    "itemId": "id13",
+    "wordPos": 1,
+  },
+  Object {
+    "itemId": "id14",
+    "wordPos": 1,
+  },
+  Object {
+    "itemId": "id46",
+    "wordPos": 1,
+  },
+  Object {
+    "itemId": "id39",
+    "wordPos": 1,
+  },
+  Object {
+    "itemId": "id41",
+    "wordPos": 1,
+  },
+  Object {
+    "itemId": "id16",
+    "wordPos": 1,
+  },
+  Object {
+    "itemId": "id1",
+    "wordPos": 1,
+  },
+  Object {
+    "itemId": "id17",
+    "wordPos": 1,
+  },
+  Object {
+    "itemId": "id9",
+    "wordPos": 1,
+  },
+  Object {
+    "itemId": "id18",
+    "wordPos": 1,
+  },
+  Object {
+    "itemId": "id19",
+    "wordPos": 1,
+  },
+  Object {
+    "itemId": "id10",
+    "wordPos": 1,
+  },
+  Object {
+    "itemId": "id2",
+    "wordPos": 1,
+  },
+  Object {
+    "itemId": "id20",
+    "wordPos": 1,
+  },
+  Object {
+    "itemId": "id26",
+    "wordPos": 1,
+  },
+  Object {
     "itemId": "id4",
+    "wordPos": 1,
+  },
+  Object {
+    "itemId": "id44",
     "wordPos": 1,
   },
 ]
