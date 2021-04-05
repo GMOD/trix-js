@@ -23,10 +23,9 @@ const trixPrefixSize = 5;
 // Then use the trixSearch() function to search for a word.
 export default class Trix {
 
-  index: Promise<ParsedIxx>;
-  ixFile: anyFile;
+  private index: Promise<ParsedIxx>;
+  private ixFile: anyFile;
   maxResults: number;
-
 
   /**
    * @param ixxFile [anyFile] the second-level trix index file produced by ixIxx.

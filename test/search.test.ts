@@ -26,21 +26,21 @@ const ixFile4: string = './test/testData/test4/out.ix';
 const localIx4 = new LocalFile(ixFile4);
 const trix4 = new Trix(localIxx4, localIx4);
 
-describe(`Test the parsing of test1 ixx file`, () => {
-  it('Parse test1/myTrix.ixx', async () => {
-    const trix = new Trix(localIxx1, localIx1);
-    const ixx = await trix.index;
-    expect(ixx).toMatchSnapshot();
-  });
-});
+// describe(`Test the parsing of test1 ixx file`, () => {
+//   it('Parse test1/myTrix.ixx', async () => {
+//     const trix = new Trix(localIxx1, localIx1);
+//     const ixx = await trix.index;
+//     expect(ixx).toMatchSnapshot();
+//   });
+// });
 
-describe(`Test the parsing of test2 ixx file`, () => {
-  it('Parse test2/out.ixx', async () => {
-    const trix = new Trix(localIxx2, localIx2);
-    const ixx = await trix.index;
-    expect(ixx).toMatchSnapshot();
-  });
-});
+// describe(`Test the parsing of test2 ixx file`, () => {
+//   it('Parse test2/out.ixx', async () => {
+//     const trix = new Trix(localIxx2, localIx2);
+//     const ixx = await trix.index;
+//     expect(ixx).toMatchSnapshot();
+//   });
+// });
 
 
 // -----------------------------------------------------------------
