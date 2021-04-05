@@ -1,6 +1,93 @@
 # trix-js
 Read UCSC Trix indexes in pure JavaScript
 
+## Usage
+
+```js
+const { LocalFile } = require('generic-filehandle');
+const ixxFile = new LocalFile('out.ixx');
+const ixFile = new LocalFile('out.ix');
+
+const Trix = require('src/index');
+const trix = new Trix['default'](ixxFile, ixFile);
+
+async function doStuff() {
+  const results = await trix.search('oca');
+  console.log(results);
+}
+
+```
+
+## Documentation
+### Trix constructor
+The Trix class constructor accepts arguments:
+- `ixxFile` - a LocalFile, RemoteFile, or BlobFile object output from ixIxx
+- `ixFile` - a LocalFile, RemoteFile, or BlobFile object output from ixIxx
+- `maxResults = 20` - an optional number specifying the maximum number of results to return on `trix.search()`
+
+
+### Trix search
+**Search the index files for a term and find its keys**<br>
+The Trix search function accepts argument:
+- `searchWord` - a string for what to search the index file and find keys for<br>
+  
+The Trix search function returns: <br>
+- a promised array of hits:
+  ```js
+  [
+    {
+      itemId: string,   // The key for the searchWord
+      wordPos: number   // Where the searchWord is in the input file line (1 is first, 2 is the second word...)
+    },
+    ...
+  ]
+  ```
+
+
+## Examples
+
+```js
+const { LocalFile, RemoteFile, BlobFile } = require('generic-filehandle');
+const ixxFile = new LocalFile('out.ixx');
+const ixFile = new LocalFile('out.ix');
+
+const Trix = require('src/index');
+
+// limit maxResults to 5
+const trix = new Trix['default'](ixxFile, ixFile, 5);
+
+async function doStuff() {
+  const results1 = await trix.search('herc');
+  console.log(results1);
+
+  // increase maxResults to 30
+  trix.maxResults = 30;
+
+  const results2 = await trix.search('linc');
+  console.log(results2);
+}
+
+doStuff();
+```
+<br><br>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Development
+
+
 ### Test trix-js
 First, clone this repo and install npm packages. <br>
 Then, run `npm test`. <br>
