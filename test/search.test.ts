@@ -50,6 +50,7 @@ describe('Test a search of test1 ix file', () => {
   const searchTerm: string = "this";
   it(`Search for \"${searchTerm}\" in test1/myTrix.ix`, async () => {
     const hitList = await trix1.search(searchTerm);
+    // console.log(hitList);
     expect(hitList).toMatchSnapshot();
   });
 });
@@ -58,6 +59,7 @@ describe('Test a search of test1 ix file', () => {
   const searchTerm: string = "is";
   it(`Search for \"${searchTerm}\" in test1/myTrix.ix`, async () => {
     const hitList = await trix1.search(searchTerm);
+    // console.log(hitList);
     expect(hitList).toMatchSnapshot();
   });
 });
@@ -66,6 +68,7 @@ describe('Test a search of test1 ix file', () => {
   const searchTerm: string = "id1";
   it(`Search for \"${searchTerm}\" in test1/myTrix.ix`, async () => {
     const hitList = await trix1.search(searchTerm);
+    // console.log(hitList);
     expect(hitList).toMatchSnapshot();
   });
 });
@@ -74,6 +77,7 @@ describe('Test a search of test1 ix file', () => {
   const searchTerm: string = "nope";
   it(`Search for \"${searchTerm}\" in test1/myTrix.ix`, async () => {
     const hitList = await trix1.search(searchTerm);
+    // console.log(hitList);
     expect(hitList).toMatchSnapshot();
   });
 });
@@ -82,9 +86,29 @@ describe('Test a search of test1 ix file', () => {
   const searchTerm: string = "fOR";
   it(`Search for \"${searchTerm}\" in test1/myTrix.ix`, async () => {
     const hitList = await trix1.search(searchTerm);
+    // console.log(hitList);
     expect(hitList).toMatchSnapshot();
   });
 });
+
+describe('Test a search of test1 ix file', () => {
+  const searchTerm: string = "this is for id2";
+  it(`Search for \"${searchTerm}\" in test1/myTrix.ix`, async () => {
+    const hitList = await trix1.search(searchTerm);
+    // console.log(hitList);
+    expect(hitList).toMatchSnapshot();
+  });
+});
+
+describe('Test a search of test1 ix file', () => {
+  const searchTerm: string = "for this";
+  it(`Search for \"${searchTerm}\" in test1/myTrix.ix`, async () => {
+    const hitList = await trix1.search(searchTerm);
+    // console.log(hitList);
+    expect(hitList).toMatchSnapshot();
+  });
+});
+
 
 // ----------------------------------------------------------------------
 // Search trix2:
@@ -147,14 +171,15 @@ describe('Test a search of test2 ix file', () => {
   const searchTerm: string = "enst";
   it(`Search for \"${searchTerm}\" in test2/out.ix`, async () => {
     const hitList = await trix2.search(searchTerm);
+    // console.log(hitList);
     expect(hitList).toMatchSnapshot();
   });
 });
 
 
 
-// --------------------------------------------------
-// Search trix3:
+// // --------------------------------------------------
+// // Search trix3:
 
 
 describe('Test a search of test3 ix file', () => {
@@ -229,18 +254,18 @@ describe('Test a search of test4 ix file', () => {
 
 
 
-// ------------------------
-// Test maxResults:
+// // ------------------------
+// // Test maxResults:
 
-const trix3B = new Trix(localIxx3, localIx3, 5);
+// const trix3B = new Trix(localIxx3, localIx3, 5);
 
-describe('Test maxResults for search of test3 ix file', () => {
-  const searchTerm: string = "tim";
-  it(`Search for \"${searchTerm}\" with a max of 5 results`, async () => {
-    const hitList = await trix3B.search(searchTerm);
-    // console.log(hitList);
-    expect(hitList).toMatchSnapshot();
-  });
-});
+// describe('Test maxResults for search of test3 ix file', () => {
+//   const searchTerm: string = "tim";
+//   it(`Search for \"${searchTerm}\" with a max of 5 results`, async () => {
+//     const hitList = await trix3B.search(searchTerm);
+//     // console.log(hitList);
+//     expect(hitList).toMatchSnapshot();
+//   });
+// });
 
 

@@ -5,24 +5,30 @@ type anyFile = LocalFile | RemoteFile | BlobFile;
 type ParsedIxx = Map<string, number>;
 
 type hit = {
-  itemId: string;   // The id string.
-  wordPos: number;   // Where the searchWord is in the sentence (1 is first, 2 is the second word...).
+  itemId: string; // The id string.
+  wordPos: number; // Where the searchWord is in the sentence (1 is first, 2 is the second word...).
 };
-
 
 const trixPrefixSize = 5;
 
 // TODO:
+//    > handle multiple words as a search query
+//      - Intersection of sets method:
+//          - get the entire set for one prefix
+//          - as you iterate the other word, check if it is in the first set
+//          - OR just get both sets and intersect them
+//    Check if there are more than one words.
+//    If there are more than one words, we can't break out.
+//    Repeat for all words. Then at the end do the union set.
+//
+//
 //    > Implement reasonable prefix to filter results?
 //    > specify minimum number of characters as a class variable?
-//    > test with RemoteFile:
-//      https://hgdownload.soe.ucsc.edu/gbdb/hg38/knownGene.ix
-//      
+//
 
 // Define this object with .ixx and .ix files.
 // Then use the trixSearch() function to search for a word.
 export default class Trix {
-
   private index: Promise<ParsedIxx>;
   private ixFile: anyFile;
   maxResults: number;
@@ -38,7 +44,6 @@ export default class Trix {
     this.maxResults = maxResults;
   }
 
-
   /**
    * Search trix for the given searchWord. Return up to {this.maxResults} results.
    * This method matches each word's prefix against searchWord. It does not do fuzzy matching.
@@ -47,12 +52,23 @@ export default class Trix {
    * @returns results [Array<hit>]. Each hit contains the itemId [string], and wordPos [number] (which is the word number in the sentence).
    */
   async search(searchWord: string) {
+    let searchWords = searchWord.split(' ');
+    if (searchWords.length > 1) {
+      // We have multiple searchwords
+      let ans = await this.searchMultiple(searchWords);
+      let arr = Array.from(ans);
+      if (arr.length > this.maxResults)
+        return arr.slice(0, this.maxResults);
+
+      return arr;
+    }
+
     searchWord = searchWord.toLowerCase();
-        
+
     // 1. Seek ahead to byte `this.index` of `ixFile`. Load this section of .ix data into the buffer.
     const buf: Buffer = await this._getBuffer(searchWord);
 
-    let resultArr: Array<hit> = [];
+    let resultArr: Array<string> = [];
     let linePtr = 0;
     let numValues = 0;
 
@@ -61,9 +77,9 @@ export default class Trix {
       let startsWith = true;
       let done = false;
       let i = linePtr;
-      
+
       // 3. Check if the first word in the line has the same prefix as searchWord.
-      
+
       // Iterate through each char of the line in the buffer.
       // break out of loop when we hit a \n (unicode char 10) or the searchWord does not match the line.
       while (buf[i] != 10) {
@@ -73,27 +89,28 @@ export default class Trix {
         }
         if (startsWith) {
           let cur = String.fromCharCode(buf[i]);
-          if (i < linePtr + searchWord.length &&
-              searchWord[i - linePtr] > cur) {
+          if (
+            i < linePtr + searchWord.length &&
+            searchWord[i - linePtr] > cur
+          ) {
             // searchWord[i] > cur, so keep looping.
             startsWith = false;
-
-          } 
-          else if (i < linePtr + searchWord.length &&
-                  searchWord[i - linePtr] < cur) {
+          } else if (
+            i < linePtr + searchWord.length &&
+            searchWord[i - linePtr] < cur
+          ) {
             // searchWord[i] < cur, so we lexicographically will not find any more results.
             startsWith = false;
             done = true;
-            break;        
-          }
-          else {
+            break;
+          } else {
             // this condition indicates we found a match.
             if (buf[i] === 44) {
               // we found a ',' so increment numValues by one.
               numValues++;
+
               if (numValues >= this.maxResults) {
-                while (buf[i] != 32)
-                  i++;
+                while (buf[i] != 32) i++;
 
                 break;
               }
@@ -108,7 +125,6 @@ export default class Trix {
 
       // If the line starts with the searchWord, we have a hit!
       if (startsWith) {
-
         // Parse the line and add results to arr.
         const line: string = buf.slice(linePtr, i).toString();
         resultArr.push.apply(resultArr, this._parseHitString(line));
@@ -116,21 +132,124 @@ export default class Trix {
 
       // Once we have enough results, stop searching.
       if (resultArr.length >= this.maxResults) break;
+      // TODO: comment out this line ^
 
       linePtr = i + 1;
     }
+
+    resultArr = resultArr.slice(0, this.maxResults);
 
     // 4. Return the hitList [list of trixHitPos (itemId: string, wordPos: int]
     return resultArr;
   }
 
+  // - get the entire set for one prefix
+  // - as you iterate the other word, check if it is in the first set
+  async searchMultiple(searchWords: Array<string>) {
+    let firstWord: boolean = true;
+    let initialSet = new Set<string>();
 
+    for (let word of searchWords) {
+      let searchWord = word;
+
+
+      searchWord = searchWord.toLowerCase();
+
+      // 1. Seek ahead to byte `this.index` of `ixFile`. Load this section of .ix data into the buffer.
+      const buf: Buffer = await this._getBuffer(searchWord);
+
+      let resultSet = new Set<string>();
+      let linePtr = 0;
+      let numValues = 0;
+
+      // 2. Iterate through the entire buffer
+      while (linePtr < buf.byteLength) {
+        let startsWith = true;
+        let done = false;
+        let i = linePtr;
+
+        // 3. Check if the first word in the line has the same prefix as searchWord.
+
+        // Iterate through each char of the line in the buffer.
+        // break out of loop when we hit a \n (unicode char 10) or the searchWord does not match the line.
+        while (buf[i] != 10) {
+          if (i >= buf.byteLength) {
+            done = true;
+            break;
+          }
+          if (startsWith) {
+            let cur = String.fromCharCode(buf[i]);
+            if (
+              i < linePtr + searchWord.length &&
+              searchWord[i - linePtr] > cur
+            ) {
+              // searchWord[i] > cur, so keep looping.
+              startsWith = false;
+            } else if (
+              i < linePtr + searchWord.length &&
+              searchWord[i - linePtr] < cur
+            ) {
+              // searchWord[i] < cur, so we lexicographically will not find any more results.
+              startsWith = false;
+              done = true;
+              break;
+            } else {
+              // this condition indicates we found a match.
+              if (buf[i] === 44) {
+                // we found a ',' so increment numValues by one.
+                numValues++;
+
+                if (numValues >= this.maxResults) {
+                  while (buf[i] != 32) i++;
+
+                  break;
+                }
+              }
+            }
+          }
+
+          i++;
+        }
+
+        if (done) break;
+
+        // If the line starts with the searchWord, we have a hit!
+        if (startsWith) {
+          // Parse the line and add results to arr.
+          debugger;
+
+          const line: string = buf.slice(linePtr, i).toString();
+          let arr = this._parseHitString(line);
+          for (let hit of arr) {
+            if (firstWord) {
+              resultSet.add(hit);
+            }
+            else {
+              if (initialSet.has(hit)) {
+                resultSet.add(hit);
+              }
+            }
+
+            
+          } 
+        }
+
+        linePtr = i + 1;
+      }
+
+      initialSet = resultSet;
+      firstWord = false;
+    }
+
+    // 4. Return the hitList [list of trixHitPos (itemId: string, wordPos: int]
+    return initialSet;
+  }
 
   // Private Methods:
 
   /**
    * Seek ahead in the .ix file, and load the next two sections of .ix into a buffer.
-   * 
+   *
    * @param searchWord [string]
    * @returns a Buffer holding the sections we want to search.
    */
@@ -171,12 +290,12 @@ export default class Trix {
 
   /**
    * Takes in a hit string and returns an array of result terms.
-   * 
+   *
    * @param line [string] The line of .ix that is a hit.
    * @returns results [Array<hit>]. Each hit contains the itemId [string], and wordPos [number].
    */
   private _parseHitString(line: string) {
-    let arr: Array<hit> = [];
+    let arr: Array<string> = [];
     const parts = line.split(' ');
     // Each result is of format: "{itemId},{wordPos}"
     // Parse the entire line of these and return
@@ -185,11 +304,10 @@ export default class Trix {
       if (pair.length == 2) {
         const itemId: string = pair[0];
         const wordPos: number = Number.parseInt(pair[1]);
-        if (typeof wordPos !== "number" || isNaN(wordPos))
+        if (typeof wordPos !== 'number' || isNaN(wordPos))
           throw `Error in ix index format at term ${itemId} for word ${parts[0]}`;
 
-        const obj: hit = { itemId: itemId, wordPos: wordPos };
-        arr.push(obj);
+        arr.push(itemId);
       } else if (pair.length > 1) {
         throw `Error in ix index format at word ${parts[0]}`;
       }
@@ -197,10 +315,9 @@ export default class Trix {
     return arr;
   }
 
-
   /**
    * Parses ixx file and constructs a map of {word: ixFileLocation}
-   * 
+   *
    * @param ixxFile [anyFile] second level index that is produced by ixIxx.
    * @returns a ParsedIxx map.
    */
@@ -217,7 +334,7 @@ export default class Trix {
         const prefix = line.substr(0, trixPrefixSize);
         const posStr = line.substr(trixPrefixSize);
         const pos = Number.parseInt(posStr, 16);
-        if (typeof pos !== "number" || isNaN(pos))
+        if (typeof pos !== 'number' || isNaN(pos))
           throw `Error in ixx index format at word ${prefix}`;
 
         ixx.set(prefix, pos);
