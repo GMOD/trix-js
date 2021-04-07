@@ -4,24 +4,10 @@ type anyFile = LocalFile | RemoteFile | BlobFile;
 
 type ParsedIxx = Map<string, number>;
 
-type hit = {
-  itemId: string; // The id string.
-  wordPos: number; // Where the searchWord is in the sentence (1 is first, 2 is the second word...).
-};
-
 const trixPrefixSize = 5;
 
 // TODO:
-//    > handle multiple words as a search query
-//      - Intersection of sets method:
-//          - get the entire set for one prefix
-//          - as you iterate the other word, check if it is in the first set
-//          - OR just get both sets and intersect them
-//    Check if there are more than one words.
-//    If there are more than one words, we can't break out.
-//    Repeat for all words. Then at the end do the union set.
-//
-//
+//    > test handling multiple words as a search query
 //    > Implement reasonable prefix to filter results?
 //    > specify minimum number of characters as a class variable?
 //
@@ -44,114 +30,28 @@ export default class Trix {
     this.maxResults = maxResults;
   }
 
+  
   /**
    * Search trix for the given searchWord. Return up to {this.maxResults} results.
    * This method matches each word's prefix against searchWord. It does not do fuzzy matching.
    *
-   * @param searchWord [string] term to search for its id(s).
-   * @returns results [Array<hit>]. Each hit contains the itemId [string], and wordPos [number] (which is the word number in the sentence).
+   * @param searchString [string] term(s) separated by spaces to search for id(s).
+   * @returns results [Array<string>] where each string is an itemId.
    */
-  async search(searchWord: string) {
-    let searchWords = searchWord.split(' ');
-    if (searchWords.length > 1) {
-      // We have multiple searchwords
-      let ans = await this.searchMultiple(searchWords);
-      let arr = Array.from(ans);
-      if (arr.length > this.maxResults)
-        return arr.slice(0, this.maxResults);
-
-      return arr;
-    }
-
-    searchWord = searchWord.toLowerCase();
-
-    // 1. Seek ahead to byte `this.index` of `ixFile`. Load this section of .ix data into the buffer.
-    const buf: Buffer = await this._getBuffer(searchWord);
-
+  async search(searchString: string) {
     let resultArr: Array<string> = [];
-    let linePtr = 0;
-    let numValues = 0;
 
-    // 2. Iterate through the entire buffer
-    while (linePtr < buf.byteLength) {
-      let startsWith = true;
-      let done = false;
-      let i = linePtr;
-
-      // 3. Check if the first word in the line has the same prefix as searchWord.
-
-      // Iterate through each char of the line in the buffer.
-      // break out of loop when we hit a \n (unicode char 10) or the searchWord does not match the line.
-      while (buf[i] != 10) {
-        if (i >= buf.byteLength) {
-          done = true;
-          break;
-        }
-        if (startsWith) {
-          let cur = String.fromCharCode(buf[i]);
-          if (
-            i < linePtr + searchWord.length &&
-            searchWord[i - linePtr] > cur
-          ) {
-            // searchWord[i] > cur, so keep looping.
-            startsWith = false;
-          } else if (
-            i < linePtr + searchWord.length &&
-            searchWord[i - linePtr] < cur
-          ) {
-            // searchWord[i] < cur, so we lexicographically will not find any more results.
-            startsWith = false;
-            done = true;
-            break;
-          } else {
-            // this condition indicates we found a match.
-            if (buf[i] === 44) {
-              // we found a ',' so increment numValues by one.
-              numValues++;
-
-              if (numValues >= this.maxResults) {
-                while (buf[i] != 32) i++;
-
-                break;
-              }
-            }
-          }
-        }
-
-        i++;
-      }
-
-      if (done) break;
-
-      // If the line starts with the searchWord, we have a hit!
-      if (startsWith) {
-        // Parse the line and add results to arr.
-        const line: string = buf.slice(linePtr, i).toString();
-        resultArr.push.apply(resultArr, this._parseHitString(line));
-      }
-
-      // Once we have enough results, stop searching.
-      if (resultArr.length >= this.maxResults) break;
-      // TODO: comment out this line ^
-
-      linePtr = i + 1;
-    }
-
-    resultArr = resultArr.slice(0, this.maxResults);
-
-    // 4. Return the hitList [list of trixHitPos (itemId: string, wordPos: int]
-    return resultArr;
-  }
-
-  // - get the entire set for one prefix
-  // - as you iterate the other word, check if it is in the first set
-  async searchMultiple(searchWords: Array<string>) {
     let firstWord: boolean = true;
     let initialSet = new Set<string>();
 
+    let searchWords = searchString.split(' ');
+
+    // Loop for each word in searchWords.
+    // If there are more than one searchWords, use resultSet and only take the matching terms
+    // that are also in initialSet. 
+    // Otherwise, just iterate once and add words to resultArr.
     for (let word of searchWords) {
       let searchWord = word;
-
 
       searchWord = searchWord.toLowerCase();
 
@@ -216,22 +116,30 @@ export default class Trix {
         // If the line starts with the searchWord, we have a hit!
         if (startsWith) {
           // Parse the line and add results to arr.
-          debugger;
-
+          // debugger;
           const line: string = buf.slice(linePtr, i).toString();
           let arr = this._parseHitString(line);
-          for (let hit of arr) {
-            if (firstWord) {
-              resultSet.add(hit);
-            }
-            else {
-              if (initialSet.has(hit)) {
+
+          if (searchWords.length === 1) {
+            // Only a single word so add to array
+            resultArr = resultArr.concat(arr);
+            // Once we have enough results, stop searching.
+            if (resultArr.length >= this.maxResults) break;
+            
+          }
+          else {
+            // Handle multiple words
+            for (let hit of arr) {
+              if (firstWord) {
                 resultSet.add(hit);
               }
-            }
-
-            
-          } 
+              else {
+                if (initialSet.has(hit)) {
+                  resultSet.add(hit);
+                }
+              }
+            } 
+          }
         }
 
         linePtr = i + 1;
@@ -240,10 +148,20 @@ export default class Trix {
       initialSet = resultSet;
       firstWord = false;
     }
+    
+    // 4. Return the hitList [list of string]
+    if (searchWords.length === 1) {
+      return resultArr;
+    }
 
-    // 4. Return the hitList [list of trixHitPos (itemId: string, wordPos: int]
-    return initialSet;
+    // We need to return our set converted to an array
+    resultArr = Array.from(initialSet);
+    if (resultArr.length > this.maxResults)
+      return resultArr.slice(0, this.maxResults)
+
+    return resultArr;
   }
+
 
   // Private Methods:
 
@@ -301,7 +219,7 @@ export default class Trix {
     // Parse the entire line of these and return
     for (const part of parts) {
       const pair = part.split(',');
-      if (pair.length == 2) {
+      if (pair.length === 2) {
         const itemId: string = pair[0];
         const wordPos: number = Number.parseInt(pair[1]);
         if (typeof wordPos !== 'number' || isNaN(wordPos))
