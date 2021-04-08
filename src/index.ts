@@ -32,11 +32,11 @@ export default class Trix {
 
   
   /**
-   * Search trix for the given searchWord. Return up to {this.maxResults} results.
-   * This method matches each word's prefix against searchWord. It does not do fuzzy matching.
+   * Search trix for the given searchWord(s). Return up to {this.maxResults} results.
+   * This method matches each index prefix against each searchWord. It does not do fuzzy matching.
    *
    * @param searchString [string] term(s) separated by spaces to search for id(s).
-   * @returns results [Array<string>] where each string is an itemId.
+   * @returns results [Array<string>] where each string is a corresponding itemId.
    */
   async search(searchString: string) {
     let resultArr: Array<string> = [];
@@ -45,6 +45,8 @@ export default class Trix {
     let initialSet = new Set<string>();
 
     let searchWords = searchString.split(' ');
+    // if (searchWords.length > 1)
+    //   searchWords.sort((a, b) => b.length - a.length);
 
     // Loop for each word in searchWords.
     // If there are more than one searchWords, use resultSet and only take the matching terms
@@ -136,6 +138,7 @@ export default class Trix {
               else {
                 if (initialSet.has(hit)) {
                   resultSet.add(hit);
+                  // TODO: if it is on the last iteration of words, break after maxResults
                 }
               }
             } 
@@ -147,6 +150,11 @@ export default class Trix {
 
       initialSet = resultSet;
       firstWord = false;
+
+      // If there aren't any results, stop looping, because an intersection with an empty set is an empty set.
+      if (resultArr.length === 0 && initialSet.size === 0)
+        return [];
+
     }
     
     // 4. Return the hitList [list of string]

@@ -176,6 +176,14 @@ describe('Test a search of test2 ix file', () => {
   });
 });
 
+describe('Test a search of test2 ix file', () => {
+  const searchTerm: string = "hello an e";
+  it(`Search for \"${searchTerm}\" in test2/out.ix`, async () => {
+    const hitList = await trix2.search(searchTerm);
+    console.log(hitList);
+    expect(hitList).toMatchSnapshot();
+  });
+});
 
 
 // // --------------------------------------------------

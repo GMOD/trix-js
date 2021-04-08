@@ -103,6 +103,8 @@ Array [
 ]
 `;
 
+exports[`Test a search of test2 ix file Search for "hello an e" in test2/out.ix 1`] = `Array []`;
+
 exports[`Test a search of test2 ix file Search for "none" in test2/out.ix 1`] = `Array []`;
 
 exports[`Test a search of test2 ix file Search for "prickle" in test2/out.ix 1`] = `
