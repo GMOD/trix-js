@@ -39,22 +39,23 @@ export default class Trix {
    * @returns results [Array<string>] where each string is a corresponding itemId.
    */
   async search(searchString: string) {
+
+    // If there is one search word, store results in resultArr.
     let resultArr: Array<string> = [];
 
+    // If there are multiple words, store results in initialSet.
+    // firstWord indicates we are iterating the first time.
     let firstWord: boolean = true;
     let initialSet = new Set<string>();
 
     let searchWords = searchString.split(' ');
-    // if (searchWords.length > 1)
-    //   searchWords.sort((a, b) => b.length - a.length);
 
     // Loop for each word in searchWords.
     // If there are more than one searchWords, use resultSet and only take the matching terms
     // that are also in initialSet. 
     // Otherwise, just iterate once and add words to resultArr.
-    for (let word of searchWords) {
-      let searchWord = word;
-
+    for (let w = 0; w < searchWords.length; w++) {
+      let searchWord = searchWords[w];
       searchWord = searchWord.toLowerCase();
 
       // 1. Seek ahead to byte `this.index` of `ixFile`. Load this section of .ix data into the buffer.
@@ -70,7 +71,7 @@ export default class Trix {
         let done = false;
         let i = linePtr;
 
-        // 3. Check if the first word in the line has the same prefix as searchWord.
+        // 3. Check if the first word in the current line has the same prefix as searchWord.
 
         // Iterate through each char of the line in the buffer.
         // break out of loop when we hit a \n (unicode char 10) or the searchWord does not match the line.
@@ -79,30 +80,31 @@ export default class Trix {
             done = true;
             break;
           }
+
           if (startsWith) {
             let cur = String.fromCharCode(buf[i]);
-            if (
-              i < linePtr + searchWord.length &&
-              searchWord[i - linePtr] > cur
-            ) {
+            
+            if (i < linePtr + searchWord.length && searchWord[i - linePtr] > cur) {
               // searchWord[i] > cur, so keep looping.
               startsWith = false;
-            } else if (
-              i < linePtr + searchWord.length &&
-              searchWord[i - linePtr] < cur
-            ) {
+            } 
+            else if (i < linePtr + searchWord.length && searchWord[i - linePtr] < cur) {
               // searchWord[i] < cur, so we lexicographically will not find any more results.
               startsWith = false;
               done = true;
               break;
-            } else {
+            } 
+            else {
+              
               // this condition indicates we found a match.
               if (buf[i] === 44) {
                 // we found a ',' so increment numValues by one.
                 numValues++;
 
-                if (numValues >= this.maxResults) {
-                  while (buf[i] != 32) i++;
+                // If ere searching for one word and we have enough results, break out at the next space.
+                if (numValues >= this.maxResults && searchWords.length === 1) {
+                  while (buf[i] != 32) 
+                    i++;
 
                   break;
                 }
@@ -117,8 +119,8 @@ export default class Trix {
 
         // If the line starts with the searchWord, we have a hit!
         if (startsWith) {
+
           // Parse the line and add results to arr.
-          // debugger;
           const line: string = buf.slice(linePtr, i).toString();
           let arr = this._parseHitString(line);
 
@@ -132,13 +134,18 @@ export default class Trix {
           else {
             // Handle multiple words
             for (let hit of arr) {
+              hit = hit.toLowerCase();
+
               if (firstWord) {
                 resultSet.add(hit);
               }
               else {
                 if (initialSet.has(hit)) {
                   resultSet.add(hit);
-                  // TODO: if it is on the last iteration of words, break after maxResults
+                 
+                  // If it is on the last iteration of words, break after we reach maxResults
+                  if (w === searchWords.length - 1 && resultSet.size >= this.maxResults)
+                    break;
                 }
               }
             } 

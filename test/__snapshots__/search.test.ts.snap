@@ -78,6 +78,47 @@ Array [
 ]
 `;
 
+exports[`Test a search of test2 ix file Search for "enst ac" in test2/out.ix 1`] = `
+Array [
+  "enst00000562538.1",
+  "enst00000634116.1",
+  "enst00000449652.1",
+  "enst00000661649.1",
+  "enst00000415249.1",
+  "enst00000456270.1",
+  "enst00000653602.1",
+  "enst00000668236.1",
+  "enst00000661747.1",
+  "enst00000452326.1",
+  "enst00000431090.1",
+  "enst00000608816.1",
+  "enst00000607934.1",
+  "enst00000658236.1",
+  "enst00000661478.1",
+  "enst00000664918.1",
+  "enst00000413812.1",
+  "enst00000450061.5",
+  "enst00000667616.1",
+  "enst00000656084.1",
+]
+`;
+
+exports[`Test a search of test2 ix file Search for "enst alg" in test2/out.ix 1`] = `
+Array [
+  "enst00000430794.1",
+  "enst00000508969.2",
+  "enst00000511954.5",
+  "enst00000524714.1",
+  "enst00000525473.1",
+  "enst00000657407.1",
+  "enst00000661578.1",
+  "enst00000664227.1",
+  "enst00000665956.1",
+  "enst00000670269.1",
+  "enst00000531305.1",
+]
+`;
+
 exports[`Test a search of test2 ix file Search for "enst" in test2/out.ix 1`] = `
 Array [
   "ENST00000229465.10",
@@ -102,8 +143,6 @@ Array [
   "ENST00000294715.6",
 ]
 `;
-
-exports[`Test a search of test2 ix file Search for "hello an e" in test2/out.ix 1`] = `Array []`;
 
 exports[`Test a search of test2 ix file Search for "none" in test2/out.ix 1`] = `Array []`;
 
@@ -246,5 +285,15 @@ Array [
   "id26",
   "id4",
   "id44",
+]
+`;
+
+exports[`Test maxResults for search of test3 ix file Search for "tim" with a max of 5 results 1`] = `
+Array [
+  "ENSMUST00000055102.13",
+  "ENSMUST00000109225.9",
+  "ENSMUST00000125008.2",
+  "ENSMUST00000169584.8",
+  "ENSMUST00000068877.7",
 ]
 `;
