@@ -1,16 +1,10 @@
 import { LocalFile, RemoteFile, BlobFile } from 'generic-filehandle';
 
 type anyFile = LocalFile | RemoteFile | BlobFile;
-
 type ParsedIxx = Map<string, number>;
 
 const trixPrefixSize = 5;
 
-// TODO:
-//    > test handling multiple words as a search query
-//    > Implement reasonable prefix to filter results?
-//    > specify minimum number of characters as a class variable?
-//
 
 // Define this object with .ixx and .ix files.
 // Then use the trixSearch() function to search for a word.
@@ -101,7 +95,7 @@ export default class Trix {
                 // we found a ',' so increment numValues by one.
                 numValues++;
 
-                // If ere searching for one word and we have enough results, break out at the next space.
+                // If we're searching for one word and we have enough results, break out at the next space.
                 if (numValues >= this.maxResults && searchWords.length === 1) {
                   while (buf[i] != 32) 
                     i++;
