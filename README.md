@@ -28,20 +28,13 @@ The Trix class constructor accepts arguments:
 
 ### Trix search
 **Search the index files for a term and find its keys**<br>
+In the case of searching with multiple words, `trix.search()` finds the intersection of the result sets.<br>
 The Trix search function accepts argument:
-- `searchWord` - a string for what to search the index file and find keys for<br>
+- `searchString` - a string of space-separated words for what to search the index file and find keys for<br>
   
 The Trix search function returns: <br>
-- a promised array of hits:
-  ```js
-  [
-    {
-      itemId: string,   // The key for the searchWord
-      wordPos: number   // Where the searchWord is in the input file line (1 is first, 2 is the second word...)
-    },
-    ...
-  ]
-  ```
+- `Promise<string[]>` - a promised array of strings where each string is an itemId result
+  
 
 
 ## Examples
