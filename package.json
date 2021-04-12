@@ -1,6 +1,6 @@
 {
   "version": "0.1.0",
-  "license": "MIT",
+  "license": "Apache-2",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "files": [
@@ -34,6 +34,7 @@
   "name": "@gmod/trix",
   "author": "Matt Morgan",
   "module": "dist/trix.esm.js",
+  "repository": "GMOD/trix-js",
   "size-limit": [
     {
       "path": "dist/trix.cjs.production.min.js",
