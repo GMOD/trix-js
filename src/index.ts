@@ -1,6 +1,7 @@
-import { LocalFile, RemoteFile, BlobFile } from 'generic-filehandle';
+import type { FileHandle } from 'fs/promises';
+import type { LocalFile, RemoteFile, BlobFile } from 'generic-filehandle';
 
-type anyFile = LocalFile | RemoteFile | BlobFile;
+type AnyFile = LocalFile | RemoteFile | BlobFile | FileHandle
 type ParsedIxx = Map<string, number>;
 
 const trixPrefixSize = 5;
@@ -10,7 +11,7 @@ const trixPrefixSize = 5;
 // Then use the trixSearch() function to search for a word.
 export default class Trix {
   private index: Promise<ParsedIxx>;
-  private ixFile: anyFile;
+  private ixFile: AnyFile;
   maxResults: number;
 
   /**
@@ -18,7 +19,7 @@ export default class Trix {
    * @param ixFile [anyFile] the first-level trix index file produced by ixIxx.
    * @param maxResults [number] the maximum number of results to return. Default is set to 20.
    */
-  constructor(ixxFile: anyFile, ixFile: anyFile, maxResults: number = 20) {
+  constructor(ixxFile: AnyFile, ixFile: AnyFile, maxResults: number = 20) {
     this.index = this._parseIxx(ixxFile);
     this.ixFile = ixFile;
     this.maxResults = maxResults;
@@ -248,7 +249,7 @@ export default class Trix {
    * @param ixxFile [anyFile] second level index that is produced by ixIxx.
    * @returns a ParsedIxx map.
    */
-  private async _parseIxx(ixxFile: anyFile): Promise<ParsedIxx> {
+  private async _parseIxx(ixxFile: AnyFile): Promise<ParsedIxx> {
     const ixx = new Map();
 
     // Load the ixxFile into ixxData object

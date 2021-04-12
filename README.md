@@ -4,25 +4,29 @@ Read UCSC Trix indexes in pure JavaScript
 ## Usage
 
 ```js
-const { LocalFile } = require('generic-filehandle');
-const ixxFile = new LocalFile('out.ixx');
-const ixFile = new LocalFile('out.ix');
+import Trix from '@gmod/trix'
+import { RemoteFile } from 'generic-filehandle'
 
-const Trix = require('src/index');
-const trix = new Trix['default'](ixxFile, ixFile);
+// any filehandle object that supports the Nodejs FileHandle API will work.
+// We use generic-filehandle here to demonstrate searching files on remote servers.
+const ixxFile = new RemoteFile('https://hgdownload.soe.ucsc.edu/gbdb/hg38/knownGene.ixx');
+const ixFile = new RemoteFile('https://hgdownload.soe.ucsc.edu/gbdb/hg38/knownGene.ix');
+
+const trix = new Trix(ixxFile, ixFile);
 
 async function doStuff() {
   const results = await trix.search('oca');
   console.log(results);
 }
+doStuff();
 
 ```
 
 ## Documentation
 ### Trix constructor
 The Trix class constructor accepts arguments:
-- `ixxFile` - a LocalFile, RemoteFile, or BlobFile object output from ixIxx
-- `ixFile` - a LocalFile, RemoteFile, or BlobFile object output from ixIxx
+- `ixxFile` - a filehandle object for the trix .ixx file
+- `ixFile` - a filehandle object for the trix .ix file
 - `maxResults = 20` - an optional number specifying the maximum number of results to return on `trix.search()`
 
 
@@ -40,17 +44,17 @@ The Trix search function returns: <br>
 ## Examples
 
 ```js
-const { LocalFile, RemoteFile, BlobFile } = require('generic-filehandle');
+import { LocalFile } from 'generic-filehandle'
+import Trix from '@gmod/trix'
+
 const ixxFile = new LocalFile('out.ixx');
 const ixFile = new LocalFile('out.ix');
 
-const Trix = require('src/index');
-
 // limit maxResults to 5
-const trix = new Trix['default'](ixxFile, ixFile, 5);
+const trix = new Trix(ixxFile, ixFile, 5);
 
 async function doStuff() {
-  const results1 = await trix.search('herc');
+const results1 = await trix.search('herc');
   console.log(results1);
 
   // increase maxResults to 30
