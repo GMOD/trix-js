@@ -197,7 +197,9 @@ export default class Trix {
       } else if (seekPosEnd === -2) {
         seekPosEnd = -3;
       } else if (seekPosEnd === -3) {
+        // Break out of loop since we now have seekPosStart and end.
         seekPosEnd = value - 1;
+        break;
       }
     }
 
