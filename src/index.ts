@@ -270,7 +270,7 @@ export default class Trix {
    */
   private _parseHitString(line: string) {
     let arr: Array<string> = [];
-    const parts = line.split(' ');
+    const parts = line.split(' ').slice(1); // skip term
     // Each result is of format: "{itemId},{wordPos}"
     // Parse the entire line of these and return
     for (const part of parts) {
