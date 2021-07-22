@@ -1,11 +1,10 @@
 import type { FileHandle } from 'fs/promises';
 import type { LocalFile, RemoteFile, BlobFile } from 'generic-filehandle';
 
-type AnyFile = LocalFile | RemoteFile | BlobFile | FileHandle
+type AnyFile = LocalFile | RemoteFile | BlobFile | FileHandle;
 type ParsedIxx = Map<string, number>;
 
 const trixPrefixSize = 5;
-
 
 // Define this object with .ixx and .ix files.
 // Then use the trixSearch() function to search for a word.
@@ -25,7 +24,6 @@ export default class Trix {
     this.maxResults = maxResults;
   }
 
-  
   /**
    * Search trix for the given searchWord(s). Return up to {this.maxResults} results.
    * This method matches each index prefix against each searchWord. It does not do fuzzy matching.
@@ -34,7 +32,6 @@ export default class Trix {
    * @returns results [Array<string>] where each string is a corresponding itemId.
    */
   async search(searchString: string) {
-
     // If there is one search word, store results in resultArr.
     let resultArr: Array<string> = [];
 
@@ -47,7 +44,7 @@ export default class Trix {
 
     // Loop for each word in searchWords.
     // If there are more than one searchWords, use resultSet and only take the matching terms
-    // that are also in initialSet. 
+    // that are also in initialSet.
     // Otherwise, just iterate once and add words to resultArr.
     for (let w = 0; w < searchWords.length; w++) {
       let searchWord = searchWords[w];
@@ -72,41 +69,40 @@ export default class Trix {
         // Iterate through each char of the line in the buffer.
         // break out of loop when we hit a \n (unicode char 10) or the searchWord does not match the line.
         while (buf[i] != 10) {
-
           if (i >= buf.byteLength) {
-            
             // In this case, we ran out of our current buffer, but could still find more matches.
             // Load another chunk in to buf and repeat.
             let tempBufData = await this._getNextChunk(bufPos);
             if (tempBufData) {
               buf = tempBufData.buf;
-              bufPos = tempBufData.bufEndPos;              
+              bufPos = tempBufData.bufEndPos;
               i = 0;
               linePtr = 0;
-            }
-            else {
+            } else {
               // If tempBufData is null, we reached the end of the file, so we are done.
               done = true;
               break;
             }
           }
 
-          
           if (startsWith) {
-              let cur = String.fromCharCode(buf[i]);
+            let cur = String.fromCharCode(buf[i]);
 
-            if (i < linePtr + searchWord.length && searchWord[i - linePtr] > cur) {
+            if (
+              i < linePtr + searchWord.length &&
+              searchWord[i - linePtr] > cur
+            ) {
               // searchWord[i] > cur, so keep looping.
               startsWith = false;
-            } 
-            else if (i < linePtr + searchWord.length && searchWord[i - linePtr] < cur) {
+            } else if (
+              i < linePtr + searchWord.length &&
+              searchWord[i - linePtr] < cur
+            ) {
               // searchWord[i] < cur, so we lexicographically will not find any more results.
               startsWith = false;
               done = true;
               break;
-            } 
-            else {
-              
+            } else {
               // This condition indicates we found a match.
               if (buf[i] === 44) {
                 // We found a ',' so increment numValues by one.
@@ -114,8 +110,7 @@ export default class Trix {
 
                 // If we're searching for one word and we have enough results, break out at the next space.
                 if (numValues >= this.maxResults && searchWords.length === 1) {
-                  while (buf[i] != 32) 
-                    i++;
+                  while (buf[i] != 32) i++;
 
                   break;
                 }
@@ -130,8 +125,6 @@ export default class Trix {
 
         // If the line starts with the searchWord, we have a hit!
         if (startsWith) {
-
-
           // Parse the line and add results to arr.
           const line: string = buf.slice(linePtr, i).toString();
           let arr = this._parseHitString(line);
@@ -141,26 +134,26 @@ export default class Trix {
             resultArr = resultArr.concat(arr);
             // Once we have enough results, stop searching.
             if (resultArr.length >= this.maxResults) break;
-            
-          }
-          else {
+          } else {
             // Handle multiple words using sets.
             for (let hit of arr) {
               hit = hit.toLowerCase();
 
               if (firstWord) {
                 resultSet.add(hit);
-              }
-              else {
+              } else {
                 if (initialSet.has(hit)) {
                   resultSet.add(hit);
-                 
+
                   // If it is on the last iteration of words, break after we reach maxResults
-                  if (w === searchWords.length - 1 && resultSet.size >= this.maxResults)
+                  if (
+                    w === searchWords.length - 1 &&
+                    resultSet.size >= this.maxResults
+                  )
                     break;
                 }
               }
-            } 
+            }
           }
         }
 
@@ -171,11 +164,9 @@ export default class Trix {
       firstWord = false;
 
       // If there aren't any results, stop looping, because an intersection with an empty set is an empty set.
-      if (resultArr.length === 0 && initialSet.size === 0)
-        return [];
-
+      if (resultArr.length === 0 && initialSet.size === 0) return [];
     }
-    
+
     // 4. Return the hitList [list of string]
     if (searchWords.length === 1) {
       return resultArr;
@@ -184,23 +175,21 @@ export default class Trix {
     // Else we need to return our set converted to an array
     resultArr = Array.from(initialSet);
     if (resultArr.length > this.maxResults)
-      return resultArr.slice(0, this.maxResults)
+      return resultArr.slice(0, this.maxResults);
 
     return resultArr;
   }
 
-
   // Private Methods:
 
   /**
-   * Seek ahead to the correct position in the .ix file, 
+   * Seek ahead to the correct position in the .ix file,
    * then load that chunk of .ix into a buffer.
    *
    * @param searchWord [string]
    * @returns a Buffer holding the sections we want to search.
    */
   private async _getBuffer(searchWord: string) {
-
     // Get position to seek to in .ix file from indexes.
     let seekPosStart = 0;
     let seekPosEnd = -1;
@@ -212,36 +201,31 @@ export default class Trix {
           // We reached the end pos in the file.
           seekPosEnd = value - 1;
           break;
-        } 
-        else {
+        } else {
           seekPosStart = value;
         }
       }
     }
-    
+
     // Return the buffer and its end position in the file.
     return this._createBuffer(seekPosStart, seekPosEnd);
   }
 
-
   /**
-   * Given the end position of the last buffer, 
+   * Given the end position of the last buffer,
    * load the next chunk  of .ix data into a buffer and return it.
    *
    * @param seekPosStart [number] where to start loading data into the new buffer.
    * @returns a Buffer holding the chunk we want to search.
    */
   private async _getNextChunk(seekPosStart: number) {
-
-    if (seekPosStart == -1)
-      return null;
+    if (seekPosStart == -1) return null;
 
     let seekPosEnd = -1;
     // Get the next position of the end of buffer.
     const indexes = await this.index;
     for (let [key, value] of indexes) {
-      if (value <= seekPosStart + 1)
-        continue
+      if (value <= seekPosStart + 1) continue;
 
       seekPosEnd = value;
       break;
@@ -253,35 +237,30 @@ export default class Trix {
     return this._createBuffer(seekPosStart, seekPosEnd);
   }
 
-
-    /**
-   * Create and return a buffer given the start and end position  
+  /**
+   * Create and return a buffer given the start and end position
    * of what to load from the .ix file.
    *
    * @param seekPosStart [number] byte the buffer should start reading from file.
    * @param seekPosEnd [number] byte the buffer should stop reading from file.
    * @returns a Buffer holding the chunk of data.
    */
-    private async _createBuffer(seekPosStart: number, seekPosEnd: number) {  
-      // Set bufLength to seekPosEnd or the end of the file.
-      let bufLength: number;
-      if (seekPosEnd < 0) {
-        const stat = await this.ixFile.stat();
-        bufLength = stat.size - seekPosStart;
-      } 
-      else {
-        bufLength = seekPosEnd - seekPosStart;
-      }
-  
-      let buf = Buffer.alloc(bufLength);
-      await this.ixFile.read(buf, 0, bufLength, seekPosStart);
-  
-      // Return the buffer and its end position in the file.
-      return { "buf": buf, "bufEndPos": seekPosEnd };
+  private async _createBuffer(seekPosStart: number, seekPosEnd: number) {
+    // Set bufLength to seekPosEnd or the end of the file.
+    let bufLength: number;
+    if (seekPosEnd < 0) {
+      const stat = await this.ixFile.stat();
+      bufLength = stat.size - seekPosStart;
+    } else {
+      bufLength = seekPosEnd - seekPosStart;
     }
 
+    let buf = Buffer.alloc(bufLength);
+    await this.ixFile.read(buf, 0, bufLength, seekPosStart);
 
-
+    // Return the buffer and its end position in the file.
+    return { buf: buf, bufEndPos: seekPosEnd };
+  }
 
   /**
    * Takes in a hit string and returns an array of result terms.
@@ -300,11 +279,13 @@ export default class Trix {
         const itemId: string = pair[0];
         const wordPos: number = Number.parseInt(pair[1]);
         if (typeof wordPos !== 'number' || isNaN(wordPos))
-          throw `Error in ix index format at term ${itemId} for word ${parts[0]}`;
+          throw new Error(
+            `Error in ix index format at term ${itemId} for word ${parts[0]}`
+          );
 
         arr.push(itemId);
       } else if (pair.length > 1) {
-        throw `Error in ix index format at word ${parts[0]}`;
+        throw new Error(`Error in ix index format at word ${parts[0]}`);
       }
     }
     return arr;
@@ -330,7 +311,7 @@ export default class Trix {
         const posStr = line.substr(trixPrefixSize);
         const pos = Number.parseInt(posStr, 16);
         if (typeof pos !== 'number' || isNaN(pos))
-          throw `Error in ixx index format at word ${prefix}`;
+          throw new Error(`Error in ixx index format at word ${prefix}`);
 
         ixx.set(prefix, pos);
       }
