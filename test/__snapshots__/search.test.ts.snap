@@ -8,7 +8,7 @@ exports[`Test a search of test1 ix file Search for "id1" in test1/myTrix.ix 1`] 
 Array [
   Array [
     "id1",
-    "id1,5",
+    "id1",
   ],
 ]
 `;
@@ -17,15 +17,15 @@ exports[`Test a search of test1 ix file Search for "is" in test1/myTrix.ix 1`] =
 Array [
   Array [
     "is",
-    "id1,2",
+    "id1",
   ],
   Array [
     "is",
-    "id2,2",
+    "id2",
   ],
   Array [
     "is",
-    "id3,2",
+    "id3",
   ],
 ]
 `;
@@ -38,15 +38,15 @@ exports[`Test a search of test1 ix file Search for "this" in test1/myTrix.ix 1`]
 Array [
   Array [
     "this",
-    "id1,1",
+    "id1",
   ],
   Array [
     "this",
-    "id2,1",
+    "id2",
   ],
   Array [
     "this",
-    "id3,1",
+    "id3",
   ],
 ]
 `;
@@ -67,27 +67,27 @@ exports[`Test a search of test2 ix file Search for "prickle" in test2/out.ix 1`]
 Array [
   Array [
     "prickle2-as1",
-    "ENST00000460946.1,1",
+    "ENST00000460946.1",
   ],
   Array [
     "prickle2-as1",
-    "ENST00000476308.1,1",
+    "ENST00000476308.1",
   ],
   Array [
     "prickle2-as2",
-    "ENST00000484703.1,1",
+    "ENST00000484703.1",
   ],
   Array [
     "prickle2-as3",
-    "ENST00000473434.1,1",
+    "ENST00000473434.1",
   ],
   Array [
     "prickle2-dt",
-    "ENST00000487097.1,1",
+    "ENST00000487097.1",
   ],
   Array [
     "prickle2-dt",
-    "ENST00000659263.1,1",
+    "ENST00000659263.1",
   ],
 ]
 `;
@@ -96,19 +96,19 @@ exports[`Test a search of test2 ix file Search for "tim" in test2/out.ix 1`] = `
 Array [
   Array [
     "timm23b-agap6",
-    "ENST00000429104.1,1",
+    "ENST00000429104.1",
   ],
   Array [
     "timm23b-agap6",
-    "ENST00000444438.2,1",
+    "ENST00000444438.2",
   ],
   Array [
     "timm23b-agap6",
-    "ENST00000651208.1,1",
+    "ENST00000651208.1",
   ],
   Array [
     "timm23b-agap6",
-    "ENST00000651763.1,1",
+    "ENST00000651763.1",
   ],
 ]
 `;
@@ -117,15 +117,15 @@ exports[`Test a search of test2 ix file Search for "znf8" in test2/out.ix 1`] = 
 Array [
   Array [
     "znf8-ervk3-1",
-    "ENST00000591325.1,1",
+    "ENST00000591325.1",
   ],
   Array [
     "znf84-dt",
-    "ENST00000443154.3,1",
+    "ENST00000443154.3",
   ],
   Array [
     "znf84-dt",
-    "ENST00000592296.5,1",
+    "ENST00000592296.5",
   ],
 ]
 `;
@@ -134,43 +134,43 @@ exports[`Test a search of test3 ix file Search for "focad" in test3/out.ix 1`] =
 Array [
   Array [
     "focad",
-    "ENSMUST00000097992.10,1",
+    "ENSMUST00000097992.10",
   ],
   Array [
     "focad",
-    "ENSMUST00000107147.2,1",
+    "ENSMUST00000107147.2",
   ],
   Array [
     "focad",
-    "ENSMUST00000107148.8,1",
+    "ENSMUST00000107148.8",
   ],
   Array [
     "focad",
-    "ENSMUST00000129967.2,1",
+    "ENSMUST00000129967.2",
   ],
   Array [
     "focad",
-    "ENSMUST00000130603.2,1",
+    "ENSMUST00000130603.2",
   ],
   Array [
     "focad",
-    "ENSMUST00000144388.2,1",
+    "ENSMUST00000144388.2",
   ],
   Array [
     "focad",
-    "ENSMUST00000147527.2,1",
+    "ENSMUST00000147527.2",
   ],
   Array [
     "focad",
-    "ENSMUST00000159342.8,1",
+    "ENSMUST00000159342.8",
   ],
   Array [
     "focad",
-    "ENSMUST00000161058.8,1",
+    "ENSMUST00000161058.8",
   ],
   Array [
     "focad",
-    "ENSMUST00000162039.2,1",
+    "ENSMUST00000162039.2",
   ],
 ]
 `;
@@ -181,27 +181,27 @@ exports[`Test a search of test3 ix file Search for "oca" in test3/out.ix 1`] = `
 Array [
   Array [
     "oca2",
-    "ENSMUST00000032633.12,1",
+    "ENSMUST00000032633.12",
   ],
   Array [
     "oca2",
-    "ENSMUST00000144739.8,1",
+    "ENSMUST00000144739.8",
   ],
   Array [
     "oca2",
-    "ENSMUST00000152693.8,1",
+    "ENSMUST00000152693.8",
   ],
   Array [
     "oca2",
-    "ENSMUST00000154559.2,1",
+    "ENSMUST00000154559.2",
   ],
   Array [
     "oca2",
-    "ENSMUST00000155533.2,1",
+    "ENSMUST00000155533.2",
   ],
   Array [
     "oca2",
-    "ENSMUST00000156886.8,1",
+    "ENSMUST00000156886.8",
   ],
 ]
 `;
@@ -210,67 +210,67 @@ exports[`Test a search of test3 ix file Search for "prickle" in test3/out.ix 1`]
 Array [
   Array [
     "prickle1",
-    "ENSMUST00000048982.11,1",
+    "ENSMUST00000048982.11",
   ],
   Array [
     "prickle1",
-    "ENSMUST00000109255.3,1",
+    "ENSMUST00000109255.3",
   ],
   Array [
     "prickle2",
-    "ENSMUST00000032093.12,1",
+    "ENSMUST00000032093.12",
   ],
   Array [
     "prickle2",
-    "ENSMUST00000113445.2,1",
+    "ENSMUST00000113445.2",
   ],
   Array [
     "prickle2",
-    "ENSMUST00000113446.8,1",
+    "ENSMUST00000113446.8",
   ],
   Array [
     "prickle2",
-    "ENSMUST00000113447.8,1",
+    "ENSMUST00000113447.8",
   ],
   Array [
     "prickle3",
-    "ENSMUST00000033485.14,1",
+    "ENSMUST00000033485.14",
   ],
   Array [
     "prickle3",
-    "ENSMUST00000123172.3,1",
+    "ENSMUST00000123172.3",
   ],
   Array [
     "prickle3",
-    "ENSMUST00000129662.3,1",
+    "ENSMUST00000129662.3",
   ],
   Array [
     "prickle3",
-    "ENSMUST00000141876.2,1",
+    "ENSMUST00000141876.2",
   ],
   Array [
     "prickle3",
-    "ENSMUST00000153994.2,1",
+    "ENSMUST00000153994.2",
   ],
   Array [
     "prickle4",
-    "ENSMUST00000113299.6,1",
+    "ENSMUST00000113299.6",
   ],
   Array [
     "prickle4",
-    "ENSMUST00000113300.8,1",
+    "ENSMUST00000113300.8",
   ],
   Array [
     "prickle4",
-    "ENSMUST00000142014.2,1",
+    "ENSMUST00000142014.2",
   ],
   Array [
     "prickle4",
-    "ENSMUST00000151540.2,1",
+    "ENSMUST00000151540.2",
   ],
   Array [
     "prickle4",
-    "ENSMUST00000152214.4,1",
+    "ENSMUST00000152214.4",
   ],
 ]
 `;
@@ -279,83 +279,83 @@ exports[`Test a search of test3 ix file Search for "tim" in test3/out.ix 1`] = `
 Array [
   Array [
     "timd2",
-    "ENSMUST00000055102.13,1",
+    "ENSMUST00000055102.13",
   ],
   Array [
     "timd2",
-    "ENSMUST00000109225.9,1",
+    "ENSMUST00000109225.9",
   ],
   Array [
     "timd2",
-    "ENSMUST00000125008.2,1",
+    "ENSMUST00000125008.2",
   ],
   Array [
     "timd2",
-    "ENSMUST00000169584.8,1",
+    "ENSMUST00000169584.8",
   ],
   Array [
     "timd4",
-    "ENSMUST00000068877.7,1",
+    "ENSMUST00000068877.7",
   ],
   Array [
     "timeless",
-    "ENSMUST00000055539.11,1",
+    "ENSMUST00000055539.11",
   ],
   Array [
     "timeless",
-    "ENSMUST00000105240.8,1",
+    "ENSMUST00000105240.8",
   ],
   Array [
     "timeless",
-    "ENSMUST00000105242.8,1",
+    "ENSMUST00000105242.8",
   ],
   Array [
     "timeless",
-    "ENSMUST00000105243.9,1",
+    "ENSMUST00000105243.9",
   ],
   Array [
     "timeless",
-    "ENSMUST00000105244.8,1",
+    "ENSMUST00000105244.8",
   ],
   Array [
     "timeless",
-    "ENSMUST00000105245.3,1",
+    "ENSMUST00000105245.3",
   ],
   Array [
     "timeless",
-    "ENSMUST00000125289.8,1",
+    "ENSMUST00000125289.8",
   ],
   Array [
     "timeless",
-    "ENSMUST00000129147.2,1",
+    "ENSMUST00000129147.2",
   ],
   Array [
     "timeless",
-    "ENSMUST00000135376.2,1",
+    "ENSMUST00000135376.2",
   ],
   Array [
     "timeless",
-    "ENSMUST00000135538.2,1",
+    "ENSMUST00000135538.2",
   ],
   Array [
     "timeless",
-    "ENSMUST00000136854.2,1",
+    "ENSMUST00000136854.2",
   ],
   Array [
     "timeless",
-    "ENSMUST00000142149.2,1",
+    "ENSMUST00000142149.2",
   ],
   Array [
     "timeless",
-    "ENSMUST00000142484.2,1",
+    "ENSMUST00000142484.2",
   ],
   Array [
     "timeless",
-    "ENSMUST00000145710.8,1",
+    "ENSMUST00000145710.8",
   ],
   Array [
     "timeless",
-    "ENSMUST00000146945.2,1",
+    "ENSMUST00000146945.2",
   ],
 ]
 `;
@@ -364,43 +364,43 @@ exports[`Test a search of test3 ix file Search for "zzz" in test3/out.ix 1`] = `
 Array [
   Array [
     "zzz3",
-    "ENSMUST00000089982.11,1",
+    "ENSMUST00000089982.11",
   ],
   Array [
     "zzz3",
-    "ENSMUST00000106100.9,1",
+    "ENSMUST00000106100.9",
   ],
   Array [
     "zzz3",
-    "ENSMUST00000106101.2,1",
+    "ENSMUST00000106101.2",
   ],
   Array [
     "zzz3",
-    "ENSMUST00000106103.8,1",
+    "ENSMUST00000106103.8",
   ],
   Array [
     "zzz3",
-    "ENSMUST00000135044.3,1",
+    "ENSMUST00000135044.3",
   ],
   Array [
     "zzz3",
-    "ENSMUST00000138115.8,1",
+    "ENSMUST00000138115.8",
   ],
   Array [
     "zzz3",
-    "ENSMUST00000150802.8,1",
+    "ENSMUST00000150802.8",
   ],
   Array [
     "zzz3",
-    "ENSMUST00000197987.5,1",
+    "ENSMUST00000197987.5",
   ],
   Array [
     "zzz3",
-    "ENSMUST00000198468.2,1",
+    "ENSMUST00000198468.2",
   ],
   Array [
     "zzz3",
-    "ENSMUST00000200570.5,1",
+    "ENSMUST00000200570.5",
   ],
 ]
 `;
@@ -409,83 +409,83 @@ exports[`Test a search of test4 ix file Search for "ek" in test4/out.ix 1`] = `
 Array [
   Array [
     "ekaa",
-    "id11,1",
+    "id11",
   ],
   Array [
     "ekaa",
-    "id8,1",
+    "id8",
   ],
   Array [
     "ekab",
-    "id12,1",
+    "id12",
   ],
   Array [
     "ekac",
-    "id13,1",
+    "id13",
   ],
   Array [
     "ekad",
-    "id14,1",
+    "id14",
   ],
   Array [
     "ekadd",
-    "id46,1",
+    "id46",
   ],
   Array [
     "ekae",
-    "id39,1",
+    "id39",
   ],
   Array [
     "ekaf",
-    "id41,1",
+    "id41",
   ],
   Array [
     "ekag",
-    "id16,1",
+    "id16",
   ],
   Array [
     "ekah",
-    "id1,1",
+    "id1",
   ],
   Array [
     "ekah",
-    "id17,1",
+    "id17",
   ],
   Array [
     "ekah",
-    "id9,1",
+    "id9",
   ],
   Array [
     "ekai",
-    "id18,1",
+    "id18",
   ],
   Array [
     "ekaj",
-    "id19,1",
+    "id19",
   ],
   Array [
     "ekak",
-    "id10,1",
+    "id10",
   ],
   Array [
     "ekak",
-    "id2,1",
+    "id2",
   ],
   Array [
     "ekak",
-    "id20,1",
+    "id20",
   ],
   Array [
     "ekak",
-    "id26,1",
+    "id26",
   ],
   Array [
     "ekak",
-    "id4,1",
+    "id4",
   ],
   Array [
     "ekak",
-    "id44,1",
+    "id44",
   ],
 ]
 `;
@@ -494,23 +494,23 @@ exports[`Test maxResults for search of test3 ix file Search for "tim" with a max
 Array [
   Array [
     "timd2",
-    "ENSMUST00000055102.13,1",
+    "ENSMUST00000055102.13",
   ],
   Array [
     "timd2",
-    "ENSMUST00000109225.9,1",
+    "ENSMUST00000109225.9",
   ],
   Array [
     "timd2",
-    "ENSMUST00000125008.2,1",
+    "ENSMUST00000125008.2",
   ],
   Array [
     "timd2",
-    "ENSMUST00000169584.8,1",
+    "ENSMUST00000169584.8",
   ],
   Array [
     "timd4",
-    "ENSMUST00000068877.7,1",
+    "ENSMUST00000068877.7",
   ],
 ]
 `;
