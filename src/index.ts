@@ -51,14 +51,17 @@ export default class Trix {
       // 1. Seek ahead to byte `this.index` of `ixFile`. Load this section of
       // .ix data into the buffer.
       let bufData = await this._getBuffer(searchWord);
+
       const hits = bufData.buf
         .toString()
         .split('\n')
         .filter((f) => !!f)
-        .filter((line) => line.startsWith(searchString))
+        .filter((line) => {
+          return line.startsWith(searchString);
+        })
         .map((line) => {
           const [term, ...parts] = line.split(' ');
-          return parts.map((elt) => [term, elt]);
+          return parts.map((elt) => [term, elt.split(',')[0]]);
         })
         .flat() as [string, string][];
       resultArr = resultArr.concat(hits);
