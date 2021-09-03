@@ -51,108 +51,22 @@ export default class Trix {
       // 1. Seek ahead to byte `this.index` of `ixFile`. Load this section of
       // .ix data into the buffer.
       let bufData = await this._getBuffer(searchWord);
-      let buf = bufData.buf;
-      let bufPos = bufData.bufEndPos;
-      let resultSet = new Set<string>();
-      let linePtr = 0;
-      let numValues = 0;
-
-      // 2. Iterate through the entire buffer
-      while (linePtr < buf.byteLength) {
-        let startsWith = true;
-        let done = false;
-        let i = linePtr;
-
-        // 3. Check if the first word in the current line has the same prefix
-        // as searchWord.  Iterate through each char of the line in the buffer.
-        // break out of loop when we hit a \n (unicode char 10) or the
-        // searchWord does not match the line.
-        while (buf[i] != 10) {
-          if (i >= buf.byteLength) {
-            // In this case, we ran out of our current buffer, but could still
-            // find more matches.  Load another chunk in to buf and repeat.
-            let tempBufData = await this._getNextChunk(bufPos);
-            if (tempBufData) {
-              buf = tempBufData.buf;
-              bufPos = tempBufData.bufEndPos;
-              i = 0;
-              linePtr = 0;
-            } else {
-              // If tempBufData is null, we reached the end of the file, so we
-              // are done.
-              done = true;
-              break;
-            }
-          }
-
-          if (startsWith) {
-            let cur = String.fromCharCode(buf[i]);
-
-            if (
-              i < linePtr + searchWord.length &&
-              searchWord[i - linePtr] > cur
-            ) {
-              // searchWord[i] > cur, so keep looping.
-              startsWith = false;
-            } else if (
-              i < linePtr + searchWord.length &&
-              searchWord[i - linePtr] < cur
-            ) {
-              // searchWord[i] < cur, so we lexicographically will not find any
-              // more results.
-              startsWith = false;
-              done = true;
-              break;
-            } else {
-              // This condition indicates we found a match.
-              if (buf[i] === 44) {
-                // We found a ',' so increment numValues by one.
-                numValues++;
-
-                // If we're searching for one word and we have enough results,
-                // break out at the next space.
-                if (numValues >= this.maxResults && searchWords.length === 1) {
-                  while (buf[i] != 32) i++;
-
-                  break;
-                }
-              }
-            }
-          }
-
-          i++;
-        }
-
-        if (done) break;
-
-        // If the line starts with the searchWord, we have a hit!
-        if (startsWith) {
-          // Parse the line and add results to arr.
-          const line: string = buf.slice(linePtr, i).toString();
-          let hits = this._parseHitString(line);
-
-          resultArr = resultArr.concat(hits);
-          if (resultArr.length >= this.maxResults) {
-            break;
-          }
-        }
-
-        linePtr = i + 1;
-      }
-
-      initialSet = resultSet;
-
-      // If there aren't any results, stop looping, because an intersection
-      // with an empty set is an empty set.
-      if (resultArr.length === 0 && initialSet.size === 0) {
-        return [];
+      const hits = bufData.buf
+        .toString()
+        .split('\n')
+        .filter((f) => !!f)
+        .filter((line) => line.startsWith(searchString))
+        .map((line) => {
+          const [term, ...parts] = line.split(' ');
+          return parts.map((elt) => [term, elt]);
+        })
+        .flat() as [string, string][];
+      resultArr = resultArr.concat(hits);
+      if (resultArr.length >= this.maxResults) {
+        break;
       }
     }
 
-    // 4. Return the hitList [list of string]
-    if (searchWords.length === 1) {
-      return resultArr;
-    }
     return [...resultArr].slice(0, this.maxResults);
   }
 
@@ -236,17 +150,6 @@ export default class Trix {
 
     // Return the buffer and its end position in the file.
     return { buf: buf, bufEndPos: seekPosEnd };
-  }
-
-  /**
-   * Takes in a hit string and returns an array of result terms.
-   *
-   * @param line [string] The line of .ix that is a hit.
-   * @returns results [Array<hit>]. Each hit contains the itemId [string], and wordPos [number].
-   */
-  private _parseHitString(line: string): [string, string][] {
-    const [term, ...parts] = line.split(' ');
-    return parts.map((elt) => [term, elt]);
   }
 
   /**
