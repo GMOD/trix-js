@@ -1,50 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Test a search of test1 ix file Search for "fOR" in test1/myTrix.ix 1`] = `
-Array [
-  Array [
-    "for",
-    "id1,4",
-  ],
-  Array [
-    "for",
-    "id2,4",
-  ],
-  Array [
-    "for",
-    "id3,4",
-  ],
-]
-`;
+exports[`Test a search of test1 ix file Search for "fOR" in test1/myTrix.ix 1`] = `Array []`;
 
-exports[`Test a search of test1 ix file Search for "for this" in test1/myTrix.ix 1`] = `
-Array [
-  Array [
-    "for",
-    "id1,4",
-  ],
-  Array [
-    "for",
-    "id2,4",
-  ],
-  Array [
-    "for",
-    "id3,4",
-  ],
-  Array [
-    "this",
-    "id1,1",
-  ],
-  Array [
-    "this",
-    "id2,1",
-  ],
-  Array [
-    "this",
-    "id3,1",
-  ],
-]
-`;
+exports[`Test a search of test1 ix file Search for "for this" in test1/myTrix.ix 1`] = `Array []`;
 
 exports[`Test a search of test1 ix file Search for "id1" in test1/myTrix.ix 1`] = `
 Array [
@@ -74,50 +32,7 @@ Array [
 
 exports[`Test a search of test1 ix file Search for "nope" in test1/myTrix.ix 1`] = `Array []`;
 
-exports[`Test a search of test1 ix file Search for "this is for id2" in test1/myTrix.ix 1`] = `
-Array [
-  Array [
-    "this",
-    "id1,1",
-  ],
-  Array [
-    "this",
-    "id2,1",
-  ],
-  Array [
-    "this",
-    "id3,1",
-  ],
-  Array [
-    "is",
-    "id1,2",
-  ],
-  Array [
-    "is",
-    "id2,2",
-  ],
-  Array [
-    "is",
-    "id3,2",
-  ],
-  Array [
-    "for",
-    "id1,4",
-  ],
-  Array [
-    "for",
-    "id2,4",
-  ],
-  Array [
-    "for",
-    "id3,4",
-  ],
-  Array [
-    "id2",
-    "id2,5",
-  ],
-]
-`;
+exports[`Test a search of test1 ix file Search for "this is for id2" in test1/myTrix.ix 1`] = `Array []`;
 
 exports[`Test a search of test1 ix file Search for "this" in test1/myTrix.ix 1`] = `
 Array [
@@ -136,359 +51,15 @@ Array [
 ]
 `;
 
-exports[`Test a search of test2 ix file Search for "FocAd" in test2/out.ix 1`] = `
-Array [
-  Array [
-    "focad-as1",
-    "ENST00000439876.1,1",
-  ],
-  Array [
-    "focad-as1",
-    "ENST00000445051.1,1",
-  ],
-]
-`;
+exports[`Test a search of test2 ix file Search for "FocAd" in test2/out.ix 1`] = `Array []`;
 
-exports[`Test a search of test2 ix file Search for "LINC" in test2/out.ix 1`] = `
-Array [
-  Array [
-    "linc-pint",
-    "ENST00000416999.1,1",
-  ],
-  Array [
-    "linc-pint",
-    "ENST00000423414.5,1",
-  ],
-  Array [
-    "linc-pint",
-    "ENST00000429901.2,1",
-  ],
-  Array [
-    "linc-pint",
-    "ENST00000431189.1,1",
-  ],
-  Array [
-    "linc-pint",
-    "ENST00000433079.5,1",
-  ],
-  Array [
-    "linc-pint",
-    "ENST00000435523.5,1",
-  ],
-  Array [
-    "linc-pint",
-    "ENST00000443623.5,1",
-  ],
-  Array [
-    "linc-pint",
-    "ENST00000451786.5,1",
-  ],
-  Array [
-    "linc-pint",
-    "ENST00000642156.1,1",
-  ],
-  Array [
-    "linc-pint",
-    "ENST00000642483.1,1",
-  ],
-  Array [
-    "linc-pint",
-    "ENST00000642602.1,1",
-  ],
-  Array [
-    "linc-pint",
-    "ENST00000643135.1,1",
-  ],
-  Array [
-    "linc-pint",
-    "ENST00000643373.1,1",
-  ],
-  Array [
-    "linc-pint",
-    "ENST00000643855.1,1",
-  ],
-  Array [
-    "linc-pint",
-    "ENST00000643874.1,1",
-  ],
-  Array [
-    "linc-pint",
-    "ENST00000644188.1,1",
-  ],
-  Array [
-    "linc-pint",
-    "ENST00000644804.1,1",
-  ],
-  Array [
-    "linc-pint",
-    "ENST00000645248.1,1",
-  ],
-  Array [
-    "linc-pint",
-    "ENST00000646429.1,1",
-  ],
-  Array [
-    "linc-pint",
-    "ENST00000646587.1,1",
-  ],
-]
-`;
+exports[`Test a search of test2 ix file Search for "LINC" in test2/out.ix 1`] = `Array []`;
 
-exports[`Test a search of test2 ix file Search for "enst ac" in test2/out.ix 1`] = `
-Array [
-  Array [
-    "enst00000229465.10",
-    "ENST00000229465.10,2",
-  ],
-  Array [
-    "enst00000230113.5",
-    "ENST00000230113.5,2",
-  ],
-  Array [
-    "enst00000235290.7",
-    "ENST00000235290.7,2",
-  ],
-  Array [
-    "enst00000242109.5",
-    "ENST00000242109.5,2",
-  ],
-  Array [
-    "enst00000244820.2",
-    "ENST00000244820.2,2",
-  ],
-  Array [
-    "enst00000244906.6",
-    "ENST00000244906.6,2",
-  ],
-  Array [
-    "enst00000248980.9",
-    "ENST00000248980.9,2",
-  ],
-  Array [
-    "enst00000250776.5",
-    "ENST00000250776.5,2",
-  ],
-  Array [
-    "enst00000250805.5",
-    "ENST00000250805.5,2",
-  ],
-  Array [
-    "enst00000253838.3",
-    "ENST00000253838.3,2",
-  ],
-  Array [
-    "enst00000253848.3",
-    "ENST00000253848.3,2",
-  ],
-  Array [
-    "enst00000255183.8",
-    "ENST00000255183.8,2",
-  ],
-  Array [
-    "enst00000262354.5",
-    "ENST00000262354.5,2",
-  ],
-  Array [
-    "enst00000276770.8",
-    "ENST00000276770.8,2",
-  ],
-  Array [
-    "enst00000276779.8",
-    "ENST00000276779.8,2",
-  ],
-  Array [
-    "enst00000279067.3",
-    "ENST00000279067.3,2",
-  ],
-  Array [
-    "enst00000289890.7",
-    "ENST00000289890.7,2",
-  ],
-  Array [
-    "enst00000291374.11",
-    "ENST00000291374.11,2",
-  ],
-  Array [
-    "enst00000292748.7",
-    "ENST00000292748.7,2",
-  ],
-  Array [
-    "enst00000294715.6",
-    "ENST00000294715.6,2",
-  ],
-]
-`;
+exports[`Test a search of test2 ix file Search for "enst ac" in test2/out.ix 1`] = `Array []`;
 
-exports[`Test a search of test2 ix file Search for "enst alg" in test2/out.ix 1`] = `
-Array [
-  Array [
-    "enst00000229465.10",
-    "ENST00000229465.10,2",
-  ],
-  Array [
-    "enst00000230113.5",
-    "ENST00000230113.5,2",
-  ],
-  Array [
-    "enst00000235290.7",
-    "ENST00000235290.7,2",
-  ],
-  Array [
-    "enst00000242109.5",
-    "ENST00000242109.5,2",
-  ],
-  Array [
-    "enst00000244820.2",
-    "ENST00000244820.2,2",
-  ],
-  Array [
-    "enst00000244906.6",
-    "ENST00000244906.6,2",
-  ],
-  Array [
-    "enst00000248980.9",
-    "ENST00000248980.9,2",
-  ],
-  Array [
-    "enst00000250776.5",
-    "ENST00000250776.5,2",
-  ],
-  Array [
-    "enst00000250805.5",
-    "ENST00000250805.5,2",
-  ],
-  Array [
-    "enst00000253838.3",
-    "ENST00000253838.3,2",
-  ],
-  Array [
-    "enst00000253848.3",
-    "ENST00000253848.3,2",
-  ],
-  Array [
-    "enst00000255183.8",
-    "ENST00000255183.8,2",
-  ],
-  Array [
-    "enst00000262354.5",
-    "ENST00000262354.5,2",
-  ],
-  Array [
-    "enst00000276770.8",
-    "ENST00000276770.8,2",
-  ],
-  Array [
-    "enst00000276779.8",
-    "ENST00000276779.8,2",
-  ],
-  Array [
-    "enst00000279067.3",
-    "ENST00000279067.3,2",
-  ],
-  Array [
-    "enst00000289890.7",
-    "ENST00000289890.7,2",
-  ],
-  Array [
-    "enst00000291374.11",
-    "ENST00000291374.11,2",
-  ],
-  Array [
-    "enst00000292748.7",
-    "ENST00000292748.7,2",
-  ],
-  Array [
-    "enst00000294715.6",
-    "ENST00000294715.6,2",
-  ],
-]
-`;
+exports[`Test a search of test2 ix file Search for "enst alg" in test2/out.ix 1`] = `Array []`;
 
-exports[`Test a search of test2 ix file Search for "enst" in test2/out.ix 1`] = `
-Array [
-  Array [
-    "enst00000229465.10",
-    "ENST00000229465.10,2",
-  ],
-  Array [
-    "enst00000230113.5",
-    "ENST00000230113.5,2",
-  ],
-  Array [
-    "enst00000235290.7",
-    "ENST00000235290.7,2",
-  ],
-  Array [
-    "enst00000242109.5",
-    "ENST00000242109.5,2",
-  ],
-  Array [
-    "enst00000244820.2",
-    "ENST00000244820.2,2",
-  ],
-  Array [
-    "enst00000244906.6",
-    "ENST00000244906.6,2",
-  ],
-  Array [
-    "enst00000248980.9",
-    "ENST00000248980.9,2",
-  ],
-  Array [
-    "enst00000250776.5",
-    "ENST00000250776.5,2",
-  ],
-  Array [
-    "enst00000250805.5",
-    "ENST00000250805.5,2",
-  ],
-  Array [
-    "enst00000253838.3",
-    "ENST00000253838.3,2",
-  ],
-  Array [
-    "enst00000253848.3",
-    "ENST00000253848.3,2",
-  ],
-  Array [
-    "enst00000255183.8",
-    "ENST00000255183.8,2",
-  ],
-  Array [
-    "enst00000262354.5",
-    "ENST00000262354.5,2",
-  ],
-  Array [
-    "enst00000276770.8",
-    "ENST00000276770.8,2",
-  ],
-  Array [
-    "enst00000276779.8",
-    "ENST00000276779.8,2",
-  ],
-  Array [
-    "enst00000279067.3",
-    "ENST00000279067.3,2",
-  ],
-  Array [
-    "enst00000289890.7",
-    "ENST00000289890.7,2",
-  ],
-  Array [
-    "enst00000291374.11",
-    "ENST00000291374.11,2",
-  ],
-  Array [
-    "enst00000292748.7",
-    "ENST00000292748.7,2",
-  ],
-  Array [
-    "enst00000294715.6",
-    "ENST00000294715.6,2
-enst00000295012.5",
-  ],
-]
-`;
+exports[`Test a search of test2 ix file Search for "enst" in test2/out.ix 1`] = `Array []`;
 
 exports[`Test a search of test2 ix file Search for "none" in test2/out.ix 1`] = `Array []`;
 
@@ -784,8 +355,7 @@ Array [
   ],
   Array [
     "timeless",
-    "ENSMUST00000146945.2,1
-timm10",
+    "ENSMUST00000146945.2,1",
   ],
 ]
 `;
@@ -915,8 +485,7 @@ Array [
   ],
   Array [
     "ekak",
-    "id44,1
-ekakt",
+    "id44,1",
   ],
 ]
 `;
@@ -941,8 +510,7 @@ Array [
   ],
   Array [
     "timd4",
-    "ENSMUST00000068877.7,1
-timeless",
+    "ENSMUST00000068877.7,1",
   ],
 ]
 `;
