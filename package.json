@@ -2,7 +2,6 @@
   "version": "0.2.1",
   "license": "Apache-2.0",
   "main": "dist/index.js",
-  "typings": "dist/index.d.ts",
   "files": [
     "dist"
   ],
@@ -23,7 +22,6 @@
   },
   "name": "@gmod/trix",
   "author": "Matt Morgan",
-  "module": "dist/trix.esm.js",
   "repository": "GMOD/trix-js",
   "devDependencies": {
     "@types/jest": "^26.0.24",
