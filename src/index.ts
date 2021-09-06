@@ -35,9 +35,6 @@ export default class Trix {
     // If there is one search word, store results in resultArr.
     let resultArr: Array<[string, string]> = [];
 
-    // If there are multiple words, store results in initialSet.
-    let initialSet = new Set<string>();
-
     let searchWords = searchString.split(' ');
 
     // Loop for each word in searchWords.  If there are more than one
