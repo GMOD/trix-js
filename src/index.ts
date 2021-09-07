@@ -47,12 +47,14 @@ export default class Trix {
 
       // 1. Seek ahead to byte `this.index` of `ixFile`. Load this section of
       // .ix data into the buffer.
-      let bufData = await this._getBuffer(searchWord);
+      let { buffer, seekPosEnd } = await this._getBuffer(searchWord);
 
-      const hits = bufData.buf
+      const lines = buffer
         .toString()
         .split('\n')
-        .filter((f) => !!f)
+        .filter((f) => !!f);
+
+      const hits = lines
         .filter((line) => {
           return line.startsWith(searchString);
         })
@@ -98,58 +100,12 @@ export default class Trix {
     }
 
     // Return the buffer and its end position in the file.
-    return this._createBuffer(seekPosStart, seekPosEnd);
-  }
-
-  /**
-   * Given the end position of the last buffer,
-   * load the next chunk  of .ix data into a buffer and return it.
-   *
-   * @param seekPosStart [number] where to start loading data into the new buffer.
-   * @returns a Buffer holding the chunk we want to search.
-   */
-  private async _getNextChunk(seekPosStart: number) {
-    if (seekPosStart == -1) return null;
-
-    let seekPosEnd = -1;
-    // Get the next position of the end of buffer.
-    const indexes = await this.index;
-    for (let [key, value] of indexes) {
-      if (value <= seekPosStart + 1) continue;
-
-      seekPosEnd = value;
-      break;
-    }
-
-    seekPosStart--;
-
-    // Return the buffer and its end position in the file.
-    return this._createBuffer(seekPosStart, seekPosEnd);
-  }
-
-  /**
-   * Create and return a buffer given the start and end position
-   * of what to load from the .ix file.
-   *
-   * @param seekPosStart [number] byte the buffer should start reading from file.
-   * @param seekPosEnd [number] byte the buffer should stop reading from file.
-   * @returns a Buffer holding the chunk of data.
-   */
-  private async _createBuffer(seekPosStart: number, seekPosEnd: number) {
-    // Set bufLength to seekPosEnd or the end of the file.
-    let bufLength: number;
-    if (seekPosEnd < 0) {
-      const stat = await this.ixFile.stat();
-      bufLength = stat.size - seekPosStart;
-    } else {
-      bufLength = seekPosEnd - seekPosStart;
-    }
-
-    let buf = Buffer.alloc(bufLength);
-    await this.ixFile.read(buf, 0, bufLength, seekPosStart);
-
-    // Return the buffer and its end position in the file.
-    return { buf: buf, bufEndPos: seekPosEnd };
+    const len = seekPosEnd - seekPosStart;
+    const res = this.ixFile.read(Buffer.alloc(len), 0, len, seekPosStart);
+    return {
+      ...res,
+      seekPosEnd,
+    };
   }
 
   /**
