@@ -270,7 +270,7 @@ export default class Trix {
    */
   private _parseHitString(line: string) {
     let arr: Array<string> = [];
-    const parts = line.split(' ').slice(1); // skip term
+    const [term, ...parts] = line.split(' '); // skip term
     // Each result is of format: "{itemId},{wordPos}"
     // Parse the entire line of these and return
     for (const part of parts) {
@@ -283,7 +283,7 @@ export default class Trix {
             `Error in ix index format at term ${itemId} for word ${parts[0]}`
           );
 
-        arr.push(itemId);
+        arr.push(`${term},${itemId}`);
       } else if (pair.length > 1) {
         throw new Error(`Error in ix index format at word ${parts[0]}`);
       }
