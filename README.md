@@ -101,3 +101,8 @@ Open up `tests/testdata/test#/input.txt`.
 **How to test my own .gff.gz data?**<br>
 Navigate to `/test/rawGenomes` and create a directory with your .gff.gz file in it. From within that directory, run `bash ../../programs/gff3ToInput.sh <.gff3.gz FILE> <OUTPUT NAME>`.
 
+
+## Reference
+
+See https://genome.ucsc.edu/goldenPath/help/trix.html for basic concepts of trix and https://github.com/GMOD/ixixx-js for a javascript implementation of the ixIxx command
+
