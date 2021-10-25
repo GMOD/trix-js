@@ -5,8 +5,8 @@ const trixPrefixSize = 5;
 // Define this object with .ixx and .ix files.
 // Then use the trixSearch() function to search for a word.
 export default class Trix {
-  private index: Promise<Map<string, number>>;
   private ixFile: GenericFilehandle;
+  private ixxFile: GenericFilehandle;
   maxResults: number;
 
   /**
@@ -19,11 +19,14 @@ export default class Trix {
     ixFile: GenericFilehandle,
     maxResults: number = 20
   ) {
-    this.index = this._parseIxx(ixxFile);
     this.ixFile = ixFile;
+    this.ixxFile = ixxFile;
     this.maxResults = maxResults;
   }
 
+  private getIndex(opts?: { signal?: AbortSignal }) {
+    return this._parseIxx(this.ixxFile, opts);
+  }
   /**
    * Search trix for the given searchWord(s). Return up to {this.maxResults} results.
    * This method matches each index prefix against each searchWord. It does not do fuzzy matching.
@@ -31,27 +34,28 @@ export default class Trix {
    * @param searchString [string] term(s) separated by spaces to search for id(s).
    * @returns results [Array<string>] where each string is a corresponding itemId.
    */
-  async search(searchString: string) {
+  async search(searchString: string, opts?: { signal?: AbortSignal }) {
     // If there is one search word, store results in resultArr.
     let resultArr: Array<string> = [];
 
-    // If there are multiple words, store results in initialSet.
-    // firstWord indicates we are iterating the first time.
+    // If there are multiple words, store results in initialSet.  firstWord
+    // indicates we are iterating the first time.
     let firstWord: boolean = true;
     let initialSet = new Set<string>();
 
     let searchWords = searchString.split(' ');
 
     // Loop for each word in searchWords.
-    // If there are more than one searchWords, use resultSet and only take the matching terms
-    // that are also in initialSet.
-    // Otherwise, just iterate once and add words to resultArr.
+    // If there are more than one searchWords, use resultSet and only take the
+    // matching terms that are also in initialSet.  Otherwise, just iterate
+    // once and add words to resultArr.
     for (let w = 0; w < searchWords.length; w++) {
       let searchWord = searchWords[w];
       searchWord = searchWord.toLowerCase();
 
-      // 1. Seek ahead to byte `this.index` of `ixFile`. Load this section of .ix data into the buffer.
-      let bufData = await this._getBuffer(searchWord);
+      // 1. Seek ahead to byte `this.index` of `ixFile`. Load this section of
+      // .ix data into the buffer.
+      let bufData = await this._getBuffer(searchWord, opts);
       let buf: Buffer = bufData.buf;
       let bufPos = bufData.bufEndPos;
       let resultSet = new Set<string>();
@@ -64,22 +68,23 @@ export default class Trix {
         let done = false;
         let i = linePtr;
 
-        // 3. Check if the first word in the current line has the same prefix as searchWord.
-
-        // Iterate through each char of the line in the buffer.
-        // break out of loop when we hit a \n (unicode char 10) or the searchWord does not match the line.
+        // 3. Check if the first word in the current line has the same prefix
+        // as searchWord.  Iterate through each char of the line in the buffer.
+        // break out of loop when we hit a \n (unicode char 10) or the
+        // searchWord does not match the line.
         while (buf[i] != 10) {
           if (i >= buf.byteLength) {
-            // In this case, we ran out of our current buffer, but could still find more matches.
-            // Load another chunk in to buf and repeat.
-            let tempBufData = await this._getNextChunk(bufPos);
+            // In this case, we ran out of our current buffer, but could still
+            // find more matches.  Load another chunk in to buf and repeat.
+            let tempBufData = await this._getNextChunk(bufPos, opts);
             if (tempBufData) {
               buf = tempBufData.buf;
               bufPos = tempBufData.bufEndPos;
               i = 0;
               linePtr = 0;
             } else {
-              // If tempBufData is null, we reached the end of the file, so we are done.
+              // If tempBufData is null, we reached the end of the file, so we
+              // are done.
               done = true;
               break;
             }
@@ -98,7 +103,8 @@ export default class Trix {
               i < linePtr + searchWord.length &&
               searchWord[i - linePtr] < cur
             ) {
-              // searchWord[i] < cur, so we lexicographically will not find any more results.
+              // searchWord[i] < cur, so we lexicographically will not find any
+              // more results.
               startsWith = false;
               done = true;
               break;
@@ -108,7 +114,8 @@ export default class Trix {
                 // We found a ',' so increment numValues by one.
                 numValues++;
 
-                // If we're searching for one word and we have enough results, break out at the next space.
+                // If we're searching for one word and we have enough results,
+                // break out at the next space.
                 if (numValues >= this.maxResults && searchWords.length === 1) {
                   while (buf[i] != 32) i++;
 
@@ -126,7 +133,7 @@ export default class Trix {
         // If the line starts with the searchWord, we have a hit!
         if (startsWith) {
           // Parse the line and add results to arr.
-          const line: string = buf.slice(linePtr, i).toString();
+          const line = buf.slice(linePtr, i).toString();
           let arr = this._parseHitString(line);
 
           if (searchWords.length === 1) {
@@ -145,7 +152,8 @@ export default class Trix {
                 if (initialSet.has(hit)) {
                   resultSet.add(hit);
 
-                  // If it is on the last iteration of words, break after we reach maxResults
+                  // If it is on the last iteration of words, break after we
+                  // reach maxResults
                   if (
                     w === searchWords.length - 1 &&
                     resultSet.size >= this.maxResults
@@ -189,11 +197,14 @@ export default class Trix {
    * @param searchWord [string]
    * @returns a Buffer holding the sections we want to search.
    */
-  private async _getBuffer(searchWord: string) {
+  private async _getBuffer(
+    searchWord: string,
+    opts?: { signal?: AbortSignal }
+  ) {
     // Get position to seek to in .ix file from indexes.
     let seekPosStart = 0;
     let seekPosEnd = -1;
-    const indexes = await this.index;
+    const indexes = await this.getIndex(opts);
     for (let [key, value] of indexes) {
       let trimmedKey = key.slice(0, searchWord.length);
       if (seekPosEnd === -1) {
@@ -218,12 +229,15 @@ export default class Trix {
    * @param seekPosStart [number] where to start loading data into the new buffer.
    * @returns a Buffer holding the chunk we want to search.
    */
-  private async _getNextChunk(seekPosStart: number) {
+  private async _getNextChunk(
+    seekPosStart: number,
+    opts?: { signal?: AbortSignal }
+  ) {
     if (seekPosStart == -1) return null;
 
     let seekPosEnd = -1;
     // Get the next position of the end of buffer.
-    const indexes = await this.index;
+    const indexes = await this.getIndex(opts);
     for (let [key, value] of indexes) {
       if (value <= seekPosStart + 1) continue;
 
@@ -234,7 +248,7 @@ export default class Trix {
     seekPosStart--;
 
     // Return the buffer and its end position in the file.
-    return this._createBuffer(seekPosStart, seekPosEnd);
+    return this._createBuffer(seekPosStart, seekPosEnd, opts);
   }
 
   /**
@@ -245,7 +259,11 @@ export default class Trix {
    * @param seekPosEnd [number] byte the buffer should stop reading from file.
    * @returns a Buffer holding the chunk of data.
    */
-  private async _createBuffer(seekPosStart: number, seekPosEnd: number) {
+  private async _createBuffer(
+    seekPosStart: number,
+    seekPosEnd: number,
+    opts?: { signal?: AbortSignal }
+  ) {
     // Set bufLength to seekPosEnd or the end of the file.
     let bufLength: number;
     if (seekPosEnd < 0) {
@@ -256,7 +274,7 @@ export default class Trix {
     }
 
     let buf = Buffer.alloc(bufLength);
-    await this.ixFile.read(buf, 0, bufLength, seekPosStart);
+    await this.ixFile.read(buf, 0, bufLength, seekPosStart, opts);
 
     // Return the buffer and its end position in the file.
     return { buf: buf, bufEndPos: seekPosEnd };
@@ -297,8 +315,15 @@ export default class Trix {
    * @param ixxFile [anyFile] second level index that is produced by ixIxx.
    * @returns a ParsedIxx map.
    */
-  private async _parseIxx(ixxFile: GenericFilehandle) {
-    const file = (await ixxFile.readFile('utf8')) as string;
+  private async _parseIxx(
+    ixxFile: GenericFilehandle,
+    opts?: { signal?: AbortSignal }
+  ) {
+    const file = (await ixxFile.readFile({
+      encoding: 'utf8',
+      ...opts,
+    })) as string;
+
     const lines = file.split('\n');
     return new Map(
       lines
