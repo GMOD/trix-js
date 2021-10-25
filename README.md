@@ -1,16 +1,23 @@
+[![Build Status](https://img.shields.io/github/workflow/status/GMOD/trix-js/Push/main?logo=github&style=for-the-badge)](https://github.com/GMOD/trix-js/actions?query=branch%3Amain+workflow%3APush+)
+
 # trix-js
+
 Read UCSC Trix indexes in pure JavaScript
 
 ## Usage
 
 ```js
-import Trix from '@gmod/trix'
-import { RemoteFile } from 'generic-filehandle'
+import Trix from '@gmod/trix';
+import { RemoteFile } from 'generic-filehandle';
 
 // any filehandle object that supports the Nodejs FileHandle API will work.
 // We use generic-filehandle here to demonstrate searching files on remote servers.
-const ixxFile = new RemoteFile('https://hgdownload.soe.ucsc.edu/gbdb/hg38/knownGene.ixx');
-const ixFile = new RemoteFile('https://hgdownload.soe.ucsc.edu/gbdb/hg38/knownGene.ix');
+const ixxFile = new RemoteFile(
+  'https://hgdownload.soe.ucsc.edu/gbdb/hg38/knownGene.ixx'
+);
+const ixFile = new RemoteFile(
+  'https://hgdownload.soe.ucsc.edu/gbdb/hg38/knownGene.ix'
+);
 
 const trix = new Trix(ixxFile, ixFile);
 
@@ -19,33 +26,35 @@ async function doStuff() {
   console.log(results);
 }
 doStuff();
-
 ```
 
 ## Documentation
+
 ### Trix constructor
+
 The Trix class constructor accepts arguments:
+
 - `ixxFile` - a filehandle object for the trix .ixx file
 - `ixFile` - a filehandle object for the trix .ix file
 - `maxResults = 20` - an optional number specifying the maximum number of results to return on `trix.search()`
 
-
 ### Trix search
+
 **Search the index files for a term and find its keys.**<br>
 **In the case of searching with multiple words, `trix.search()` finds the intersection of the result sets.**<br>
 The Trix search function accepts argument:
-- `searchString` - a string of space-separated words for what to search the index file and find keys for<br>
-  
-The Trix search function returns: <br>
-- `Promise<string[]>` - a promised array of strings where each string is an itemId result
-  
 
+- `searchString` - a string of space-separated words for what to search the index file and find keys for<br>
+
+The Trix search function returns: <br>
+
+- `Promise<string[]>` - a promised array of strings where each string is an itemId result
 
 ## Examples
 
 ```js
-import { LocalFile } from 'generic-filehandle'
-import Trix from '@gmod/trix'
+import { LocalFile } from 'generic-filehandle';
+import Trix from '@gmod/trix';
 
 const ixxFile = new LocalFile('out.ixx');
 const ixFile = new LocalFile('out.ix');
@@ -54,7 +63,7 @@ const ixFile = new LocalFile('out.ix');
 const trix = new Trix(ixxFile, ixFile, 5);
 
 async function doStuff() {
-const results1 = await trix.search('herc');
+  const results1 = await trix.search('herc');
   console.log(results1);
 
   // increase maxResults to 30
@@ -66,30 +75,18 @@ const results1 = await trix.search('herc');
 
 doStuff();
 ```
+
 <br><br>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ## Development
 
-
 ### Test trix-js
+
 First, clone this repo and install npm packages. <br>
 Then, run `npm test`. <br>
 
 ### Test the USCS TrixSearch - Requires Linux
+
 First, clone this repo.
 To run test searches on a track hub using the USCS `TrixSearch`, navigate to `tests/testdata/test#` and run `bash test#script.sh` where # is the test number.
 To change search terms, edit `searchterms.txt`.
@@ -97,12 +94,9 @@ To change search terms, edit `searchterms.txt`.
 **Wondering what to search for?**<br>
 Open up `tests/testdata/test#/input.txt`.
 
-
 **How to test my own .gff.gz data?**<br>
 Navigate to `/test/rawGenomes` and create a directory with your .gff.gz file in it. From within that directory, run `bash ../../programs/gff3ToInput.sh <.gff3.gz FILE> <OUTPUT NAME>`.
-
 
 ## Reference
 
 See https://genome.ucsc.edu/goldenPath/help/trix.html for basic concepts of trix and https://github.com/GMOD/ixixx-js for a javascript implementation of the ixIxx command
-
