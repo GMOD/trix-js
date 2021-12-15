@@ -4,6 +4,15 @@ const TRIX_PREFIX_SIZE = 5
 
 const CHUNK_SIZE = 65536
 
+// https://stackoverflow.com/a/9229821/2129219
+function uniqBy(a: [string, string][], key: (elt: [string, string]) => string) {
+  let seen = new Set()
+  return a.filter(item => {
+    let k = key(item)
+    return seen.has(k) ? false : seen.add(k)
+  })
+}
+
 export default class Trix {
   private ixFile: GenericFilehandle
 
@@ -22,7 +31,7 @@ export default class Trix {
   }
 
   async search(searchString: string, opts?: { signal?: AbortSignal }) {
-    let resultArr = [] as string[][]
+    let resultArr = [] as [string, string][]
     const searchWords = searchString.split(' ')
 
     // we only search one word at a time
@@ -96,7 +105,8 @@ export default class Trix {
       }
     }
 
-    return [...resultArr].slice(0, this.maxResults)
+    // deduplicate results based on the detail column (resultArr[1])
+    return uniqBy(resultArr, elt => elt[1]).slice(0, this.maxResults)
   }
 
   private async getIndex(opts?: { signal?: AbortSignal }) {
