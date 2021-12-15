@@ -5,8 +5,8 @@ const trixPrefixSize = 5
 // Define this object with .ixx and .ix files.
 // Then use the trixSearch() function to search for a word.
 export default class Trix {
-  private index: Promise<Map<string, number>>
   private ixFile: GenericFilehandle
+  private ixxFile: GenericFilehandle
   maxResults: number
 
   /**
@@ -19,9 +19,13 @@ export default class Trix {
     ixFile: GenericFilehandle,
     maxResults = 20,
   ) {
-    this.index = this._parseIxx(ixxFile)
     this.ixFile = ixFile
+    this.ixxFile = ixxFile
     this.maxResults = maxResults
+  }
+
+  private getIndex(opts?: { signal?: AbortSignal }) {
+    return this._parseIxx(this.ixxFile, opts)
   }
 
   /**
@@ -31,13 +35,13 @@ export default class Trix {
    * @param searchString [string] term(s) separated by spaces to search for id(s).
    * @returns results [Array<string>] where each string is a corresponding itemId.
    */
-  async search(searchString: string) {
+  async search(searchString: string, opts?: { signal?: AbortSignal }) {
     let resultArr = [] as string[][]
     const searchWords = searchString.split(' ')
     for (let w = 0; w < searchWords.length; w++) {
       const searchWord = searchWords[w].toLowerCase()
       let done = false
-      const res = await this._getBuffer(searchWord)
+      const res = await this._getBuffer(searchWord, opts)
 
       while (res && !done) {
         let { buffer } = res
@@ -100,11 +104,14 @@ export default class Trix {
    * @param searchWord [string]
    * @returns a Buffer holding the sections we want to search.
    */
-  private async _getBuffer(searchWord: string) {
+  private async _getBuffer(
+    searchWord: string,
+    opts?: { signal?: AbortSignal },
+  ) {
     // Get position to seek to in .ix file from indexes.
     let seekPosStart = 0
     let seekPosEnd = -1
-    const indexes = await this.index
+    const indexes = await this.getIndex(opts)
     for (const [key, value] of indexes) {
       const trimmedKey = key.slice(0, searchWord.length)
       if (trimmedKey >= searchWord) {
@@ -121,7 +128,13 @@ export default class Trix {
     if (len < 0) {
       return undefined
     }
-    const res = await this.ixFile.read(Buffer.alloc(len), 0, len, seekPosStart)
+    const res = await this.ixFile.read(
+      Buffer.alloc(len),
+      0,
+      len,
+      seekPosStart,
+      opts,
+    )
     return {
       ...res,
       seekPosEnd,
@@ -134,15 +147,21 @@ export default class Trix {
    * @param ixxFile [anyFile] second level index that is produced by ixIxx.
    * @returns a ParsedIxx map.
    */
-  private async _parseIxx(ixxFile: GenericFilehandle) {
-    const file = (await ixxFile.readFile('utf8')) as string
+  private async _parseIxx(
+    ixxFile: GenericFilehandle,
+    opts?: { signal?: AbortSignal },
+  ) {
+    const file = (await ixxFile.readFile({
+      encoding: 'utf8',
+      ...opts,
+    })) as string
     return new Map(
       file
         .split('\n')
         .filter(f => !!f)
         .map(line => {
-          const prefix = line.substr(0, trixPrefixSize)
-          const posStr = line.substr(trixPrefixSize)
+          const prefix = line.slice(0, trixPrefixSize)
+          const posStr = line.slice(trixPrefixSize)
           const pos = Number.parseInt(posStr, 16)
           return [prefix, pos]
         }),
