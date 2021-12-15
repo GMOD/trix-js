@@ -1,4 +1,5 @@
 - Fix issue with infinite loop
+- Add abortsignal support
 
 # v1.0.0
 
