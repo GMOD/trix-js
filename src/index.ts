@@ -51,9 +51,11 @@ export default class Trix {
           const match = word.startsWith(searchString)
           if (!foundSomething && match) {
             foundSomething = true
-          } else if (foundSomething && !match) {
-            done = true
-          } else if (word > searchString) {
+          }
+
+          //we are done scanning if we are lexicographically greater than the
+          //search string
+          if (word > searchString) {
             done = true
           }
           return match
@@ -64,6 +66,8 @@ export default class Trix {
         })
         .flat() as [string, string][]
 
+      // if we are not done, and we haven't filled up maxResults with hits yet,
+      // then refetch
       if (resultArr.length + hits.length < this.maxResults && !done) {
         const res = await this.ixFile.read(
           Buffer.alloc(CHUNK_SIZE),
@@ -80,7 +84,11 @@ export default class Trix {
         }
         buffer = Buffer.concat([buffer, res.buffer])
         seekPosEnd += CHUNK_SIZE
-      } else if (resultArr.length + hits.length >= this.maxResults || done) {
+      }
+
+      // if we have filled up the hits, or we are detected to be done via the
+      // filtering, then return
+      else if (resultArr.length + hits.length >= this.maxResults || done) {
         resultArr = resultArr.concat(hits)
         break
       }
