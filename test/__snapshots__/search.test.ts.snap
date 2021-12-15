@@ -443,6 +443,39 @@ Array [
 ]
 `;
 
+exports[`Test a search of test3 ix file Search for "zx" in test3/out.ix 1`] = `
+Array [
+  Array [
+    "zxda",
+    "ENSMUST00000117281.2",
+  ],
+  Array [
+    "zxdb",
+    "ENSMUST00000101388.4",
+  ],
+  Array [
+    "zxdc",
+    "ENSMUST00000045740.8",
+  ],
+  Array [
+    "zxdc",
+    "ENSMUST00000075117.10",
+  ],
+  Array [
+    "zxdc",
+    "ENSMUST00000113539.8",
+  ],
+  Array [
+    "zxdc",
+    "ENSMUST00000137483.2",
+  ],
+  Array [
+    "zxdc",
+    "ENSMUST00000203493.2",
+  ],
+]
+`;
+
 exports[`Test a search of test3 ix file Search for "zzz" in test3/out.ix 1`] = `
 Array [
   Array [
