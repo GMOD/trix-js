@@ -34,12 +34,7 @@ export default class Trix {
    */
   async search(searchString: string) {
     // If there is one search word, store results in resultArr.
-    let resultArr: Array<string> = []
-
-    // If there are multiple words, store results in initialSet.
-    // firstWord indicates we are iterating the first time.
-    let firstWord = true
-    let initialSet = new Set<string>()
+    let resultArr: Array<string[]> = []
 
     const searchWords = searchString.split(' ')
 
@@ -48,56 +43,56 @@ export default class Trix {
     // also in initialSet.  Otherwise, just iterate once and add words to
     // resultArr.
     for (let w = 0; w < searchWords.length; w++) {
-      let searchWord = searchWords[w].toLowerCase();
-      let done = false;
-      let { buffer, seekPosEnd } = await this._getBuffer(searchWord);
-      console.log({ buffer: buffer.toString() });
+      let searchWord = searchWords[w].toLowerCase()
+      let done = false
+      let { buffer, seekPosEnd } = await this._getBuffer(searchWord)
+      console.log({ buffer: buffer.toString() })
 
       while (!done) {
-        let foundSomething = false;
+        let foundSomething = false
         const lines = buffer
           .toString()
           .split('\n')
-          .filter((f) => !!f);
+          .filter(f => !!f)
 
         const hits = lines
-          .filter((line) => {
-            const word = line.split(' ')[0];
-            const match = word.startsWith(searchString);
-            console.log({ word, match });
+          .filter(line => {
+            const word = line.split(' ')[0]
+            const match = word.startsWith(searchString)
+            console.log({ word, match })
             if (!foundSomething && match) {
-              foundSomething = true;
+              foundSomething = true
             } else if (foundSomething && !match) {
-              done = true;
+              done = true
             } else if (word > searchString) {
-              done = true;
+              done = true
             }
-            return match;
+            return match
           })
-          .map((line) => {
-            const [term, ...parts] = line.split(' ');
-            return parts.map((elt) => [term, elt.split(',')[0]]);
+          .map(line => {
+            const [term, ...parts] = line.split(' ')
+            return parts.map(elt => [term, elt.split(',')[0]])
           })
-          .flat() as [string, string][];
+          .flat() as [string, string][]
 
-        resultArr = resultArr.concat(hits);
+        resultArr = resultArr.concat(hits)
 
         if (resultArr.length >= this.maxResults || done) {
-          break;
+          break
         } else {
-          const len = 65536;
+          const len = 65536
           const res = await this.ixFile.read(
             Buffer.alloc(len),
             0,
             len,
-            seekPosEnd
-          );
-          buffer = Buffer.concat([buffer, res.buffer]);
+            seekPosEnd,
+          )
+          buffer = Buffer.concat([buffer, res.buffer])
         }
       }
     }
 
-    return [...resultArr].slice(0, this.maxResults);
+    return [...resultArr].slice(0, this.maxResults)
   }
 
   // Private Methods:
@@ -111,36 +106,36 @@ export default class Trix {
    */
   private async _getBuffer(searchWord: string) {
     // Get position to seek to in .ix file from indexes.
-    let seekPosStart = 0;
-    let seekPosEnd = -1;
-    const indexes = await this.index;
+    let seekPosStart = 0
+    let seekPosEnd = -1
+    const indexes = await this.index
     for (let [key, value] of indexes) {
-      let trimmedKey = key.slice(0, searchWord.length);
+      let trimmedKey = key.slice(0, searchWord.length)
       console.log({
         key,
         value,
         trimmedKey,
         searchWord,
         r: trimmedKey > searchWord,
-      });
+      })
       if (trimmedKey >= searchWord) {
         // We reached the end pos in the file.
-        break;
+        break
       } else {
-        seekPosStart = value;
-        seekPosEnd = value + 65536;
+        seekPosStart = value
+        seekPosEnd = value + 65536
       }
     }
 
-    console.log({ seekPosStart, seekPosEnd });
+    console.log({ seekPosStart, seekPosEnd })
 
     // Return the buffer and its end position in the file.
-    const len = seekPosEnd - seekPosStart;
-    const res = await this.ixFile.read(Buffer.alloc(len), 0, len, seekPosStart);
+    const len = seekPosEnd - seekPosStart
+    const res = await this.ixFile.read(Buffer.alloc(len), 0, len, seekPosStart)
     return {
       ...res,
       seekPosEnd,
-    };
+    }
   }
 
   /**
@@ -150,17 +145,17 @@ export default class Trix {
    * @returns a ParsedIxx map.
    */
   private async _parseIxx(ixxFile: GenericFilehandle) {
-    const file = (await ixxFile.readFile('utf8')) as string;
+    const file = (await ixxFile.readFile('utf8')) as string
     return new Map(
       file
         .split('\n')
-        .filter((f) => !!f)
-        .map((line) => {
-          const prefix = line.substr(0, trixPrefixSize);
-          const posStr = line.substr(trixPrefixSize);
-          const pos = Number.parseInt(posStr, 16);
-          return [prefix, pos];
-        })
-    );
+        .filter(f => !!f)
+        .map(line => {
+          const prefix = line.substr(0, trixPrefixSize)
+          const posStr = line.substr(trixPrefixSize)
+          const pos = Number.parseInt(posStr, 16)
+          return [prefix, pos]
+        }),
+    )
   }
 }
