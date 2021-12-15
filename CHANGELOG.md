@@ -1,3 +1,5 @@
+- Fix issue with infinite loop
+
 # v1.0.0
 
 - Change result format from just the "result" string returned to be "term,result"

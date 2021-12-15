@@ -19,6 +19,7 @@ export default class Trix {
     ixFile: GenericFilehandle,
     maxResults = 20,
   ) {
+    console.log('t1')
     this.index = this._parseIxx(ixxFile)
     this.ixFile = ixFile
     this.maxResults = maxResults
@@ -52,7 +53,7 @@ export default class Trix {
       // 1. Seek ahead to byte `this.index` of `ixFile`. Load this section of
       // .ix data into the buffer.
       const bufData = await this._getBuffer(searchWord)
-      let buf: Buffer = bufData.buf
+      let buf = bufData.buf
       let bufPos = bufData.bufEndPos
       const resultSet = new Set<string>()
       let linePtr = 0
