@@ -2,8 +2,10 @@
   "parser": "@typescript-eslint/parser",
   "plugins": ["prettier", "@typescript-eslint"],
   "extends": [
-    "plugin:@typescript-eslint/recommended",
-    "plugin:prettier/recommended"
+    "airbnb-base",
+    "airbnb-typescript/base",
+    "plugin:prettier/recommended",
+    "plugin:@typescript-eslint/recommended"
   ],
   "rules": {
     "no-underscore-dangle": 0,
@@ -12,5 +14,8 @@
     "@typescript-eslint/explicit-module-boundary-types": 0,
     "@typescript-eslint/ban-ts-comment": 0,
     "semi": ["error", "never"]
+  },
+  "parserOptions": {
+    "project": "./tsconfig.json"
   }
 }

@@ -4,11 +4,11 @@ const TRIX_PREFIX_SIZE = 5
 
 const CHUNK_SIZE = 65536
 
-// Define this object with .ixx and .ix files.
-// Then use the trixSearch() function to search for a word.
 export default class Trix {
   private ixFile: GenericFilehandle
+
   private ixxFile: GenericFilehandle
+
   maxResults: number
 
   constructor(
@@ -46,6 +46,7 @@ export default class Trix {
         .filter(f => !!f)
 
       const hits = lines
+        // eslint-disable-next-line @typescript-eslint/no-loop-func
         .filter(line => {
           const word = line.split(' ')[0]
           const match = word.startsWith(searchString)
@@ -53,8 +54,8 @@ export default class Trix {
             foundSomething = true
           }
 
-          //we are done scanning if we are lexicographically greater than the
-          //search string
+          // we are done scanning if we are lexicographically greater than the
+          // search string
           if (word > searchString) {
             done = true
           }
@@ -69,7 +70,8 @@ export default class Trix {
       // if we are not done, and we haven't filled up maxResults with hits yet,
       // then refetch
       if (resultArr.length + hits.length < this.maxResults && !done) {
-        const res = await this.ixFile.read(
+        // eslint-disable-next-line no-await-in-loop
+        const res2 = await this.ixFile.read(
           Buffer.alloc(CHUNK_SIZE),
           0,
           CHUNK_SIZE,
@@ -77,12 +79,12 @@ export default class Trix {
           opts,
         )
 
-        //early break if empty response
-        if (!res.bytesRead) {
+        // early break if empty response
+        if (!res2.bytesRead) {
           resultArr = resultArr.concat(hits)
           break
         }
-        buffer = Buffer.concat([buffer, res.buffer])
+        buffer = Buffer.concat([buffer, res2.buffer])
         seekPosEnd += CHUNK_SIZE
       }
 
@@ -97,8 +99,20 @@ export default class Trix {
     return [...resultArr].slice(0, this.maxResults)
   }
 
-  private getIndex(opts?: { signal?: AbortSignal }) {
-    return this._parseIxx(this.ixxFile, opts)
+  private async getIndex(opts?: { signal?: AbortSignal }) {
+    const file = await this.ixxFile.readFile({
+      encoding: 'utf8',
+      ...opts,
+    })
+    return file
+      .split('\n')
+      .filter(f => !!f)
+      .map(line => {
+        const prefix = line.slice(0, TRIX_PREFIX_SIZE)
+        const posStr = line.slice(TRIX_PREFIX_SIZE)
+        const pos = Number.parseInt(posStr, 16)
+        return [prefix, pos] as [string, number]
+      })
   }
 
   private async _getBuffer(
@@ -108,15 +122,13 @@ export default class Trix {
     let seekPosStart = 0
     let seekPosEnd = -1
     const indexes = await this.getIndex(opts)
-    for (const [key, value] of indexes) {
+    indexes.forEach(([key, value]) => {
       const trimmedKey = key.slice(0, searchWord.length)
-      if (trimmedKey >= searchWord) {
-        break
-      } else {
+      if (trimmedKey < searchWord) {
         seekPosStart = value
         seekPosEnd = value + 65536
       }
-    }
+    })
 
     // Return the buffer and its end position in the file.
     const len = seekPosEnd - seekPosStart
@@ -134,26 +146,5 @@ export default class Trix {
       ...res,
       seekPosEnd,
     }
-  }
-
-  private async _parseIxx(
-    ixxFile: GenericFilehandle,
-    opts?: { signal?: AbortSignal },
-  ) {
-    const file = (await ixxFile.readFile({
-      encoding: 'utf8',
-      ...opts,
-    })) as string
-    return new Map(
-      file
-        .split('\n')
-        .filter(f => !!f)
-        .map(line => {
-          const prefix = line.slice(0, TRIX_PREFIX_SIZE)
-          const posStr = line.slice(TRIX_PREFIX_SIZE)
-          const pos = Number.parseInt(posStr, 16)
-          return [prefix, pos]
-        }),
-    )
   }
 }
