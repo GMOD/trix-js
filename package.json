@@ -23,8 +23,8 @@
   "author": "Matt Morgan",
   "repository": "GMOD/trix-js",
   "devDependencies": {
-    "@types/jest": "^26.0.24",
-    "@types/node": "^14.14.37",
+    "@types/jest": "^27.0.3",
+    "@types/node": "^16.11.13",
     "@typescript-eslint/eslint-plugin": "^5.7.0",
     "@typescript-eslint/parser": "^5.7.0",
     "eslint": "^7.0.0",
