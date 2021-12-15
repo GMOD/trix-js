@@ -1,3 +1,9 @@
+# v2.0.1
+
+- Redeploy to npm with preversion script added
+
+# v2.0.0
+
 - Fix issue with infinite loop
 - Add abortsignal support
 - Only query first word when string with multiple words is entered

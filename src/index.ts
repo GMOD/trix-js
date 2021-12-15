@@ -6,9 +6,9 @@ const CHUNK_SIZE = 65536
 
 // https://stackoverflow.com/a/9229821/2129219
 function uniqBy(a: [string, string][], key: (elt: [string, string]) => string) {
-  let seen = new Set()
+  const seen = new Set()
   return a.filter(item => {
-    let k = key(item)
+    const k = key(item)
     return seen.has(k) ? false : seen.add(k)
   })
 }
