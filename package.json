@@ -11,6 +11,7 @@
     "node": ">=10"
   },
   "scripts": {
+    "lint": "eslint --report-unused-disable-directives --max-warnings 0 --ext .js,.ts src test",
     "prebuild": "rimraf dist esm",
     "build:esm": "tsc --target es2018 --outDir esm",
     "build:es5": "tsc --target es5 --outDir dist",
@@ -24,6 +25,12 @@
   "devDependencies": {
     "@types/jest": "^26.0.24",
     "@types/node": "^14.14.37",
+    "@typescript-eslint/eslint-plugin": "^5.7.0",
+    "@typescript-eslint/parser": "^5.7.0",
+    "eslint": "^7.0.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-import": "^2.25.3",
+    "eslint-plugin-prettier": "^4.0.0",
     "generic-filehandle": "^2.1.0",
     "jest": "^27.0.6",
     "prettier": "^2.5.1",
