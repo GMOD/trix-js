@@ -2,6 +2,8 @@ import type { GenericFilehandle } from 'generic-filehandle'
 
 const trixPrefixSize = 5
 
+const CHUNKSIZE = 65536
+
 // Define this object with .ixx and .ix files.
 // Then use the trixSearch() function to search for a word.
 export default class Trix {
@@ -26,10 +28,10 @@ export default class Trix {
       const searchWord = searchWords[w].toLowerCase()
       let done = false
       const res = await this._getBuffer(searchWord, opts)
+      let prevLen
 
       while (res && !done) {
-        let { buffer } = res
-        const { seekPosEnd } = res
+        let { seekPosEnd, buffer } = res
         let foundSomething = false
         const str = buffer.toString()
 
@@ -62,20 +64,30 @@ export default class Trix {
         if (!hits.length) {
           done = true
         }
+        if (prevLen === hits.length) {
+          done = true
+        }
 
-        resultArr = resultArr.concat(hits)
-
-        if (resultArr.length >= this.maxResults || done) {
-          break
-        } else if (hits.length) {
-          const len = 65536
+        if (resultArr.length + hits.length < this.maxResults && !done) {
           const res = await this.ixFile.read(
-            Buffer.alloc(len),
+            Buffer.alloc(CHUNKSIZE),
             0,
-            len,
+            CHUNKSIZE,
             seekPosEnd,
+            opts,
           )
+
+          //early break if empty response
+          if (!res.bytesRead) {
+            resultArr = resultArr.concat(hits)
+            break
+          }
           buffer = Buffer.concat([buffer, res.buffer])
+          seekPosEnd += CHUNKSIZE
+          prevLen = hits.length
+        } else if (resultArr.length + hits.length >= this.maxResults || done) {
+          resultArr = resultArr.concat(hits)
+          break
         }
       }
     }
