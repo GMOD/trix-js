@@ -31,8 +31,12 @@ export default class Trix {
         let { buffer } = res
         const { seekPosEnd } = res
         let foundSomething = false
-        const lines = buffer
-          .toString()
+        const str = buffer.toString()
+
+        // slice to lastIndexOf('\n') to make sure we get complete records
+        // since the buffer fetch could get halfway into a record
+        const lines = str
+          .slice(0, str.lastIndexOf('\n'))
           .split('\n')
           .filter(f => !!f)
 

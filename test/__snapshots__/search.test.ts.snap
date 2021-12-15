@@ -48,6 +48,74 @@ Array [
     "this",
     "id3",
   ],
+  Array [
+    "this",
+    "id1",
+  ],
+  Array [
+    "this",
+    "id2",
+  ],
+  Array [
+    "this",
+    "id3",
+  ],
+  Array [
+    "this",
+    "id1",
+  ],
+  Array [
+    "this",
+    "id2",
+  ],
+  Array [
+    "this",
+    "id3",
+  ],
+  Array [
+    "this",
+    "id1",
+  ],
+  Array [
+    "this",
+    "id2",
+  ],
+  Array [
+    "this",
+    "id3",
+  ],
+  Array [
+    "this",
+    "id1",
+  ],
+  Array [
+    "this",
+    "id2",
+  ],
+  Array [
+    "this",
+    "id3",
+  ],
+  Array [
+    "this",
+    "id1",
+  ],
+  Array [
+    "this",
+    "id2",
+  ],
+  Array [
+    "this",
+    "id3",
+  ],
+  Array [
+    "this",
+    "id1",
+  ],
+  Array [
+    "this",
+    "id2",
+  ],
 ]
 `;
 
@@ -445,6 +513,46 @@ Array [
 
 exports[`Test a search of test3 ix file Search for "zzz" in test3/out.ix 1`] = `
 Array [
+  Array [
+    "zzz3",
+    "ENSMUST00000089982.11",
+  ],
+  Array [
+    "zzz3",
+    "ENSMUST00000106100.9",
+  ],
+  Array [
+    "zzz3",
+    "ENSMUST00000106101.2",
+  ],
+  Array [
+    "zzz3",
+    "ENSMUST00000106103.8",
+  ],
+  Array [
+    "zzz3",
+    "ENSMUST00000135044.3",
+  ],
+  Array [
+    "zzz3",
+    "ENSMUST00000138115.8",
+  ],
+  Array [
+    "zzz3",
+    "ENSMUST00000150802.8",
+  ],
+  Array [
+    "zzz3",
+    "ENSMUST00000197987.5",
+  ],
+  Array [
+    "zzz3",
+    "ENSMUST00000198468.2",
+  ],
+  Array [
+    "zzz3",
+    "ENSMUST00000200570.5",
+  ],
   Array [
     "zzz3",
     "ENSMUST00000089982.11",
