@@ -9,11 +9,6 @@ export default class Trix {
   private ixxFile: GenericFilehandle
   maxResults: number
 
-  /**
-   * @param ixxFile [anyFile] the second-level trix index file produced by ixIxx.
-   * @param ixFile [anyFile] the first-level trix index file produced by ixIxx.
-   * @param maxResults [number] the maximum number of results to return. Default is set to 20.
-   */
   constructor(
     ixxFile: GenericFilehandle,
     ixFile: GenericFilehandle,
@@ -24,17 +19,6 @@ export default class Trix {
     this.maxResults = maxResults
   }
 
-  private getIndex(opts?: { signal?: AbortSignal }) {
-    return this._parseIxx(this.ixxFile, opts)
-  }
-
-  /**
-   * Search trix for the given searchWord(s). Return up to {this.maxResults} results.
-   * This method matches each index prefix against each searchWord. It does not do fuzzy matching.
-   *
-   * @param searchString [string] term(s) separated by spaces to search for id(s).
-   * @returns results [Array<string>] where each string is a corresponding itemId.
-   */
   async search(searchString: string, opts?: { signal?: AbortSignal }) {
     let resultArr = [] as string[][]
     const searchWords = searchString.split(' ')
@@ -95,27 +79,20 @@ export default class Trix {
     return [...resultArr].slice(0, this.maxResults)
   }
 
-  // Private Methods:
+  private getIndex(opts?: { signal?: AbortSignal }) {
+    return this._parseIxx(this.ixxFile, opts)
+  }
 
-  /**
-   * Seek ahead to the correct position in the .ix file,
-   * then load that chunk of .ix into a buffer.
-   *
-   * @param searchWord [string]
-   * @returns a Buffer holding the sections we want to search.
-   */
   private async _getBuffer(
     searchWord: string,
     opts?: { signal?: AbortSignal },
   ) {
-    // Get position to seek to in .ix file from indexes.
     let seekPosStart = 0
     let seekPosEnd = -1
     const indexes = await this.getIndex(opts)
     for (const [key, value] of indexes) {
       const trimmedKey = key.slice(0, searchWord.length)
       if (trimmedKey >= searchWord) {
-        // We reached the end pos in the file.
         break
       } else {
         seekPosStart = value
@@ -141,12 +118,6 @@ export default class Trix {
     }
   }
 
-  /**
-   * Parses ixx file and constructs a map of {word: ixFileLocation}
-   *
-   * @param ixxFile [anyFile] second level index that is produced by ixIxx.
-   * @returns a ParsedIxx map.
-   */
   private async _parseIxx(
     ixxFile: GenericFilehandle,
     opts?: { signal?: AbortSignal },
