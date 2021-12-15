@@ -19,7 +19,6 @@ export default class Trix {
     ixFile: GenericFilehandle,
     maxResults = 20,
   ) {
-    console.log('t1')
     this.index = this._parseIxx(ixxFile)
     this.ixFile = ixFile
     this.maxResults = maxResults
@@ -33,22 +32,16 @@ export default class Trix {
    * @returns results [Array<string>] where each string is a corresponding itemId.
    */
   async search(searchString: string) {
-    // If there is one search word, store results in resultArr.
-    let resultArr: Array<string[]> = []
-
+    let resultArr = [] as string[][]
     const searchWords = searchString.split(' ')
-
-    // Loop for each word in searchWords.  If there are more than one
-    // searchWords, use resultSet and only take the matching terms that are
-    // also in initialSet.  Otherwise, just iterate once and add words to
-    // resultArr.
     for (let w = 0; w < searchWords.length; w++) {
-      let searchWord = searchWords[w].toLowerCase()
+      const searchWord = searchWords[w].toLowerCase()
       let done = false
-      let { buffer, seekPosEnd } = await this._getBuffer(searchWord)
-      console.log({ buffer: buffer.toString() })
+      const res = await this._getBuffer(searchWord)
 
-      while (!done) {
+      while (res && !done) {
+        let { buffer } = res
+        const { seekPosEnd } = res
         let foundSomething = false
         const lines = buffer
           .toString()
@@ -59,7 +52,6 @@ export default class Trix {
           .filter(line => {
             const word = line.split(' ')[0]
             const match = word.startsWith(searchString)
-            console.log({ word, match })
             if (!foundSomething && match) {
               foundSomething = true
             } else if (foundSomething && !match) {
@@ -75,11 +67,15 @@ export default class Trix {
           })
           .flat() as [string, string][]
 
+        if (!hits.length) {
+          done = true
+        }
+
         resultArr = resultArr.concat(hits)
 
         if (resultArr.length >= this.maxResults || done) {
           break
-        } else {
+        } else if (hits.length) {
           const len = 65536
           const res = await this.ixFile.read(
             Buffer.alloc(len),
@@ -109,15 +105,8 @@ export default class Trix {
     let seekPosStart = 0
     let seekPosEnd = -1
     const indexes = await this.index
-    for (let [key, value] of indexes) {
-      let trimmedKey = key.slice(0, searchWord.length)
-      console.log({
-        key,
-        value,
-        trimmedKey,
-        searchWord,
-        r: trimmedKey > searchWord,
-      })
+    for (const [key, value] of indexes) {
+      const trimmedKey = key.slice(0, searchWord.length)
       if (trimmedKey >= searchWord) {
         // We reached the end pos in the file.
         break
@@ -127,10 +116,11 @@ export default class Trix {
       }
     }
 
-    console.log({ seekPosStart, seekPosEnd })
-
     // Return the buffer and its end position in the file.
     const len = seekPosEnd - seekPosStart
+    if (len < 0) {
+      return undefined
+    }
     const res = await this.ixFile.read(Buffer.alloc(len), 0, len, seekPosStart)
     return {
       ...res,
