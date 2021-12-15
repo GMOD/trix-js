@@ -26,25 +26,6 @@ const ixFile4 = './test/testData/test4/out.ix'
 const localIx4 = new LocalFile(ixFile4)
 const trix4 = new Trix(localIxx4, localIx4)
 
-// describe(`Test the parsing of test1 ixx file`, () => {
-//   it('Parse test1/myTrix.ixx', async () => {
-//     const trix = new Trix(localIxx1, localIx1);
-//     const ixx = await trix.index;
-//     expect(ixx).toMatchSnapshot();
-//   });
-// });
-
-// describe(`Test the parsing of test2 ixx file`, () => {
-//   it('Parse test2/out.ixx', async () => {
-//     const trix = new Trix(localIxx2, localIx2);
-//     const ixx = await trix.index;
-//     expect(ixx).toMatchSnapshot();
-//   });
-// });
-
-// -----------------------------------------------------------------
-// Search trix1:
-
 describe('Test a search of test1 ix file', () => {
   const searchTerm = 'this'
   it(`Search for \"${searchTerm}\" in test1/myTrix.ix`, async () => {
@@ -100,9 +81,6 @@ describe('Test a search of test1 ix file', () => {
     expect(hitList).toMatchSnapshot()
   })
 })
-
-// ----------------------------------------------------------------------
-// Search trix2:
 
 describe('Test a search of test2 ix file', () => {
   const searchTerm = 'FocAd'
@@ -177,9 +155,6 @@ describe('Test a search of test2 ix file', () => {
   })
 })
 
-// // --------------------------------------------------
-// // Search trix3:
-
 describe('Test a search of test3 ix file', () => {
   const searchTerm = 'focad'
   it(`Search for \"${searchTerm}\" in test3/out.ix`, async () => {
@@ -236,7 +211,6 @@ describe('Test a search of test3 ix file', () => {
   })
 })
 
-// ---------------------
 describe('Test a search of test4 ix file', () => {
   const searchTerm = 'ek'
   it(`Search for \"${searchTerm}\" in test4/out.ix`, async () => {
@@ -244,9 +218,6 @@ describe('Test a search of test4 ix file', () => {
     expect(hitList).toMatchSnapshot()
   })
 })
-
-// ------------------------
-// Test maxResults:
 
 const trix3B = new Trix(localIxx3, localIx3, 5)
 

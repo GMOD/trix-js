@@ -1,8 +1,8 @@
 import type { GenericFilehandle } from 'generic-filehandle'
 
-const trixPrefixSize = 5
+const TRIX_PREFIX_SIZE = 5
 
-const CHUNKSIZE = 65536
+const CHUNK_SIZE = 65536
 
 // Define this object with .ixx and .ix files.
 // Then use the trixSearch() function to search for a word.
@@ -24,71 +24,65 @@ export default class Trix {
   async search(searchString: string, opts?: { signal?: AbortSignal }) {
     let resultArr = [] as string[][]
     const searchWords = searchString.split(' ')
-    for (let w = 0; w < searchWords.length; w++) {
-      const searchWord = searchWords[w].toLowerCase()
-      let done = false
-      const res = await this._getBuffer(searchWord, opts)
-      let prevLen
 
-      while (res && !done) {
-        let { seekPosEnd, buffer } = res
-        let foundSomething = false
-        const str = buffer.toString()
+    // we only search one word at a time
+    const searchWord = searchWords[0].toLowerCase()
+    const res = await this._getBuffer(searchWord, opts)
+    if (!res) {
+      return []
+    }
 
-        // slice to lastIndexOf('\n') to make sure we get complete records
-        // since the buffer fetch could get halfway into a record
-        const lines = str
-          .slice(0, str.lastIndexOf('\n'))
-          .split('\n')
-          .filter(f => !!f)
+    let { seekPosEnd, buffer } = res
+    let done = false
+    while (!done) {
+      let foundSomething = false
+      const str = buffer.toString()
 
-        const hits = lines
-          .filter(line => {
-            const word = line.split(' ')[0]
-            const match = word.startsWith(searchString)
-            if (!foundSomething && match) {
-              foundSomething = true
-            } else if (foundSomething && !match) {
-              done = true
-            } else if (word > searchString) {
-              done = true
-            }
-            return match
-          })
-          .map(line => {
-            const [term, ...parts] = line.split(' ')
-            return parts.map(elt => [term, elt.split(',')[0]])
-          })
-          .flat() as [string, string][]
+      // slice to lastIndexOf('\n') to make sure we get complete records
+      // since the buffer fetch could get halfway into a record
+      const lines = str
+        .slice(0, str.lastIndexOf('\n'))
+        .split('\n')
+        .filter(f => !!f)
 
-        if (!hits.length) {
-          done = true
-        }
-        if (prevLen === hits.length) {
-          done = true
-        }
-
-        if (resultArr.length + hits.length < this.maxResults && !done) {
-          const res = await this.ixFile.read(
-            Buffer.alloc(CHUNKSIZE),
-            0,
-            CHUNKSIZE,
-            seekPosEnd,
-            opts,
-          )
-
-          //early break if empty response
-          if (!res.bytesRead) {
-            resultArr = resultArr.concat(hits)
-            break
+      const hits = lines
+        .filter(line => {
+          const word = line.split(' ')[0]
+          const match = word.startsWith(searchString)
+          if (!foundSomething && match) {
+            foundSomething = true
+          } else if (foundSomething && !match) {
+            done = true
+          } else if (word > searchString) {
+            done = true
           }
-          buffer = Buffer.concat([buffer, res.buffer])
-          seekPosEnd += CHUNKSIZE
-          prevLen = hits.length
-        } else if (resultArr.length + hits.length >= this.maxResults || done) {
+          return match
+        })
+        .map(line => {
+          const [term, ...parts] = line.split(' ')
+          return parts.map(elt => [term, elt.split(',')[0]])
+        })
+        .flat() as [string, string][]
+
+      if (resultArr.length + hits.length < this.maxResults && !done) {
+        const res = await this.ixFile.read(
+          Buffer.alloc(CHUNK_SIZE),
+          0,
+          CHUNK_SIZE,
+          seekPosEnd,
+          opts,
+        )
+
+        //early break if empty response
+        if (!res.bytesRead) {
           resultArr = resultArr.concat(hits)
           break
         }
+        buffer = Buffer.concat([buffer, res.buffer])
+        seekPosEnd += CHUNK_SIZE
+      } else if (resultArr.length + hits.length >= this.maxResults || done) {
+        resultArr = resultArr.concat(hits)
+        break
       }
     }
 
@@ -147,8 +141,8 @@ export default class Trix {
         .split('\n')
         .filter(f => !!f)
         .map(line => {
-          const prefix = line.slice(0, trixPrefixSize)
-          const posStr = line.slice(trixPrefixSize)
+          const prefix = line.slice(0, TRIX_PREFIX_SIZE)
+          const posStr = line.slice(TRIX_PREFIX_SIZE)
           const pos = Number.parseInt(posStr, 16)
           return [prefix, pos]
         }),

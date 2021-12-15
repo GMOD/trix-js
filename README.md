@@ -7,25 +7,25 @@ Read UCSC Trix indexes in pure JavaScript
 ## Usage
 
 ```js
-import Trix from '@gmod/trix';
-import { RemoteFile } from 'generic-filehandle';
+import Trix from '@gmod/trix'
+import { RemoteFile } from 'generic-filehandle'
 
 // any filehandle object that supports the Nodejs FileHandle API will work.
 // We use generic-filehandle here to demonstrate searching files on remote servers.
 const ixxFile = new RemoteFile(
-  'https://hgdownload.soe.ucsc.edu/gbdb/hg38/knownGene.ixx'
-);
+  'https://hgdownload.soe.ucsc.edu/gbdb/hg38/knownGene.ixx',
+)
 const ixFile = new RemoteFile(
-  'https://hgdownload.soe.ucsc.edu/gbdb/hg38/knownGene.ix'
-);
+  'https://hgdownload.soe.ucsc.edu/gbdb/hg38/knownGene.ix',
+)
 
-const trix = new Trix(ixxFile, ixFile);
+const trix = new Trix(ixxFile, ixFile)
 
 async function doStuff() {
-  const results = await trix.search('oca');
-  console.log(results);
+  const results = await trix.search('oca')
+  console.log(results)
 }
-doStuff();
+doStuff()
 ```
 
 ## Documentation
@@ -48,32 +48,32 @@ The Trix search function accepts argument:
 
 The Trix search function returns: <br>
 
-- `Promise<string[]>` - a promised array of strings where each string is an itemId result
+- `Promise<[term,result][] as [string,string][]>` - an array of [term, result] pairs where each term is the left column in the trix and the right column is the trix match
 
 ## Examples
 
 ```js
-import { LocalFile } from 'generic-filehandle';
-import Trix from '@gmod/trix';
+import { LocalFile } from 'generic-filehandle'
+import Trix from '@gmod/trix'
 
-const ixxFile = new LocalFile('out.ixx');
-const ixFile = new LocalFile('out.ix');
+const ixxFile = new LocalFile('out.ixx')
+const ixFile = new LocalFile('out.ix')
 
 // limit maxResults to 5
-const trix = new Trix(ixxFile, ixFile, 5);
+const trix = new Trix(ixxFile, ixFile, 5)
 
 async function doStuff() {
-  const results1 = await trix.search('herc');
-  console.log(results1);
+  const results1 = await trix.search('herc')
+  console.log(results1)
 
   // increase maxResults to 30
-  trix.maxResults = 30;
+  trix.maxResults = 30
 
-  const results2 = await trix.search('linc');
-  console.log(results2);
+  const results2 = await trix.search('linc')
+  console.log(results2)
 }
 
-doStuff();
+doStuff()
 ```
 
 <br><br>
