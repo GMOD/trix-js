@@ -2,23 +2,21 @@
   "version": "1.0.0",
   "license": "Apache-2.0",
   "main": "dist/index.js",
+  "module": "esm/index.js",
   "files": [
-    "dist"
+    "dist",
+    "esm"
   ],
   "engines": {
     "node": ">=10"
   },
   "scripts": {
-    "prebuild": "rimraf dist",
-    "build": "tsc",
+    "prebuild": "rimraf dist esm",
+    "build:esm": "tsc --target es2018 --outDir esm",
+    "build:es5": "tsc --target es5 --outDir dist",
+    "build": "npm run build:esm && npm run build:es5",
     "postversion": "git push --follow-tags",
     "test": "jest"
-  },
-  "prettier": {
-    "printWidth": 80,
-    "semi": true,
-    "singleQuote": true,
-    "trailingComma": "es5"
   },
   "name": "@gmod/trix",
   "author": "Matt Morgan",
@@ -28,6 +26,7 @@
     "@types/node": "^14.14.37",
     "generic-filehandle": "^2.1.0",
     "jest": "^27.0.6",
+    "prettier": "^2.5.1",
     "rimraf": "^3.0.2",
     "ts-jest": "^27.0.4",
     "typescript": "^4.3.5"
