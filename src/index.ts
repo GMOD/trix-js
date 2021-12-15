@@ -49,14 +49,14 @@ export default class Trix {
         // eslint-disable-next-line @typescript-eslint/no-loop-func
         .filter(line => {
           const word = line.split(' ')[0]
-          const match = word.startsWith(searchString)
+          const match = word.startsWith(searchWord)
           if (!foundSomething && match) {
             foundSomething = true
           }
 
           // we are done scanning if we are lexicographically greater than the
           // search string
-          if (word > searchString) {
+          if (word > searchWord) {
             done = true
           }
           return match
