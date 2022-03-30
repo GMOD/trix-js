@@ -1,3 +1,7 @@
+# v2.0.2
+
+- Publish src directory for better source maps
+
 # v2.0.1
 
 - Redeploy to npm with preversion script added
