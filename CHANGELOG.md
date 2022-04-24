@@ -1,3 +1,8 @@
+# v2.0.3
+
+- Better support adjustable prefix sizes by basing the prefix as the remainder
+  of the line length - hex address size
+
 # v2.0.2
 
 - Publish src directory for better source maps
