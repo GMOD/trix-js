@@ -1,8 +1,10 @@
 import type { GenericFilehandle } from 'generic-filehandle'
 
-const TRIX_PREFIX_SIZE = 5
-
 const CHUNK_SIZE = 65536
+
+// this is the number of hex characters to use for the address in ixixx, see
+// https://github.com/GMOD/ixixx-js/blob/master/src/index.ts#L182
+const ADDRESS_SIZE = 10
 
 // https://stackoverflow.com/a/9229821/2129219
 function uniqBy(a: [string, string][], key: (elt: [string, string]) => string) {
@@ -118,8 +120,9 @@ export default class Trix {
       .split('\n')
       .filter(f => !!f)
       .map(line => {
-        const prefix = line.slice(0, TRIX_PREFIX_SIZE)
-        const posStr = line.slice(TRIX_PREFIX_SIZE)
+        const p = line.length - ADDRESS_SIZE
+        const prefix = line.slice(0, p)
+        const posStr = line.slice(p)
         const pos = Number.parseInt(posStr, 16)
         return [prefix, pos] as [string, number]
       })
