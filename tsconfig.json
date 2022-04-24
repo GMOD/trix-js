@@ -1,14 +1,12 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "module": "commonjs",
-    "lib": ["es2019", "es7", "es6", "dom"],
+    "moduleResolution": "node",
+    "lib": ["es2017", "es7", "es6", "dom"],
+    "declaration": true,
     "outDir": "dist",
     "strict": true,
-    "declaration": true,
-    "esModuleInterop": true,
-    "downlevelIteration": true,
-    "sourceMap": true
+    "sourceMap": true,
+    "esModuleInterop": true
   },
   "include": ["src"]
 }
