@@ -120,9 +120,9 @@ export default class Trix {
       .split('\n')
       .filter(f => !!f)
       .map(line => {
-        console.log('here')
-        const prefix = line.slice(0, line.length - ADDRESS_SIZE)
-        const posStr = line.slice(ADDRESS_SIZE)
+        const p = line.length - ADDRESS_SIZE
+        const prefix = line.slice(0, p)
+        const posStr = line.slice(p)
         const pos = Number.parseInt(posStr, 16)
         return [prefix, pos] as [string, number]
       })
