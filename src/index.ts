@@ -137,7 +137,7 @@ export default class Trix {
     const indexes = await this.getIndex(opts)
     indexes.forEach(([key, value]) => {
       const trimmedKey = key.slice(0, searchWord.length)
-      if (trimmedKey < searchWord) {
+      if (trimmedKey <= searchWord) {
         seekPosStart = value
         seekPosEnd = value + 65536
       }

@@ -1,8 +1,38 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Test a search of test1 ix file Search for "fOR" in test1/myTrix.ix 1`] = `Array []`;
+exports[`Test a search of test1 ix file Search for "fOR" in test1/myTrix.ix 1`] = `
+Array [
+  Array [
+    "for",
+    "id1",
+  ],
+  Array [
+    "for",
+    "id2",
+  ],
+  Array [
+    "for",
+    "id3",
+  ],
+]
+`;
 
-exports[`Test a search of test1 ix file Search for "for this" in test1/myTrix.ix 1`] = `Array []`;
+exports[`Test a search of test1 ix file Search for "for this" in test1/myTrix.ix 1`] = `
+Array [
+  Array [
+    "for",
+    "id1",
+  ],
+  Array [
+    "for",
+    "id2",
+  ],
+  Array [
+    "for",
+    "id3",
+  ],
+]
+`;
 
 exports[`Test a search of test1 ix file Search for "id1" in test1/myTrix.ix 1`] = `
 Array [
@@ -82,84 +112,20 @@ Array [
 exports[`Test a search of test2 ix file Search for "LINC" in test2/out.ix 1`] = `
 Array [
   Array [
-    "linc-pint",
-    "ENST00000416999.1",
+    "linc2194",
+    "ENST00000567127.1",
   ],
   Array [
-    "linc-pint",
-    "ENST00000423414.5",
+    "linc2194",
+    "ENST00000567624.1",
   ],
   Array [
-    "linc-pint",
-    "ENST00000429901.2",
+    "lincadl",
+    "ENST00000666259.1",
   ],
   Array [
-    "linc-pint",
-    "ENST00000431189.1",
-  ],
-  Array [
-    "linc-pint",
-    "ENST00000433079.5",
-  ],
-  Array [
-    "linc-pint",
-    "ENST00000435523.5",
-  ],
-  Array [
-    "linc-pint",
-    "ENST00000443623.5",
-  ],
-  Array [
-    "linc-pint",
-    "ENST00000451786.5",
-  ],
-  Array [
-    "linc-pint",
-    "ENST00000642156.1",
-  ],
-  Array [
-    "linc-pint",
-    "ENST00000642483.1",
-  ],
-  Array [
-    "linc-pint",
-    "ENST00000642602.1",
-  ],
-  Array [
-    "linc-pint",
-    "ENST00000643135.1",
-  ],
-  Array [
-    "linc-pint",
-    "ENST00000643373.1",
-  ],
-  Array [
-    "linc-pint",
-    "ENST00000643855.1",
-  ],
-  Array [
-    "linc-pint",
-    "ENST00000643874.1",
-  ],
-  Array [
-    "linc-pint",
-    "ENST00000644188.1",
-  ],
-  Array [
-    "linc-pint",
-    "ENST00000644804.1",
-  ],
-  Array [
-    "linc-pint",
-    "ENST00000645248.1",
-  ],
-  Array [
-    "linc-pint",
-    "ENST00000646429.1",
-  ],
-  Array [
-    "linc-pint",
-    "ENST00000646587.1",
+    "lincmd1",
+    "ENST00000418518.2",
   ],
 ]
 `;
@@ -796,7 +762,90 @@ Array [
 ]
 `;
 
-exports[`Test a search of test4 ix file Search for "ek" in test4/out.ix 1`] = `Array []`;
+exports[`Test a search of test4 ix file Search for "ek" in test4/out.ix 1`] = `
+Array [
+  Array [
+    "ekaa",
+    "id11",
+  ],
+  Array [
+    "ekaa",
+    "id8",
+  ],
+  Array [
+    "ekab",
+    "id12",
+  ],
+  Array [
+    "ekac",
+    "id13",
+  ],
+  Array [
+    "ekad",
+    "id14",
+  ],
+  Array [
+    "ekadd",
+    "id46",
+  ],
+  Array [
+    "ekae",
+    "id39",
+  ],
+  Array [
+    "ekaf",
+    "id41",
+  ],
+  Array [
+    "ekag",
+    "id16",
+  ],
+  Array [
+    "ekah",
+    "id1",
+  ],
+  Array [
+    "ekah",
+    "id17",
+  ],
+  Array [
+    "ekah",
+    "id9",
+  ],
+  Array [
+    "ekai",
+    "id18",
+  ],
+  Array [
+    "ekaj",
+    "id19",
+  ],
+  Array [
+    "ekak",
+    "id10",
+  ],
+  Array [
+    "ekak",
+    "id2",
+  ],
+  Array [
+    "ekak",
+    "id20",
+  ],
+  Array [
+    "ekak",
+    "id26",
+  ],
+  Array [
+    "ekak",
+    "id4",
+  ],
+  Array [
+    "ekak",
+    "id44",
+  ],
+]
+`;
 
 exports[`Test maxResults for search of test3 ix file Search for "tim" with a max of 5 results 1`] = `
 Array [
