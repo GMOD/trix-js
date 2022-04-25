@@ -1,3 +1,7 @@
+# v2.0.4
+
+- Fixes the ability to search for the first word in an index
+
 # v2.0.3
 
 - Better support adjustable prefix sizes by basing the prefix as the remainder
