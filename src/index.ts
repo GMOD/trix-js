@@ -67,7 +67,7 @@ export default class Trix {
 
           // we are done scanning if we are lexicographically greater than the
           // search string
-          if (word > searchWord) {
+          if (word.slice(0, searchWord.length) > searchWord) {
             done = true
           }
           return match
