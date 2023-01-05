@@ -1,3 +1,7 @@
+# v2.0.5
+
+- Improve prefix searches
+
 # v2.0.4
 
 - Fixes the ability to search for the first word in an index
