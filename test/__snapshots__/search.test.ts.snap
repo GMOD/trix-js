@@ -112,20 +112,84 @@ exports[`Test a search of test2 ix file Search for "FocAd" in test2/out.ix 1`] =
 exports[`Test a search of test2 ix file Search for "LINC" in test2/out.ix 1`] = `
 [
   [
-    "linc2194",
-    "ENST00000567127.1",
+    "linc-pint",
+    "ENST00000416999.1",
   ],
   [
-    "linc2194",
-    "ENST00000567624.1",
+    "linc-pint",
+    "ENST00000423414.5",
   ],
   [
-    "lincadl",
-    "ENST00000666259.1",
+    "linc-pint",
+    "ENST00000429901.2",
   ],
   [
-    "lincmd1",
-    "ENST00000418518.2",
+    "linc-pint",
+    "ENST00000431189.1",
+  ],
+  [
+    "linc-pint",
+    "ENST00000433079.5",
+  ],
+  [
+    "linc-pint",
+    "ENST00000435523.5",
+  ],
+  [
+    "linc-pint",
+    "ENST00000443623.5",
+  ],
+  [
+    "linc-pint",
+    "ENST00000451786.5",
+  ],
+  [
+    "linc-pint",
+    "ENST00000642156.1",
+  ],
+  [
+    "linc-pint",
+    "ENST00000642483.1",
+  ],
+  [
+    "linc-pint",
+    "ENST00000642602.1",
+  ],
+  [
+    "linc-pint",
+    "ENST00000643135.1",
+  ],
+  [
+    "linc-pint",
+    "ENST00000643373.1",
+  ],
+  [
+    "linc-pint",
+    "ENST00000643855.1",
+  ],
+  [
+    "linc-pint",
+    "ENST00000643874.1",
+  ],
+  [
+    "linc-pint",
+    "ENST00000644188.1",
+  ],
+  [
+    "linc-pint",
+    "ENST00000644804.1",
+  ],
+  [
+    "linc-pint",
+    "ENST00000645248.1",
+  ],
+  [
+    "linc-pint",
+    "ENST00000646429.1",
+  ],
+  [
+    "linc-pint",
+    "ENST00000646587.1",
   ],
 ]
 `;
