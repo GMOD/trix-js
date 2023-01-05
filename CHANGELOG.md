@@ -1,3 +1,7 @@
+# v2.0.6
+
+- Re-publish v2.0.5 to npm
+
 # v2.0.5
 
 - Improve prefix searches
