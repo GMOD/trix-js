@@ -7,7 +7,7 @@ const CHUNK_SIZE = 65536
 const ADDRESS_SIZE = 10
 
 // https://stackoverflow.com/a/9229821/2129219
-function uniqBy(a: [string, string][], key: (elt: [string, string]) => string) {
+function uniqBy<T>(a: T[], key: (elt: T) => string) {
   const seen = new Set()
   return a.filter(item => {
     const k = key(item)
@@ -43,7 +43,7 @@ export default class Trix {
       return []
     }
 
-    let { seekPosEnd, buffer } = res
+    let { end, buffer } = res
     let done = false
     while (!done) {
       let foundSomething = false
@@ -67,7 +67,7 @@ export default class Trix {
 
           // we are done scanning if we are lexicographically greater than the
           // search string
-          if (word > searchWord) {
+          if (word.slice(0, searchWord.length) > searchWord) {
             done = true
           }
           return match
@@ -86,7 +86,7 @@ export default class Trix {
           Buffer.alloc(CHUNK_SIZE),
           0,
           CHUNK_SIZE,
-          seekPosEnd,
+          end,
           opts,
         )
 
@@ -96,7 +96,7 @@ export default class Trix {
           break
         }
         buffer = Buffer.concat([buffer, res2.buffer])
-        seekPosEnd += CHUNK_SIZE
+        end += CHUNK_SIZE
       }
 
       // if we have filled up the hits, or we are detected to be done via the
@@ -132,32 +132,27 @@ export default class Trix {
     searchWord: string,
     opts?: { signal?: AbortSignal },
   ) {
-    let seekPosStart = 0
-    let seekPosEnd = -1
+    let start = 0
+    let end = 65536
     const indexes = await this.getIndex(opts)
-    indexes.forEach(([key, value]) => {
+    for (let i = 0; i < indexes.length; i++) {
+      const [key, value] = indexes[i]
       const trimmedKey = key.slice(0, searchWord.length)
-      if (trimmedKey <= searchWord) {
-        seekPosStart = value
-        seekPosEnd = value + 65536
+      if (trimmedKey < searchWord) {
+        start = value
+        end = value + 65536
       }
-    })
+    }
 
     // Return the buffer and its end position in the file.
-    const len = seekPosEnd - seekPosStart
+    const len = end - start
     if (len < 0) {
       return undefined
     }
-    const res = await this.ixFile.read(
-      Buffer.alloc(len),
-      0,
-      len,
-      seekPosStart,
-      opts,
-    )
+    const res = await this.ixFile.read(Buffer.alloc(len), 0, len, start, opts)
     return {
       ...res,
-      seekPosEnd,
+      end,
     }
   }
 }
