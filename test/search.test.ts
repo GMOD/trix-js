@@ -85,3 +85,17 @@ describe('Test maxResults for search of test3 ix file', () => {
     expect(hitList).toMatchSnapshot()
   })
 })
+
+describe('Test maxResults for search of test5 ix file', () => {
+  const searchTerms = ['vamp', '#100']
+  searchTerms.forEach(searchTerm =>
+    it(`Search for ${searchTerm} results`, async () => {
+      const trix5 = new Trix(
+        new LocalFile('./test/testData/test5/hg19.ixx'),
+        new LocalFile('./test/testData/test5/hg19.ix'),
+      )
+      const hitList = await trix5.search(searchTerm)
+      expect(hitList).toMatchSnapshot()
+    }),
+  )
+})

@@ -935,3 +935,113 @@ exports[`Test maxResults for search of test3 ix file Search for "tim" with a max
   ],
 ]
 `;
+
+exports[`Test maxResults for search of test5 ix file Search for #100 results 1`] = `
+[
+  [
+    "#10000;",
+    "["NC_000011.9%3A45921329..45921623"|"ncbi_gff_hg19"|"tiled%20region%20%2310000%3B%20K562%20Activating%20DNase%20unmatched%20-%20State%201%3ATss%20%20and%20HepG2%20Activating%20DNase%20matched%20-%20State%204%3APromP"]",
+  ],
+  [
+    "#10002;",
+    "["NC_000020.10%3A60346829..60347123"|"ncbi_gff_hg19"|"tiled%20region%20%2310002%3B%20HepG2%20Activating%20DNase%20matched%20-%20State%204%3APromP"]",
+  ],
+  [
+    "#10002;",
+    "["NC_000020.10%3A60346829..60347123"|"ncbi_gff_hg19"|"tiled%20region%20%2310002%3B%20K562%20Repressive%20non-DNase%20unmatched%20-%20State%2021%3ARepr"]",
+  ],
+  [
+    "#1001;",
+    "["NC_000006.11%3A33894269..33894563"|"ncbi_gff_hg19"|"tiled%20region%20%231001%3B%20HepG2%20Activating%20non-DNase%20unmatched%20-%20State%2020%3AReprD%20%20and%20K562%20Activating%20DNase%20unmatched%20-%20State%209%3ADNaseU"]",
+  ],
+  [
+    "#10024;",
+    "["NC_000010.10%3A99534589..99534883"|"ncbi_gff_hg19"|"tiled%20region%20%2310024%3B%20HepG2%20Activating%20DNase%20matched%20-%20State%204%3APromP%20%20and%20K562%20Activating%20non-DNase%20unmatched%20-%20State%207%3AEnhWF"]",
+  ],
+  [
+    "#10040;",
+    "["NC_000012.11%3A4671209..4671503"|"ncbi_gff_hg19"|"tiled%20region%20%2310040%3B%20HepG2%20Repressive%20DNase%20matched%20-%20State%204%3APromP"]",
+  ],
+  [
+    "#10046;",
+    "["NC_000019.9%3A4759809..4760103"|"ncbi_gff_hg19"|"tiled%20region%20%2310046%3B%20HepG2%20Activating%20DNase%20matched%20-%20State%204%3APromP%20%20and%20K562%20Activating%20DNase%20unmatched%20-%20State%208%3AEnhW"]",
+  ],
+  [
+    "#10051;",
+    "["NC_000017.10%3A56381689..56381983"|"ncbi_gff_hg19"|"tiled%20region%20%2310051%3B%20HepG2%20Activating%20DNase%20matched%20-%20State%204%3APromP%20%20and%20K562%20Activating%20DNase%20unmatched%20-%20State%205%3AEnh"]",
+  ],
+  [
+    "#10059;",
+    "["NC_000017.10%3A48258529..48258823"|"ncbi_gff_hg19"|"tiled%20region%20%2310059%3B%20HepG2%20Activating%20DNase%20matched%20-%20State%204%3APromP"]",
+  ],
+  [
+    "#10071;",
+    "["NC_000010.10%3A69523229..69523523"|"ncbi_gff_hg19"|"tiled%20region%20%2310071%3B%20HepG2%20Activating%20DNase%20matched%20-%20State%204%3APromP%20%20and%20K562%20Activating%20non-DNase%20unmatched%20-%20State%202%3ATssF"]",
+  ],
+  [
+    "#10080;",
+    "["NC_000008.10%3A23896849..23897143"|"ncbi_gff_hg19"|"tiled%20region%20%2310080%3B%20HepG2%20Activating%20DNase%20matched%20-%20State%205%3AEnh"]",
+  ],
+  [
+    "#1008;",
+    "["NC_000005.9%3A42950769..42951063"|"ncbi_gff_hg19"|"tiled%20region%20%231008%3B%20HepG2%20Activating%20non-DNase%20unmatched%20-%20State%2020%3AReprD%20%20and%20K562%20Activating%20DNase%20unmatched%20-%20State%208%3AEnhW"]",
+  ],
+  [
+    "#10092;",
+    "["NC_000016.9%3A53915389..53915683"|"ncbi_gff_hg19"|"tiled%20region%20%2310092%3B%20HepG2%20Activating%20DNase%20matched%20-%20State%205%3AEnh%20%20and%20K562%20Activating%20non-DNase%20unmatched%20-%20State%2011%3AFaireW"]",
+  ],
+  [
+    "#10095;",
+    "["NC_000009.11%3A67301289..67301583"|"ncbi_gff_hg19"|"tiled%20region%20%2310095%3B%20HepG2%20Activating%20DNase%20matched%20-%20State%205%3AEnh"]",
+  ],
+  [
+    "#10096;",
+    "["NC_000018.9%3A8730409..8730703"|"ncbi_gff_hg19"|"tiled%20region%20%2310096%3B%20HepG2%20Activating%20DNase%20matched%20-%20State%205%3AEnh%20%20and%20K562%20Activating%20DNase%20unmatched%20-%20State%205%3AEnh"]",
+  ],
+]
+`;
+
+exports[`Test maxResults for search of test5 ix file Search for vamp results 1`] = `
+[
+  [
+    "vamp",
+    "["NC_000018.9%3A9914013..9960018"|"ncbi_gff_hg19"|"VAPA"|"gene22832"|"VAMP%20associated%20protein%20A"|"hVAP-33%20VAP-33%20VAP-A%20VAP33"]",
+  ],
+  [
+    "vamp",
+    "["NC_000020.10%3A56964285..57026157"|"ncbi_gff_hg19"|"VAPB"|"gene25538"|"VAMP%20associated%20protein%20B%20and%20C"|"ALS8%20VAMP-B%20VAP-B"]",
+  ],
+  [
+    "vamp-1",
+    "["NC_000012.11%3A6571403..6579843"|"ncbi_gff_hg19"|"VAMP1"|"gene16151"|"vesicle%20associated%20membrane%20protein%201"|"CMS25%20SPAX1%20SYB1%20VAMP-1"]",
+  ],
+  [
+    "vamp-2",
+    "["NC_000017.10%3A8062465..8066266"|"ncbi_gff_hg19"|"VAMP2"|"gene21485"|"vesicle%20associated%20membrane%20protein%202"|"NEDHAHM%20SYB2%20VAMP-2"]",
+  ],
+  [
+    "vamp-4",
+    "["NC_000001.10%3A171669300..171711205"|"ncbi_gff_hg19"|"VAMP4"|"gene2056"|"vesicle%20associated%20membrane%20protein%204"|"VAMP-4%20VAMP24"]",
+  ],
+  [
+    "vamp-7",
+    "["NC_000023.10%3A155111008..155173433"|"ncbi_gff_hg19"|"VAMP7"|"gene27779"|"vesicle%20associated%20membrane%20protein%207"|"SYBL1%20TI-VAMP%20TIVAMP%20VAMP-7"]",
+  ],
+  [
+    "vamp-7",
+    "["NC_000024.9%3A59214014..59276439"|"ncbi_gff_hg19"|"VAMP7"|"gene27907"|"vesicle%20associated%20membrane%20protein%207"|"SYBL1%20TI-VAMP%20TIVAMP%20VAMP-7"]",
+  ],
+  [
+    "vamp-8",
+    "["NC_000002.11%3A85804709..85809154"|"ncbi_gff_hg19"|"VAMP8"|"gene3396"|"vesicle%20associated%20membrane%20protein%208"|"EDB%20VAMP-8"]",
+  ],
+  [
+    "vamp3",
+    "["NC_000001.10%3A7831356..7841492"|"ncbi_gff_hg19"|"VAMP3"|"gene151"|"vesicle%20associated%20membrane%20protein%203"|"CEB"]",
+  ],
+  [
+    "vamp5",
+    "["NC_000002.11%3A85811554..85820529"|"ncbi_gff_hg19"|"VAMP5"|"gene3397"|"vesicle%20associated%20membrane%20protein%205"]",
+  ],
+]
+`;
