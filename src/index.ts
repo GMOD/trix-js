@@ -141,6 +141,8 @@ export default class Trix {
       if (trimmedKey < searchWord) {
         start = value
         end = value + 65536
+      } else {
+        break
       }
     }
 
