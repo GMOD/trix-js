@@ -57,7 +57,7 @@ export default class Trix {
         .filter(f => !!f)
 
       const hits = lines
-        // eslint-disable-next-line @typescript-eslint/no-loop-func
+
         .filter(line => {
           const word = line.split(' ')[0]
           const match = word.startsWith(searchWord)
@@ -72,16 +72,14 @@ export default class Trix {
           }
           return match
         })
-        .map(line => {
+        .flatMap(line => {
           const [term, ...parts] = line.split(' ')
           return parts.map(elt => [term, elt.split(',')[0]])
-        })
-        .flat() as [string, string][]
+        }) as [string, string][]
 
       // if we are not done, and we haven't filled up maxResults with hits yet,
       // then refetch
       if (resultArr.length + hits.length < this.maxResults && !done) {
-        // eslint-disable-next-line no-await-in-loop
         const res2 = await this.ixFile.read(
           Buffer.alloc(CHUNK_SIZE),
           0,
@@ -135,8 +133,7 @@ export default class Trix {
     let start = 0
     let end = 65536
     const indexes = await this.getIndex(opts)
-    for (let i = 0; i < indexes.length; i++) {
-      const [key, value] = indexes[i]
+    for (const [key, value] of indexes) {
       const trimmedKey = key.slice(0, searchWord.length)
       if (trimmedKey < searchWord) {
         start = value
