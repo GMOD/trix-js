@@ -45,6 +45,7 @@ export default class Trix {
 
     let { end, buffer } = res
     let done = false
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     while (!done) {
       let foundSomething = false
       const str = buffer.toString()
@@ -56,26 +57,27 @@ export default class Trix {
         .split('\n')
         .filter(f => !!f)
 
-      const hits = lines
+      const hits2 = [] as string[]
+      for (const line of lines) {
+        const word = line.split(' ')[0]
+        const match = word.startsWith(searchWord)
+        if (!foundSomething && match) {
+          foundSomething = true
+        }
 
-        .filter(line => {
-          const word = line.split(' ')[0]
-          const match = word.startsWith(searchWord)
-          if (!foundSomething && match) {
-            foundSomething = true
-          }
-
-          // we are done scanning if we are lexicographically greater than the
-          // search string
-          if (word.slice(0, searchWord.length) > searchWord) {
-            done = true
-          }
-          return match
-        })
-        .flatMap(line => {
-          const [term, ...parts] = line.split(' ')
-          return parts.map(elt => [term, elt.split(',')[0]])
-        }) as [string, string][]
+        // we are done scanning if we are lexicographically greater than the
+        // search string
+        if (word.slice(0, searchWord.length) > searchWord) {
+          done = true
+        }
+        if (match) {
+          hits2.push(line)
+        }
+      }
+      const hits = hits2.flatMap(line => {
+        const [term, ...parts] = line.split(' ')
+        return parts.map(elt => [term, elt.split(',')[0]] as [string, string])
+      })
 
       // if we are not done, and we haven't filled up maxResults with hits yet,
       // then refetch
@@ -122,7 +124,7 @@ export default class Trix {
         const prefix = line.slice(0, p)
         const posStr = line.slice(p)
         const pos = Number.parseInt(posStr, 16)
-        return [prefix, pos] as [string, number]
+        return [prefix, pos] as const
       })
   }
 

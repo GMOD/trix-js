@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Test a search of test1 ix file Search for "fOR" in test1/myTrix.ix 1`] = `
+exports[`Test a search of test1 ix file > Search for "fOR" in test1/myTrix.ix 1`] = `
 [
   [
     "for",
@@ -17,7 +17,7 @@ exports[`Test a search of test1 ix file Search for "fOR" in test1/myTrix.ix 1`] 
 ]
 `;
 
-exports[`Test a search of test1 ix file Search for "for this" in test1/myTrix.ix 1`] = `
+exports[`Test a search of test1 ix file > Search for "for this" in test1/myTrix.ix 1`] = `
 [
   [
     "for",
@@ -34,7 +34,7 @@ exports[`Test a search of test1 ix file Search for "for this" in test1/myTrix.ix
 ]
 `;
 
-exports[`Test a search of test1 ix file Search for "id1" in test1/myTrix.ix 1`] = `
+exports[`Test a search of test1 ix file > Search for "id1" in test1/myTrix.ix 1`] = `
 [
   [
     "id1",
@@ -43,7 +43,7 @@ exports[`Test a search of test1 ix file Search for "id1" in test1/myTrix.ix 1`] 
 ]
 `;
 
-exports[`Test a search of test1 ix file Search for "is" in test1/myTrix.ix 1`] = `
+exports[`Test a search of test1 ix file > Search for "is" in test1/myTrix.ix 1`] = `
 [
   [
     "is",
@@ -60,9 +60,9 @@ exports[`Test a search of test1 ix file Search for "is" in test1/myTrix.ix 1`] =
 ]
 `;
 
-exports[`Test a search of test1 ix file Search for "nope" in test1/myTrix.ix 1`] = `[]`;
+exports[`Test a search of test1 ix file > Search for "nope" in test1/myTrix.ix 1`] = `[]`;
 
-exports[`Test a search of test1 ix file Search for "this is for id2" in test1/myTrix.ix 1`] = `
+exports[`Test a search of test1 ix file > Search for "this is for id2" in test1/myTrix.ix 1`] = `
 [
   [
     "this",
@@ -79,7 +79,7 @@ exports[`Test a search of test1 ix file Search for "this is for id2" in test1/my
 ]
 `;
 
-exports[`Test a search of test1 ix file Search for "this" in test1/myTrix.ix 1`] = `
+exports[`Test a search of test1 ix file > Search for "this" in test1/myTrix.ix 1`] = `
 [
   [
     "this",
@@ -96,7 +96,7 @@ exports[`Test a search of test1 ix file Search for "this" in test1/myTrix.ix 1`]
 ]
 `;
 
-exports[`Test a search of test2 ix file Search for "FocAd" in test2/out.ix 1`] = `
+exports[`Test a search of test2 ix file > Search for "FocAd" in test2/out.ix 1`] = `
 [
   [
     "focad-as1",
@@ -109,7 +109,7 @@ exports[`Test a search of test2 ix file Search for "FocAd" in test2/out.ix 1`] =
 ]
 `;
 
-exports[`Test a search of test2 ix file Search for "LINC" in test2/out.ix 1`] = `
+exports[`Test a search of test2 ix file > Search for "LINC" in test2/out.ix 1`] = `
 [
   [
     "linc-pint",
@@ -194,7 +194,7 @@ exports[`Test a search of test2 ix file Search for "LINC" in test2/out.ix 1`] = 
 ]
 `;
 
-exports[`Test a search of test2 ix file Search for "enst ac" in test2/out.ix 1`] = `
+exports[`Test a search of test2 ix file > Search for "enst ac" in test2/out.ix 1`] = `
 [
   [
     "enst00000229465.10",
@@ -279,7 +279,7 @@ exports[`Test a search of test2 ix file Search for "enst ac" in test2/out.ix 1`]
 ]
 `;
 
-exports[`Test a search of test2 ix file Search for "enst alg" in test2/out.ix 1`] = `
+exports[`Test a search of test2 ix file > Search for "enst alg" in test2/out.ix 1`] = `
 [
   [
     "enst00000229465.10",
@@ -364,7 +364,7 @@ exports[`Test a search of test2 ix file Search for "enst alg" in test2/out.ix 1`
 ]
 `;
 
-exports[`Test a search of test2 ix file Search for "enst" in test2/out.ix 1`] = `
+exports[`Test a search of test2 ix file > Search for "enst" in test2/out.ix 1`] = `
 [
   [
     "enst00000229465.10",
@@ -449,9 +449,9 @@ exports[`Test a search of test2 ix file Search for "enst" in test2/out.ix 1`] = 
 ]
 `;
 
-exports[`Test a search of test2 ix file Search for "none" in test2/out.ix 1`] = `[]`;
+exports[`Test a search of test2 ix file > Search for "none" in test2/out.ix 1`] = `[]`;
 
-exports[`Test a search of test2 ix file Search for "prickle" in test2/out.ix 1`] = `
+exports[`Test a search of test2 ix file > Search for "prickle" in test2/out.ix 1`] = `
 [
   [
     "prickle2-as1",
@@ -480,7 +480,7 @@ exports[`Test a search of test2 ix file Search for "prickle" in test2/out.ix 1`]
 ]
 `;
 
-exports[`Test a search of test2 ix file Search for "tim" in test2/out.ix 1`] = `
+exports[`Test a search of test2 ix file > Search for "tim" in test2/out.ix 1`] = `
 [
   [
     "timm23b-agap6",
@@ -501,7 +501,7 @@ exports[`Test a search of test2 ix file Search for "tim" in test2/out.ix 1`] = `
 ]
 `;
 
-exports[`Test a search of test2 ix file Search for "znf8" in test2/out.ix 1`] = `
+exports[`Test a search of test2 ix file > Search for "znf8" in test2/out.ix 1`] = `
 [
   [
     "znf8-ervk3-1",
@@ -518,7 +518,7 @@ exports[`Test a search of test2 ix file Search for "znf8" in test2/out.ix 1`] = 
 ]
 `;
 
-exports[`Test a search of test3 ix file Search for "focad" in test3/out.ix 1`] = `
+exports[`Test a search of test3 ix file > Search for "focad" in test3/out.ix 1`] = `
 [
   [
     "focad",
@@ -563,9 +563,9 @@ exports[`Test a search of test3 ix file Search for "focad" in test3/out.ix 1`] =
 ]
 `;
 
-exports[`Test a search of test3 ix file Search for "nothing" in test3/out.ix 1`] = `[]`;
+exports[`Test a search of test3 ix file > Search for "nothing" in test3/out.ix 1`] = `[]`;
 
-exports[`Test a search of test3 ix file Search for "oca" in test3/out.ix 1`] = `
+exports[`Test a search of test3 ix file > Search for "oca" in test3/out.ix 1`] = `
 [
   [
     "oca2",
@@ -594,7 +594,7 @@ exports[`Test a search of test3 ix file Search for "oca" in test3/out.ix 1`] = `
 ]
 `;
 
-exports[`Test a search of test3 ix file Search for "prickle" in test3/out.ix 1`] = `
+exports[`Test a search of test3 ix file > Search for "prickle" in test3/out.ix 1`] = `
 [
   [
     "prickle1",
@@ -663,7 +663,7 @@ exports[`Test a search of test3 ix file Search for "prickle" in test3/out.ix 1`]
 ]
 `;
 
-exports[`Test a search of test3 ix file Search for "tim" in test3/out.ix 1`] = `
+exports[`Test a search of test3 ix file > Search for "tim" in test3/out.ix 1`] = `
 [
   [
     "timd2",
@@ -748,7 +748,7 @@ exports[`Test a search of test3 ix file Search for "tim" in test3/out.ix 1`] = `
 ]
 `;
 
-exports[`Test a search of test3 ix file Search for "zx" in test3/out.ix 1`] = `
+exports[`Test a search of test3 ix file > Search for "zx" in test3/out.ix 1`] = `
 [
   [
     "zxda",
@@ -781,7 +781,7 @@ exports[`Test a search of test3 ix file Search for "zx" in test3/out.ix 1`] = `
 ]
 `;
 
-exports[`Test a search of test3 ix file Search for "zzz" in test3/out.ix 1`] = `
+exports[`Test a search of test3 ix file > Search for "zzz" in test3/out.ix 1`] = `
 [
   [
     "zzz3",
@@ -826,7 +826,7 @@ exports[`Test a search of test3 ix file Search for "zzz" in test3/out.ix 1`] = `
 ]
 `;
 
-exports[`Test a search of test4 ix file Search for "ek" in test4/out.ix 1`] = `
+exports[`Test a search of test4 ix file > Search for "ek" in test4/out.ix 1`] = `
 [
   [
     "ekaa",
@@ -911,7 +911,7 @@ exports[`Test a search of test4 ix file Search for "ek" in test4/out.ix 1`] = `
 ]
 `;
 
-exports[`Test maxResults for search of test3 ix file Search for "tim" with a max of 5 results 1`] = `
+exports[`Test maxResults for search of test3 ix file > Search for "tim" with a max of 5 results 1`] = `
 [
   [
     "timd2",
@@ -936,7 +936,7 @@ exports[`Test maxResults for search of test3 ix file Search for "tim" with a max
 ]
 `;
 
-exports[`Test maxResults for search of test5 ix file Search for #100 results 1`] = `
+exports[`Test maxResults for search of test5 ix file > Search for #100 results 1`] = `
 [
   [
     "#10000;",
@@ -1001,7 +1001,7 @@ exports[`Test maxResults for search of test5 ix file Search for #100 results 1`]
 ]
 `;
 
-exports[`Test maxResults for search of test5 ix file Search for vamp results 1`] = `
+exports[`Test maxResults for search of test5 ix file > Search for vamp results 1`] = `
 [
   [
     "vamp",
