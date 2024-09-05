@@ -14,8 +14,8 @@
   "scripts": {
     "lint": "eslint --report-unused-disable-directives --max-warnings 0",
     "prebuild": "rimraf dist esm",
-    "build:esm": "tsc --target es2018 --outDir esm --module es2020",
-    "build:es5": "tsc --target es5 --outDir dist --module commonjs",
+    "build:esm": "tsc --target esnext --outDir esm",
+    "build:es5": "tsc --target es2015 --outDir dist --module commonjs",
     "build": "npm run build:esm && npm run build:es5",
     "preversion": "npm run lint && npm test run && npm run build",
     "postversion": "git push --follow-tags",

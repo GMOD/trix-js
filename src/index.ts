@@ -16,21 +16,11 @@ function uniqBy<T>(a: T[], key: (elt: T) => string) {
 }
 
 export default class Trix {
-  private ixFile: GenericFilehandle
-
-  private ixxFile: GenericFilehandle
-
-  maxResults: number
-
   constructor(
-    ixxFile: GenericFilehandle,
-    ixFile: GenericFilehandle,
-    maxResults = 20,
-  ) {
-    this.ixFile = ixFile
-    this.ixxFile = ixxFile
-    this.maxResults = maxResults
-  }
+    public ixxFile: GenericFilehandle,
+    public ixFile: GenericFilehandle,
+    public maxResults = 20,
+  ) {}
 
   async search(searchString: string, opts?: { signal?: AbortSignal }) {
     let resultArr = [] as [string, string][]
