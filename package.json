@@ -37,7 +37,9 @@
     "typescript-eslint": "^8.4.0",
     "vitest": "^2.0.5"
   },
-  "dependencies": {},
+  "dependencies": {
+    "buffer": "^6.0.3"
+  },
   "publishConfig": {
     "access": "public"
   }

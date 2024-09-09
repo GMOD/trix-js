@@ -25,6 +25,7 @@ export default tseslint.config(
       curly: 'error',
       'no-plusplus': 0,
       'unicorn/numeric-separators-style': 0,
+      'unicorn/prefer-node-protocol': 0,
       'unicorn/no-useless-undefined': 0,
       'unicorn/prevent-abbreviations': 0,
       'unicorn/prefer-spread': 0,
