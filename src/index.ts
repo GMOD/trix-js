@@ -1,3 +1,4 @@
+import { Buffer } from 'buffer'
 import type { GenericFilehandle } from 'generic-filehandle'
 
 const CHUNK_SIZE = 65536
