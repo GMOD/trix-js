@@ -1,5 +1,5 @@
-import { Buffer } from 'buffer'
-import type { GenericFilehandle } from 'generic-filehandle'
+import type { GenericFilehandle } from 'generic-filehandle2'
+import { concatUint8Array } from './util'
 
 const CHUNK_SIZE = 65536
 
@@ -36,10 +36,11 @@ export default class Trix {
 
     let { end, buffer } = res
     let done = false
+    const decoder = new TextDecoder('utf8')
+    const str = decoder.decode(buffer)
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     while (!done) {
       let foundSomething = false
-      const str = buffer.toString()
 
       // slice to lastIndexOf('\n') to make sure we get complete records
       // since the buffer fetch could get halfway into a record
@@ -73,20 +74,14 @@ export default class Trix {
       // if we are not done, and we haven't filled up maxResults with hits yet,
       // then refetch
       if (resultArr.length + hits.length < this.maxResults && !done) {
-        const res2 = await this.ixFile.read(
-          Buffer.alloc(CHUNK_SIZE),
-          0,
-          CHUNK_SIZE,
-          end,
-          opts,
-        )
+        const res2 = await this.ixFile.read(CHUNK_SIZE, end, opts)
 
         // early break if empty response
-        if (!res2.bytesRead) {
+        if (res2.length === 0) {
           resultArr = resultArr.concat(hits)
           break
         }
-        buffer = Buffer.concat([buffer, res2.buffer])
+        buffer = concatUint8Array([buffer, res2])
         end += CHUNK_SIZE
       }
 
@@ -139,9 +134,9 @@ export default class Trix {
     if (len < 0) {
       return undefined
     }
-    const res = await this.ixFile.read(Buffer.alloc(len), 0, len, start, opts)
+    const buffer = await this.ixFile.read(len, start, opts)
     return {
-      ...res,
+      buffer,
       end,
     }
   }
