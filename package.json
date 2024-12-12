@@ -1,5 +1,5 @@
 {
-  "version": "3.0.0",
+  "version": "3.0.1",
   "license": "Apache-2.0",
   "main": "dist/index.js",
   "module": "esm/index.js",
@@ -30,7 +30,7 @@
     "@typescript-eslint/parser": "^8.4.0",
     "eslint": "^9.0.0",
     "eslint-plugin-unicorn": "^55.0.0",
-    "generic-filehandle2": "^0.0.1",
+    "generic-filehandle2": "^1.0.0",
     "prettier": "^3.3.3",
     "rimraf": "^6.0.1",
     "typescript": "^5.7.0",
