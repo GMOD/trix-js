@@ -19,7 +19,7 @@ describe('Test a search of test1 ix file', () => {
         new LocalFile('./test/testData/test1/myTrix.ix'),
       )
       const hitList = await trix1.search(searchTerm)
-      expect(hitList).toMatchSnapshot()
+      expect(hitList.map(f => [f.hitString, f.hitInfo])).toMatchSnapshot()
     })
   }
 })
@@ -43,7 +43,7 @@ describe('Test a search of test2 ix file', () => {
         new LocalFile('./test/testData/test2/out.ix'),
       )
       const hitList = await trix2.search(searchTerm)
-      expect(hitList).toMatchSnapshot()
+      expect(hitList.map(f => [f.hitString, f.hitInfo])).toMatchSnapshot()
     })
   }
 })
@@ -57,7 +57,7 @@ describe('Test a search of test3 ix file', () => {
         new LocalFile('./test/testData/test3/out.ix'),
       )
       const hitList = await trix3.search(searchTerm)
-      expect(hitList).toMatchSnapshot()
+      expect(hitList.map(f => [f.hitString, f.hitInfo])).toMatchSnapshot()
     })
   }
 })
@@ -70,7 +70,7 @@ describe('Test a search of test4 ix file', () => {
       new LocalFile('./test/testData/test4/out.ix'),
     )
     const hitList = await trix4.search(searchTerm)
-    expect(hitList).toMatchSnapshot()
+    expect(hitList.map(f => [f.hitString, f.hitInfo])).toMatchSnapshot()
   })
 })
 
@@ -83,7 +83,7 @@ describe('Test maxResults for search of test3 ix file', () => {
       5,
     )
     const hitList = await trix3.search(searchTerm)
-    expect(hitList).toMatchSnapshot()
+    expect(hitList.map(f => [f.hitString, f.hitInfo])).toMatchSnapshot()
   })
 })
 
@@ -96,7 +96,7 @@ describe('Test maxResults for search of test5 ix file', () => {
         new LocalFile('./test/testData/test5/hg19.ix'),
       )
       const hitList = await trix5.search(searchTerm)
-      expect(hitList).toMatchSnapshot()
+      expect(hitList.map(f => [f.hitString, f.hitInfo])).toMatchSnapshot()
     })
   }
 })
