@@ -37,6 +37,14 @@ export default class Trix {
     let { end, buffer } = res
     let done = false
     const decoder = new TextDecoder('utf8')
+
+    let fileSize: number | undefined
+    try {
+      fileSize = (await this.ixFile.stat()).size
+    } catch (e) {
+      /* do nothing */
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     while (!done) {
       let foundSomething = false
@@ -74,7 +82,20 @@ export default class Trix {
       // if we are not done, and we haven't filled up maxResults with hits yet,
       // then refetch
       if (resultArr.length + hits.length < this.maxResults && !done) {
-        const res2 = await this.ixFile.read(CHUNK_SIZE, end, opts)
+        // if we are clear past the end of the file, break
+        if (fileSize !== undefined && end > fileSize) {
+          resultArr = resultArr.concat(hits)
+          break
+        }
+
+        // else if we are requesting past end of file, chop to length of file
+        const res2 = await this.ixFile.read(
+          fileSize !== undefined && end + CHUNK_SIZE > fileSize
+            ? fileSize - end
+            : CHUNK_SIZE,
+          end,
+          opts,
+        )
 
         // early break if empty response
         if (res2.length === 0) {
