@@ -8,10 +8,9 @@ Read UCSC Trix indexes in pure JavaScript
 
 ```js
 import Trix from '@gmod/trix'
-import { RemoteFile } from 'generic-filehandle'
+import { RemoteFile } from 'generic-filehandle2'
 
-// any filehandle object that supports the Nodejs FileHandle API will work.
-// We use generic-filehandle here to demonstrate searching files on remote servers.
+// We use generic-filehandle2 here to demonstrate searching files on remote servers.
 const ixxFile = new RemoteFile(
   'https://hgdownload.soe.ucsc.edu/gbdb/hg38/knownGene.ixx',
 )
