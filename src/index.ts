@@ -7,6 +7,11 @@ const CHUNK_SIZE = 65536
 // https://github.com/GMOD/ixixx-js/blob/master/src/index.ts#L182
 const ADDRESS_SIZE = 10
 
+interface SearchHit {
+  hitString: string
+  hitInfo: string
+}
+
 // https://stackoverflow.com/a/9229821/2129219
 function uniqBy<T>(a: T[], key: (elt: T) => string) {
   const seen = new Set()
@@ -16,15 +21,72 @@ function uniqBy<T>(a: T[], key: (elt: T) => string) {
   })
 }
 
+function bufferToLines(buffer: Uint8Array) {
+  const decoder = new TextDecoder('utf8')
+  const text = decoder.decode(buffer)
+  return text
+    .slice(0, text.lastIndexOf('\n'))
+    .split('\n')
+    .filter(line => !!line)
+}
+
+function processLine(line: string, searchWord: string) {
+  const word = line.split(' ')[0]
+  const match = word.startsWith(searchWord)
+  // We are done scanning if we are lexicographically greater than the search
+  // string
+  const isDone = word.slice(0, searchWord.length) > searchWord
+  return { match, isDone }
+}
+
+function transformHits(matchingLines: string[]): SearchHit[] {
+  return matchingLines.flatMap(line => {
+    const [term, ...parts] = line.split(' ')
+    return parts.map(elt => ({
+      hitString: term,
+      hitInfo: elt.split(',')[0],
+    }))
+  })
+}
+
+function processBuffer(buffer: Uint8Array, searchWord: string) {
+  const lines = bufferToLines(buffer)
+  const matchingLines: string[] = []
+  let isDone = false
+
+  for (const line of lines) {
+    const { match, isDone: lineIsDone } = processLine(line, searchWord)
+    if (lineIsDone) {
+      isDone = true
+    }
+    if (match) {
+      matchingLines.push(line)
+    }
+  }
+
+  return {
+    hits: transformHits(matchingLines),
+    isDone,
+  }
+}
+
 export default class Trix {
+  private readonly ixxFile: GenericFilehandle
+  private readonly ixFile: GenericFilehandle
+  private readonly maxResults: number
+
   constructor(
-    public ixxFile: GenericFilehandle,
-    public ixFile: GenericFilehandle,
-    public maxResults = 20,
-  ) {}
+    ixxFile: GenericFilehandle,
+    ixFile: GenericFilehandle,
+    maxResults = 20,
+  ) {
+    this.ixxFile = ixxFile
+    this.ixFile = ixFile
+    this.maxResults = maxResults
+  }
 
   async search(searchString: string, opts?: { signal?: AbortSignal }) {
-    let resultArr = [] as [string, string][]
+    let resultArr = [] as SearchHit[]
     const searchWords = searchString.split(' ')
 
     // we only search one word at a time
@@ -36,65 +98,30 @@ export default class Trix {
 
     let { end, buffer } = res
     let done = false
-    const decoder = new TextDecoder('utf8')
-    const str = decoder.decode(buffer)
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     while (!done) {
-      let foundSomething = false
+      const { hits, isDone } = processBuffer(buffer, searchWord)
+      done = isDone
 
-      // slice to lastIndexOf('\n') to make sure we get complete records
-      // since the buffer fetch could get halfway into a record
-      const lines = str
-        .slice(0, str.lastIndexOf('\n'))
-        .split('\n')
-        .filter(f => !!f)
-
-      const hits2 = [] as string[]
-      for (const line of lines) {
-        const word = line.split(' ')[0]
-        const match = word.startsWith(searchWord)
-        if (!foundSomething && match) {
-          foundSomething = true
-        }
-
-        // we are done scanning if we are lexicographically greater than the
-        // search string
-        if (word.slice(0, searchWord.length) > searchWord) {
-          done = true
-        }
-        if (match) {
-          hits2.push(line)
-        }
-      }
-      const hits = hits2.flatMap(line => {
-        const [term, ...parts] = line.split(' ')
-        return parts.map(elt => [term, elt.split(',')[0]] as [string, string])
-      })
-
-      // if we are not done, and we haven't filled up maxResults with hits yet,
-      // then refetch
+      // Check if we need to fetch more data
       if (resultArr.length + hits.length < this.maxResults && !done) {
         const res2 = await this.ixFile.read(CHUNK_SIZE, end, opts)
 
-        // early break if empty response
+        // Early break if empty response
         if (res2.length === 0) {
           resultArr = resultArr.concat(hits)
           break
         }
+
         buffer = concatUint8Array([buffer, res2])
         end += CHUNK_SIZE
-      }
-
-      // if we have filled up the hits, or we are detected to be done via the
-      // filtering, then return
-      else if (resultArr.length + hits.length >= this.maxResults || done) {
+      } else {
+        // We have enough results or we're done searching
         resultArr = resultArr.concat(hits)
         break
       }
     }
 
-    // deduplicate results based on the detail column (resultArr[1])
-    return uniqBy(resultArr, elt => elt[1]).slice(0, this.maxResults)
+    return uniqBy(resultArr, elt => elt.hitInfo).slice(0, this.maxResults)
   }
 
   private async getIndex(opts?: { signal?: AbortSignal }) {
