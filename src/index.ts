@@ -37,10 +37,10 @@ export default class Trix {
     let { end, buffer } = res
     let done = false
     const decoder = new TextDecoder('utf8')
-    const str = decoder.decode(buffer)
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     while (!done) {
       let foundSomething = false
+      const str = decoder.decode(buffer)
 
       // slice to lastIndexOf('\n') to make sure we get complete records
       // since the buffer fetch could get halfway into a record
