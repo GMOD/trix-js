@@ -29,6 +29,7 @@
     "@typescript-eslint/eslint-plugin": "^8.4.0",
     "@typescript-eslint/parser": "^8.4.0",
     "eslint": "^9.0.0",
+    "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-unicorn": "^58.0.0",
     "generic-filehandle2": "^1.0.0",
     "prettier": "^3.3.3",

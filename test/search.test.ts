@@ -1,6 +1,7 @@
-import { describe, it, expect } from 'vitest'
-import Trix from '../src/index'
 import { LocalFile } from 'generic-filehandle2'
+import { describe, expect, it } from 'vitest'
+
+import Trix from '../src/index'
 
 describe('Test a search of test1 ix file', () => {
   const searchTerms = [

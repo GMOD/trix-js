@@ -1,6 +1,7 @@
-import { test, expect } from 'vitest'
-import Trix from '../src/index'
 import { LocalFile } from 'generic-filehandle2'
+import { expect, test } from 'vitest'
+
+import Trix from '../src/index'
 
 test('can find pneumobase features', async () => {
   const trix1 = new Trix(

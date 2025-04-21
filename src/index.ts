@@ -1,20 +1,13 @@
-import type { GenericFilehandle } from 'generic-filehandle2'
+import { dedupe } from './dedupe'
 import { concatUint8Array } from './util'
+
+import type { GenericFilehandle } from 'generic-filehandle2'
 
 const CHUNK_SIZE = 65536
 
 // this is the number of hex characters to use for the address in ixixx, see
 // https://github.com/GMOD/ixixx-js/blob/master/src/index.ts#L182
 const ADDRESS_SIZE = 10
-
-// https://stackoverflow.com/a/9229821/2129219
-function uniqBy<T>(a: T[], key: (elt: T) => string) {
-  const seen = new Set()
-  return a.filter(item => {
-    const k = key(item)
-    return seen.has(k) ? false : seen.add(k)
-  })
-}
 
 export default class Trix {
   constructor(
@@ -93,8 +86,8 @@ export default class Trix {
       }
     }
 
-    // deduplicate results based on the detail column (resultArr[1])
-    return uniqBy(resultArr, elt => elt[1]).slice(0, this.maxResults)
+    // de-duplicate results based on the detail column (resultArr[1])
+    return dedupe(resultArr, elt => elt[1]).slice(0, this.maxResults)
   }
 
   private async getIndex(opts?: { signal?: AbortSignal }) {
