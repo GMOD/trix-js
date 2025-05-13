@@ -18,6 +18,7 @@
     "build:es5": "tsc --target es2015 --outDir dist --module commonjs",
     "build": "npm run build:esm && npm run build:es5",
     "preversion": "npm run lint && npm test run && npm run build",
+    "postbuild:es5": "echo '{\"type\": \"commonjs\"}' > dist/package.json",
     "postversion": "git push --follow-tags",
     "test": "vitest"
   },
