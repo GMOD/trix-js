@@ -31,13 +31,13 @@
     "@typescript-eslint/parser": "^8.4.0",
     "eslint": "^9.0.0",
     "eslint-plugin-import": "^2.31.0",
-    "eslint-plugin-unicorn": "^59.0.1",
+    "eslint-plugin-unicorn": "^62.0.0",
     "generic-filehandle2": "^2.0.5",
     "prettier": "^3.3.3",
     "rimraf": "^6.0.1",
     "typescript": "^5.7.0",
     "typescript-eslint": "^8.4.0",
-    "vitest": "^3.0.7"
+    "vitest": "^4.0.6"
   },
   "publishConfig": {
     "access": "public"

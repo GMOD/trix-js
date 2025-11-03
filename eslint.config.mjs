@@ -20,22 +20,25 @@ export default tseslint.config(
   ...tseslint.configs.stylisticTypeChecked,
   ...tseslint.configs.strictTypeChecked,
   importPlugin.flatConfigs.recommended,
-  eslintPluginUnicorn.configs['flat/recommended'],
+  eslintPluginUnicorn.configs.recommended,
   {
     rules: {
-      'no-underscore-dangle': 0,
+      'no-underscore-dangle': 'off',
       curly: 'error',
-      'no-plusplus': 0,
-      'unicorn/numeric-separators-style': 0,
-      'unicorn/prefer-node-protocol': 0,
-      'unicorn/no-useless-undefined': 0,
-      'unicorn/prevent-abbreviations': 0,
-      'unicorn/prefer-spread': 0,
-      '@typescript-eslint/no-explicit-any': 0,
-      '@typescript-eslint/explicit-module-boundary-types': 0,
-      '@typescript-eslint/ban-ts-comment': 0,
-      'unicorn/expiring-todo-comments': 0,
       semi: ['error', 'never'],
+      'no-plusplus': 'off',
+
+      'unicorn/text-encoding-identifier-case': 'off',
+      'unicorn/numeric-separators-style': 'off',
+      'unicorn/prefer-node-protocol': 'off',
+      'unicorn/no-useless-undefined': 'off',
+      'unicorn/prevent-abbreviations': 'off',
+      'unicorn/prefer-spread': 'off',
+      'unicorn/expiring-todo-comments': 'off',
+
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/explicit-module-boundary-types': 'off',
+      '@typescript-eslint/ban-ts-comment': 'off',
 
       'import/no-unresolved': 'off',
       'import/order': [
@@ -52,20 +55,6 @@ export default tseslint.config(
             ['parent', 'sibling', 'index', 'object'],
             'type',
           ],
-          pathGroups: [
-            {
-              group: 'builtin',
-              pattern: 'react',
-              position: 'before',
-            },
-            {
-              group: 'external',
-              pattern: '@mui/icons-material',
-              position: 'after',
-            },
-          ],
-
-          pathGroupsExcludedImportTypes: ['react'],
         },
       ],
     },
