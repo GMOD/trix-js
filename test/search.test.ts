@@ -1,7 +1,7 @@
 import { LocalFile } from 'generic-filehandle2'
 import { describe, expect, it } from 'vitest'
 
-import Trix from '../src/index'
+import Trix from '../src/index.ts'
 
 describe('Test a search of test1 ix file', () => {
   const searchTerms = [

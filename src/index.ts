@@ -1,5 +1,5 @@
-import { dedupe } from './dedupe'
-import { concatUint8Array } from './util'
+import { dedupe } from './dedupe.ts'
+import { concatUint8Array } from './util.ts'
 
 import type { GenericFilehandle } from 'generic-filehandle2'
 

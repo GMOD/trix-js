@@ -41,6 +41,7 @@ export default tseslint.config(
       '@typescript-eslint/ban-ts-comment': 'off',
 
       'import/no-unresolved': 'off',
+      'import/extensions': ['error', 'ignorePackages'],
       'import/order': [
         'error',
         {
