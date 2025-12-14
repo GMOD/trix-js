@@ -10,6 +10,9 @@ const CHUNK_SIZE = 65536
 const ADDRESS_SIZE = 10
 
 export default class Trix {
+  private decoder = new TextDecoder('utf8')
+  private indexCache?: readonly (readonly [string, number])[]
+
   constructor(
     public ixxFile: GenericFilehandle,
     public ixFile: GenericFilehandle,
@@ -19,70 +22,61 @@ export default class Trix {
   async search(searchString: string, opts?: { signal?: AbortSignal }) {
     let resultArr = [] as [string, string][]
     const searchWords = searchString.split(' ')
+    const firstWord = searchWords[0]
 
-    // we only search one word at a time
-    const searchWord = searchWords[0].toLowerCase()
-    const res = await this._getBuffer(searchWord, opts)
-    if (!res) {
-      return []
-    }
+    // validate that we have a non-empty search term
+    if (firstWord) {
+      const searchWord = firstWord.toLowerCase()
+      const res = await this.getBuffer(searchWord, opts)
 
-    let { end, buffer } = res
-    let done = false
-    const decoder = new TextDecoder('utf8')
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    while (!done) {
-      let foundSomething = false
-      const str = decoder.decode(buffer)
+      if (res) {
+        let { end, buffer } = res
+        let done = false
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        while (!done) {
+          const str = this.decoder.decode(buffer)
 
-      // slice to lastIndexOf('\n') to make sure we get complete records
-      // since the buffer fetch could get halfway into a record
-      const lines = str
-        .slice(0, str.lastIndexOf('\n'))
-        .split('\n')
-        .filter(f => !!f)
+          // slice to lastIndexOf('\n') to make sure we get complete records
+          // since the buffer fetch could get halfway into a record
+          const lines = str
+            .slice(0, str.lastIndexOf('\n'))
+            .split('\n')
+            .filter(f => f)
 
-      const hits2 = [] as string[]
-      for (const line of lines) {
-        const word = line.split(' ')[0]
-        const match = word.startsWith(searchWord)
-        if (!foundSomething && match) {
-          foundSomething = true
-        }
+          const hits2 = [] as string[]
+          for (const line of lines) {
+            const word = line.split(' ')[0]
 
-        // we are done scanning if we are lexicographically greater than the
-        // search string
-        if (word.slice(0, searchWord.length) > searchWord) {
-          done = true
-        }
-        if (match) {
-          hits2.push(line)
-        }
-      }
-      const hits = hits2.flatMap(line => {
-        const [term, ...parts] = line.split(' ')
-        return parts.map(elt => [term, elt.split(',')[0]] as [string, string])
-      })
+            if (word.startsWith(searchWord)) {
+              hits2.push(line)
+            } else if (word > searchWord) {
+              // we are done scanning if we are lexicographically greater than
+              // the search string
+              done = true
+            }
+          }
+          const hits = hits2.flatMap(line => {
+            const [term, ...parts] = line.split(' ')
+            return parts
+              .filter(elt => elt)
+              .map(elt => [term, elt.split(',')[0]] as [string, string])
+          })
 
-      // if we are not done, and we haven't filled up maxResults with hits yet,
-      // then refetch
-      if (resultArr.length + hits.length < this.maxResults && !done) {
-        const res2 = await this.ixFile.read(CHUNK_SIZE, end, opts)
-
-        // early break if empty response
-        if (res2.length === 0) {
           resultArr = resultArr.concat(hits)
-          break
-        }
-        buffer = concatUint8Array([buffer, res2])
-        end += CHUNK_SIZE
-      }
 
-      // if we have filled up the hits, or we are detected to be done via the
-      // filtering, then return
-      else if (resultArr.length + hits.length >= this.maxResults || done) {
-        resultArr = resultArr.concat(hits)
-        break
+          // if we are done or have filled up maxResults, break
+          if (done || resultArr.length >= this.maxResults) {
+            break
+          }
+
+          // fetch more data
+          const res2 = await this.ixFile.read(CHUNK_SIZE, end, opts)
+          if (res2.length === 0) {
+            break
+          }
+          buffer = concatUint8Array([buffer, res2])
+          end += CHUNK_SIZE
+        }
       }
     }
 
@@ -91,13 +85,16 @@ export default class Trix {
   }
 
   private async getIndex(opts?: { signal?: AbortSignal }) {
+    if (this.indexCache) {
+      return this.indexCache
+    }
     const file = await this.ixxFile.readFile({
       encoding: 'utf8',
       ...opts,
     })
-    return file
+    const result = file
       .split('\n')
-      .filter(f => !!f)
+      .filter(f => f)
       .map(line => {
         const p = line.length - ADDRESS_SIZE
         const prefix = line.slice(0, p)
@@ -105,32 +102,23 @@ export default class Trix {
         const pos = Number.parseInt(posStr, 16)
         return [prefix, pos] as const
       })
+    this.indexCache = result
+    return result
   }
 
-  private async _getBuffer(
-    searchWord: string,
-    opts?: { signal?: AbortSignal },
-  ) {
+  private async getBuffer(searchWord: string, opts?: { signal?: AbortSignal }) {
     let start = 0
-    let end = 65536
+    let end = CHUNK_SIZE
     const indexes = await this.getIndex(opts)
     for (const [key, value] of indexes) {
       const trimmedKey = key.slice(0, searchWord.length)
       if (trimmedKey < searchWord) {
         start = value
-        end = value + 65536
+        end = value + CHUNK_SIZE
       }
     }
 
-    // Return the buffer and its end position in the file.
-    const len = end - start
-    if (len < 0) {
-      return undefined
-    }
-    const buffer = await this.ixFile.read(len, start, opts)
-    return {
-      buffer,
-      end,
-    }
+    const buffer = await this.ixFile.read(end - start, start, opts)
+    return { buffer, end }
   }
 }
