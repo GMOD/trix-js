@@ -12,10 +12,7 @@
         "NCBI_locus",
         "Alias"
       ],
-      "excludedTypes": [
-        "CDS",
-        "exon"
-      ],
+      "excludedTypes": ["CDS", "exon"],
       "adapterConf": {
         "type": "Gff3TabixAdapter",
         "gffGzLocation": {
@@ -31,7 +28,5 @@
       }
     }
   ],
-  "assemblyNames": [
-    "D39V"
-  ]
+  "assemblyNames": ["D39V"]
 }
