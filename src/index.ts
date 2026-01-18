@@ -29,54 +29,52 @@ export default class Trix {
       const searchWord = firstWord.toLowerCase()
       const res = await this.getBuffer(searchWord, opts)
 
-      if (res) {
-        let { end, buffer } = res
-        let done = false
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-        while (!done) {
-          const str = this.decoder.decode(buffer)
+      let { end, buffer } = res
+      let done = false
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+      while (!done) {
+        const str = this.decoder.decode(buffer)
 
-          // slice to lastIndexOf('\n') to make sure we get complete records
-          // since the buffer fetch could get halfway into a record
-          const lines = str
-            .slice(0, str.lastIndexOf('\n'))
-            .split('\n')
-            .filter(f => f)
+        // slice to lastIndexOf('\n') to make sure we get complete records
+        // since the buffer fetch could get halfway into a record
+        const lines = str
+          .slice(0, str.lastIndexOf('\n'))
+          .split('\n')
+          .filter(Boolean)
 
-          const hits2 = [] as string[]
-          for (const line of lines) {
-            const word = line.split(' ')[0]
+        const hits2 = [] as string[]
+        for (const line of lines) {
+          const word = line.split(' ')[0]
 
-            if (word.startsWith(searchWord)) {
-              hits2.push(line)
-            } else if (word > searchWord) {
-              // we are done scanning if we are lexicographically greater than
-              // the search string
-              done = true
-            }
+          if (word.startsWith(searchWord)) {
+            hits2.push(line)
+          } else if (word > searchWord) {
+            // we are done scanning if we are lexicographically greater than
+            // the search string
+            done = true
           }
-          const hits = hits2.flatMap(line => {
-            const [term, ...parts] = line.split(' ')
-            return parts
-              .filter(elt => elt)
-              .map(elt => [term, elt.split(',')[0]] as [string, string])
-          })
-
-          resultArr = resultArr.concat(hits)
-
-          // if we are done or have filled up maxResults, break
-          if (done || resultArr.length >= this.maxResults) {
-            break
-          }
-
-          // fetch more data
-          const res2 = await this.ixFile.read(CHUNK_SIZE, end, opts)
-          if (res2.length === 0) {
-            break
-          }
-          buffer = concatUint8Array([buffer, res2])
-          end += CHUNK_SIZE
         }
+        const hits = hits2.flatMap(line => {
+          const [term, ...parts] = line.split(' ')
+          return parts
+            .filter(Boolean)
+            .map(elt => [term, elt.split(',')[0]] as [string, string])
+        })
+
+        resultArr = resultArr.concat(hits)
+
+        // if we are done or have filled up maxResults, break
+        if (done || resultArr.length >= this.maxResults) {
+          break
+        }
+
+        // fetch more data
+        const res2 = await this.ixFile.read(CHUNK_SIZE, end, opts)
+        if (res2.length === 0) {
+          break
+        }
+        buffer = concatUint8Array([buffer, res2])
+        end += CHUNK_SIZE
       }
     }
 
@@ -94,7 +92,7 @@ export default class Trix {
     })
     const result = file
       .split('\n')
-      .filter(f => f)
+      .filter(Boolean)
       .map(line => {
         const p = line.length - ADDRESS_SIZE
         const prefix = line.slice(0, p)

@@ -2,7 +2,7 @@ import { LocalFile } from 'generic-filehandle2'
 import { describe, expect, it } from 'vitest'
 
 import Trix from '../src/index.ts'
-import { sum, concatUint8Array } from '../src/util.ts'
+import { concatUint8Array, sum } from '../src/util.ts'
 
 describe('Edge case handling', () => {
   const trix = new Trix(
