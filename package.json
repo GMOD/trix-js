@@ -1,8 +1,17 @@
 {
+  "name": "@gmod/trix",
   "version": "3.0.5",
   "license": "Apache-2.0",
-  "main": "dist/index.js",
-  "module": "esm/index.js",
+  "type": "module",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    "import": {
+      "import": "./esm/index.js"
+    },
+    "require": {
+      "require": "./dist/index.js"
+    }
+  },
   "files": [
     "dist",
     "esm",
@@ -12,18 +21,18 @@
     "node": ">=10"
   },
   "scripts": {
-    "lint": "eslint --report-unused-disable-directives --max-warnings 0",
-    "prebuild": "rimraf dist esm",
-    "build:esm": "tsc --target esnext --outDir esm",
-    "build:es5": "tsc --target es2015 --outDir dist --module commonjs",
-    "build": "yarn build:esm && yarn build:es5",
-    "preversion": "yarn lint && yarn test --run && yarn build",
-    "postbuild:es5": "echo '{\"type\": \"commonjs\"}' > dist/package.json",
-    "postversion": "git push --follow-tags",
     "test": "vitest",
-    "format": "prettier --write ."
+    "lint": "eslint --report-unused-disable-directives --max-warnings 0",
+    "clean": "rimraf dist esm",
+    "format": "prettier --write .",
+    "build:esm": "tsc --outDir esm",
+    "build:es5": "tsc --module commonjs --outDir dist",
+    "build": "yarn build:esm && yarn build:es5",
+    "prebuild": "yarn clean",
+    "postbuild:es5": "echo '{\"type\": \"commonjs\"}' > dist/package.json",
+    "preversion": "yarn lint && yarn test --run && yarn build",
+    "postversion": "git push --follow-tags"
   },
-  "name": "@gmod/trix",
   "author": "Matt Morgan",
   "repository": "GMOD/trix-js",
   "devDependencies": {
