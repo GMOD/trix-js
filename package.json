@@ -41,18 +41,19 @@
   "author": "Matt Morgan",
   "repository": "GMOD/trix-js",
   "devDependencies": {
-    "@types/node": "^25.0.9",
-    "@typescript-eslint/eslint-plugin": "^8.53.0",
-    "@typescript-eslint/parser": "^8.53.0",
+    "@types/node": "^25.0.10",
+    "puppeteer": "^24.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.53.1",
+    "@typescript-eslint/parser": "^8.53.1",
     "eslint": "^9.0.0",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-unicorn": "^62.0.0",
     "generic-filehandle2": "^2.0.18",
-    "prettier": "^3.8.0",
+    "prettier": "^3.8.1",
     "rimraf": "^6.0.1",
     "typescript": "^5.7.0",
-    "typescript-eslint": "^8.53.0",
-    "vitest": "^4.0.17"
+    "typescript-eslint": "^8.53.1",
+    "vitest": "^4.0.18"
   },
   "publishConfig": {
     "access": "public"
