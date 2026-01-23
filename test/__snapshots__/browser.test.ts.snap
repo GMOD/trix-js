@@ -1,0 +1,35 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Browser tests with Puppeteer > handles EOF correctly with CORS enabled server 1`] = `
+[
+  [
+    "this",
+    "id1",
+  ],
+  [
+    "this",
+    "id2",
+  ],
+  [
+    "this",
+    "id3",
+  ],
+]
+`;
+
+exports[`Browser tests with Puppeteer > searches via HTTP with CORS enabled server 1`] = `
+[
+  [
+    "for",
+    "id1",
+  ],
+  [
+    "for",
+    "id2",
+  ],
+  [
+    "for",
+    "id3",
+  ],
+]
+`;

@@ -6,7 +6,14 @@ import tseslint from 'typescript-eslint'
 
 export default defineConfig(
   {
-    ignores: ['esm/**/*', 'dist/**/*', '*.js', '*.mjs', 'example/*'],
+    ignores: [
+      'esm/**/*',
+      'dist/**/*',
+      '*.js',
+      '*.mjs',
+      'example/*',
+      'test/browser.test.ts',
+    ],
   },
   {
     languageOptions: {

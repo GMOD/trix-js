@@ -25,6 +25,7 @@ export default class Trix {
       return this.ixFileSize
     }
     try {
+      // @ts-expect-error
       const stat = await this.ixFile.stat(opts)
       this.ixFileSize = stat.size
       return this.ixFileSize
@@ -43,7 +44,8 @@ export default class Trix {
       const searchWord = firstWord.toLowerCase()
       const res = await this.getBuffer(searchWord, opts)
 
-      let { end, buffer, fileSize } = res
+      let { end, buffer } = res
+      const { fileSize } = res
       let done = false
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       while (!done) {

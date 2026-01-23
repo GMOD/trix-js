@@ -42,6 +42,7 @@
   "repository": "GMOD/trix-js",
   "devDependencies": {
     "@types/node": "^25.0.10",
+    "puppeteer": "^24.0.0",
     "@typescript-eslint/eslint-plugin": "^8.53.1",
     "@typescript-eslint/parser": "^8.53.1",
     "eslint": "^9.0.0",
