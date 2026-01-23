@@ -1,0 +1,69 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`HTTP server tests with CORS > handles search near end of file without reading past EOF with CORS 1`] = `
+[
+  [
+    "this",
+    "id1",
+  ],
+  [
+    "this",
+    "id2",
+  ],
+  [
+    "this",
+    "id3",
+  ],
+]
+`;
+
+exports[`HTTP server tests with CORS > searches via HTTP with CORS 1`] = `
+[
+  [
+    "for",
+    "id1",
+  ],
+  [
+    "for",
+    "id2",
+  ],
+  [
+    "for",
+    "id3",
+  ],
+]
+`;
+
+exports[`HTTP server tests without CORS > handles search near end of file without reading past EOF 1`] = `
+[
+  [
+    "this",
+    "id1",
+  ],
+  [
+    "this",
+    "id2",
+  ],
+  [
+    "this",
+    "id3",
+  ],
+]
+`;
+
+exports[`HTTP server tests without CORS > searches via HTTP without CORS 1`] = `
+[
+  [
+    "for",
+    "id1",
+  ],
+  [
+    "for",
+    "id2",
+  ],
+  [
+    "for",
+    "id3",
+  ],
+]
+`;

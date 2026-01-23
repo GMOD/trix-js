@@ -12,12 +12,26 @@ const ADDRESS_SIZE = 10
 export default class Trix {
   private decoder = new TextDecoder('utf8')
   private indexCache?: readonly (readonly [string, number])[]
+  private ixFileSize?: number
 
   constructor(
     public ixxFile: GenericFilehandle,
     public ixFile: GenericFilehandle,
     public maxResults = 20,
   ) {}
+
+  private async getIxFileSize(opts?: { signal?: AbortSignal }) {
+    if (this.ixFileSize !== undefined) {
+      return this.ixFileSize
+    }
+    try {
+      const stat = await this.ixFile.stat(opts)
+      this.ixFileSize = stat.size
+      return this.ixFileSize
+    } catch {
+      return undefined
+    }
+  }
 
   async search(searchString: string, opts?: { signal?: AbortSignal }) {
     let resultArr = [] as [string, string][]
@@ -29,7 +43,7 @@ export default class Trix {
       const searchWord = firstWord.toLowerCase()
       const res = await this.getBuffer(searchWord, opts)
 
-      let { end, buffer } = res
+      let { end, buffer, fileSize } = res
       let done = false
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       while (!done) {
@@ -68,13 +82,22 @@ export default class Trix {
           break
         }
 
-        // fetch more data
-        const res2 = await this.ixFile.read(CHUNK_SIZE, end, opts)
+        // avoid reading past end of file
+        if (fileSize !== undefined && end >= fileSize) {
+          break
+        }
+
+        // fetch more data, clamping to file size if known
+        let bytesToRead = CHUNK_SIZE
+        if (fileSize !== undefined) {
+          bytesToRead = Math.min(CHUNK_SIZE, fileSize - end)
+        }
+        const res2 = await this.ixFile.read(bytesToRead, end, opts)
         if (res2.length === 0) {
           break
         }
         buffer = concatUint8Array([buffer, res2])
-        end += CHUNK_SIZE
+        end += res2.length
       }
     }
 
@@ -116,7 +139,12 @@ export default class Trix {
       }
     }
 
+    const fileSize = await this.getIxFileSize(opts)
+    if (fileSize !== undefined) {
+      end = Math.min(end, fileSize)
+    }
+
     const buffer = await this.ixFile.read(end - start, start, opts)
-    return { buffer, end }
+    return { buffer, end, fileSize }
   }
 }
