@@ -156,9 +156,25 @@ describe('Browser tests with Puppeteer', () => {
     })
     page = await browser.newPage()
 
+    const errors: string[] = []
+    page.on('pageerror', err => errors.push(err.message))
+    page.on('console', msg => {
+      if (msg.type() === 'error') {
+        errors.push(msg.text())
+      }
+    })
+
     await page.goto(`http://localhost:${appPort}/`)
-    await page.waitForFunction('window.ready === true')
-  })
+
+    try {
+      await page.waitForFunction('window.ready === true', { timeout: 10000 })
+    } catch (e) {
+      const html = await page.content()
+      console.error('Page errors:', errors)
+      console.error('Page HTML:', html)
+      throw e
+    }
+  }, 30000)
 
   afterAll(async () => {
     await browser?.close()

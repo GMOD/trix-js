@@ -14,8 +14,12 @@ jobs:
           node-version: '20'
       - name: Install deps (with cache)
         uses: bahmutov/npm-install@v1
+      - name: Build
+        run: yarn build
+      - name: Install Puppeteer browser
+        run: npx puppeteer browsers install chrome
       - name: Test codebase
-        run: yarn test
+        run: yarn test --run
       - name: Upload coverage
         uses: codecov/codecov-action@v2
       - name: Typecheck codebase
