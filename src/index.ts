@@ -25,7 +25,7 @@ export default class Trix {
       return this.ixFileSize
     }
     try {
-      // @ts-expect-error
+      // @ts-expect-error - stat is not in the filehandle interface but may exist at runtime
       const stat = await this.ixFile.stat(opts)
       this.ixFileSize = stat.size
       return this.ixFileSize
