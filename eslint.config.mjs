@@ -33,6 +33,7 @@ export default defineConfig(
     rules: {
       'no-underscore-dangle': 'off',
       curly: 'error',
+      '@typescript-eslint/consistent-type-imports': 'error',
       semi: ['error', 'never'],
       'no-plusplus': 'off',
 
