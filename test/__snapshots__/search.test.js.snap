@@ -1,0 +1,1047 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Test a search of test1 ix file > Search for "fOR" in test1/myTrix.ix 1`] = `
+[
+  [
+    "for",
+    "id1",
+  ],
+  [
+    "for",
+    "id2",
+  ],
+  [
+    "for",
+    "id3",
+  ],
+]
+`;
+
+exports[`Test a search of test1 ix file > Search for "for this" in test1/myTrix.ix 1`] = `
+[
+  [
+    "for",
+    "id1",
+  ],
+  [
+    "for",
+    "id2",
+  ],
+  [
+    "for",
+    "id3",
+  ],
+]
+`;
+
+exports[`Test a search of test1 ix file > Search for "id1" in test1/myTrix.ix 1`] = `
+[
+  [
+    "id1",
+    "id1",
+  ],
+]
+`;
+
+exports[`Test a search of test1 ix file > Search for "is" in test1/myTrix.ix 1`] = `
+[
+  [
+    "is",
+    "id1",
+  ],
+  [
+    "is",
+    "id2",
+  ],
+  [
+    "is",
+    "id3",
+  ],
+]
+`;
+
+exports[`Test a search of test1 ix file > Search for "nope" in test1/myTrix.ix 1`] = `[]`;
+
+exports[`Test a search of test1 ix file > Search for "this is for id2" in test1/myTrix.ix 1`] = `
+[
+  [
+    "this",
+    "id1",
+  ],
+  [
+    "this",
+    "id2",
+  ],
+  [
+    "this",
+    "id3",
+  ],
+]
+`;
+
+exports[`Test a search of test1 ix file > Search for "this" in test1/myTrix.ix 1`] = `
+[
+  [
+    "this",
+    "id1",
+  ],
+  [
+    "this",
+    "id2",
+  ],
+  [
+    "this",
+    "id3",
+  ],
+]
+`;
+
+exports[`Test a search of test2 ix file > Search for "FocAd" in test2/out.ix 1`] = `
+[
+  [
+    "focad-as1",
+    "ENST00000439876.1",
+  ],
+  [
+    "focad-as1",
+    "ENST00000445051.1",
+  ],
+]
+`;
+
+exports[`Test a search of test2 ix file > Search for "LINC" in test2/out.ix 1`] = `
+[
+  [
+    "linc-pint",
+    "ENST00000416999.1",
+  ],
+  [
+    "linc-pint",
+    "ENST00000423414.5",
+  ],
+  [
+    "linc-pint",
+    "ENST00000429901.2",
+  ],
+  [
+    "linc-pint",
+    "ENST00000431189.1",
+  ],
+  [
+    "linc-pint",
+    "ENST00000433079.5",
+  ],
+  [
+    "linc-pint",
+    "ENST00000435523.5",
+  ],
+  [
+    "linc-pint",
+    "ENST00000443623.5",
+  ],
+  [
+    "linc-pint",
+    "ENST00000451786.5",
+  ],
+  [
+    "linc-pint",
+    "ENST00000642156.1",
+  ],
+  [
+    "linc-pint",
+    "ENST00000642483.1",
+  ],
+  [
+    "linc-pint",
+    "ENST00000642602.1",
+  ],
+  [
+    "linc-pint",
+    "ENST00000643135.1",
+  ],
+  [
+    "linc-pint",
+    "ENST00000643373.1",
+  ],
+  [
+    "linc-pint",
+    "ENST00000643855.1",
+  ],
+  [
+    "linc-pint",
+    "ENST00000643874.1",
+  ],
+  [
+    "linc-pint",
+    "ENST00000644188.1",
+  ],
+  [
+    "linc-pint",
+    "ENST00000644804.1",
+  ],
+  [
+    "linc-pint",
+    "ENST00000645248.1",
+  ],
+  [
+    "linc-pint",
+    "ENST00000646429.1",
+  ],
+  [
+    "linc-pint",
+    "ENST00000646587.1",
+  ],
+]
+`;
+
+exports[`Test a search of test2 ix file > Search for "enst ac" in test2/out.ix 1`] = `
+[
+  [
+    "enst00000229465.10",
+    "ENST00000229465.10",
+  ],
+  [
+    "enst00000230113.5",
+    "ENST00000230113.5",
+  ],
+  [
+    "enst00000235290.7",
+    "ENST00000235290.7",
+  ],
+  [
+    "enst00000242109.5",
+    "ENST00000242109.5",
+  ],
+  [
+    "enst00000244820.2",
+    "ENST00000244820.2",
+  ],
+  [
+    "enst00000244906.6",
+    "ENST00000244906.6",
+  ],
+  [
+    "enst00000248980.9",
+    "ENST00000248980.9",
+  ],
+  [
+    "enst00000250776.5",
+    "ENST00000250776.5",
+  ],
+  [
+    "enst00000250805.5",
+    "ENST00000250805.5",
+  ],
+  [
+    "enst00000253838.3",
+    "ENST00000253838.3",
+  ],
+  [
+    "enst00000253848.3",
+    "ENST00000253848.3",
+  ],
+  [
+    "enst00000255183.8",
+    "ENST00000255183.8",
+  ],
+  [
+    "enst00000262354.5",
+    "ENST00000262354.5",
+  ],
+  [
+    "enst00000276770.8",
+    "ENST00000276770.8",
+  ],
+  [
+    "enst00000276779.8",
+    "ENST00000276779.8",
+  ],
+  [
+    "enst00000279067.3",
+    "ENST00000279067.3",
+  ],
+  [
+    "enst00000289890.7",
+    "ENST00000289890.7",
+  ],
+  [
+    "enst00000291374.11",
+    "ENST00000291374.11",
+  ],
+  [
+    "enst00000292748.7",
+    "ENST00000292748.7",
+  ],
+  [
+    "enst00000294715.6",
+    "ENST00000294715.6",
+  ],
+]
+`;
+
+exports[`Test a search of test2 ix file > Search for "enst alg" in test2/out.ix 1`] = `
+[
+  [
+    "enst00000229465.10",
+    "ENST00000229465.10",
+  ],
+  [
+    "enst00000230113.5",
+    "ENST00000230113.5",
+  ],
+  [
+    "enst00000235290.7",
+    "ENST00000235290.7",
+  ],
+  [
+    "enst00000242109.5",
+    "ENST00000242109.5",
+  ],
+  [
+    "enst00000244820.2",
+    "ENST00000244820.2",
+  ],
+  [
+    "enst00000244906.6",
+    "ENST00000244906.6",
+  ],
+  [
+    "enst00000248980.9",
+    "ENST00000248980.9",
+  ],
+  [
+    "enst00000250776.5",
+    "ENST00000250776.5",
+  ],
+  [
+    "enst00000250805.5",
+    "ENST00000250805.5",
+  ],
+  [
+    "enst00000253838.3",
+    "ENST00000253838.3",
+  ],
+  [
+    "enst00000253848.3",
+    "ENST00000253848.3",
+  ],
+  [
+    "enst00000255183.8",
+    "ENST00000255183.8",
+  ],
+  [
+    "enst00000262354.5",
+    "ENST00000262354.5",
+  ],
+  [
+    "enst00000276770.8",
+    "ENST00000276770.8",
+  ],
+  [
+    "enst00000276779.8",
+    "ENST00000276779.8",
+  ],
+  [
+    "enst00000279067.3",
+    "ENST00000279067.3",
+  ],
+  [
+    "enst00000289890.7",
+    "ENST00000289890.7",
+  ],
+  [
+    "enst00000291374.11",
+    "ENST00000291374.11",
+  ],
+  [
+    "enst00000292748.7",
+    "ENST00000292748.7",
+  ],
+  [
+    "enst00000294715.6",
+    "ENST00000294715.6",
+  ],
+]
+`;
+
+exports[`Test a search of test2 ix file > Search for "enst" in test2/out.ix 1`] = `
+[
+  [
+    "enst00000229465.10",
+    "ENST00000229465.10",
+  ],
+  [
+    "enst00000230113.5",
+    "ENST00000230113.5",
+  ],
+  [
+    "enst00000235290.7",
+    "ENST00000235290.7",
+  ],
+  [
+    "enst00000242109.5",
+    "ENST00000242109.5",
+  ],
+  [
+    "enst00000244820.2",
+    "ENST00000244820.2",
+  ],
+  [
+    "enst00000244906.6",
+    "ENST00000244906.6",
+  ],
+  [
+    "enst00000248980.9",
+    "ENST00000248980.9",
+  ],
+  [
+    "enst00000250776.5",
+    "ENST00000250776.5",
+  ],
+  [
+    "enst00000250805.5",
+    "ENST00000250805.5",
+  ],
+  [
+    "enst00000253838.3",
+    "ENST00000253838.3",
+  ],
+  [
+    "enst00000253848.3",
+    "ENST00000253848.3",
+  ],
+  [
+    "enst00000255183.8",
+    "ENST00000255183.8",
+  ],
+  [
+    "enst00000262354.5",
+    "ENST00000262354.5",
+  ],
+  [
+    "enst00000276770.8",
+    "ENST00000276770.8",
+  ],
+  [
+    "enst00000276779.8",
+    "ENST00000276779.8",
+  ],
+  [
+    "enst00000279067.3",
+    "ENST00000279067.3",
+  ],
+  [
+    "enst00000289890.7",
+    "ENST00000289890.7",
+  ],
+  [
+    "enst00000291374.11",
+    "ENST00000291374.11",
+  ],
+  [
+    "enst00000292748.7",
+    "ENST00000292748.7",
+  ],
+  [
+    "enst00000294715.6",
+    "ENST00000294715.6",
+  ],
+]
+`;
+
+exports[`Test a search of test2 ix file > Search for "none" in test2/out.ix 1`] = `[]`;
+
+exports[`Test a search of test2 ix file > Search for "prickle" in test2/out.ix 1`] = `
+[
+  [
+    "prickle2-as1",
+    "ENST00000460946.1",
+  ],
+  [
+    "prickle2-as1",
+    "ENST00000476308.1",
+  ],
+  [
+    "prickle2-as2",
+    "ENST00000484703.1",
+  ],
+  [
+    "prickle2-as3",
+    "ENST00000473434.1",
+  ],
+  [
+    "prickle2-dt",
+    "ENST00000487097.1",
+  ],
+  [
+    "prickle2-dt",
+    "ENST00000659263.1",
+  ],
+]
+`;
+
+exports[`Test a search of test2 ix file > Search for "tim" in test2/out.ix 1`] = `
+[
+  [
+    "timm23b-agap6",
+    "ENST00000429104.1",
+  ],
+  [
+    "timm23b-agap6",
+    "ENST00000444438.2",
+  ],
+  [
+    "timm23b-agap6",
+    "ENST00000651208.1",
+  ],
+  [
+    "timm23b-agap6",
+    "ENST00000651763.1",
+  ],
+]
+`;
+
+exports[`Test a search of test2 ix file > Search for "znf8" in test2/out.ix 1`] = `
+[
+  [
+    "znf8-ervk3-1",
+    "ENST00000591325.1",
+  ],
+  [
+    "znf84-dt",
+    "ENST00000443154.3",
+  ],
+  [
+    "znf84-dt",
+    "ENST00000592296.5",
+  ],
+]
+`;
+
+exports[`Test a search of test3 ix file > Search for "focad" in test3/out.ix 1`] = `
+[
+  [
+    "focad",
+    "ENSMUST00000097992.10",
+  ],
+  [
+    "focad",
+    "ENSMUST00000107147.2",
+  ],
+  [
+    "focad",
+    "ENSMUST00000107148.8",
+  ],
+  [
+    "focad",
+    "ENSMUST00000129967.2",
+  ],
+  [
+    "focad",
+    "ENSMUST00000130603.2",
+  ],
+  [
+    "focad",
+    "ENSMUST00000144388.2",
+  ],
+  [
+    "focad",
+    "ENSMUST00000147527.2",
+  ],
+  [
+    "focad",
+    "ENSMUST00000159342.8",
+  ],
+  [
+    "focad",
+    "ENSMUST00000161058.8",
+  ],
+  [
+    "focad",
+    "ENSMUST00000162039.2",
+  ],
+]
+`;
+
+exports[`Test a search of test3 ix file > Search for "nothing" in test3/out.ix 1`] = `[]`;
+
+exports[`Test a search of test3 ix file > Search for "oca" in test3/out.ix 1`] = `
+[
+  [
+    "oca2",
+    "ENSMUST00000032633.12",
+  ],
+  [
+    "oca2",
+    "ENSMUST00000144739.8",
+  ],
+  [
+    "oca2",
+    "ENSMUST00000152693.8",
+  ],
+  [
+    "oca2",
+    "ENSMUST00000154559.2",
+  ],
+  [
+    "oca2",
+    "ENSMUST00000155533.2",
+  ],
+  [
+    "oca2",
+    "ENSMUST00000156886.8",
+  ],
+]
+`;
+
+exports[`Test a search of test3 ix file > Search for "prickle" in test3/out.ix 1`] = `
+[
+  [
+    "prickle1",
+    "ENSMUST00000048982.11",
+  ],
+  [
+    "prickle1",
+    "ENSMUST00000109255.3",
+  ],
+  [
+    "prickle2",
+    "ENSMUST00000032093.12",
+  ],
+  [
+    "prickle2",
+    "ENSMUST00000113445.2",
+  ],
+  [
+    "prickle2",
+    "ENSMUST00000113446.8",
+  ],
+  [
+    "prickle2",
+    "ENSMUST00000113447.8",
+  ],
+  [
+    "prickle3",
+    "ENSMUST00000033485.14",
+  ],
+  [
+    "prickle3",
+    "ENSMUST00000123172.3",
+  ],
+  [
+    "prickle3",
+    "ENSMUST00000129662.3",
+  ],
+  [
+    "prickle3",
+    "ENSMUST00000141876.2",
+  ],
+  [
+    "prickle3",
+    "ENSMUST00000153994.2",
+  ],
+  [
+    "prickle4",
+    "ENSMUST00000113299.6",
+  ],
+  [
+    "prickle4",
+    "ENSMUST00000113300.8",
+  ],
+  [
+    "prickle4",
+    "ENSMUST00000142014.2",
+  ],
+  [
+    "prickle4",
+    "ENSMUST00000151540.2",
+  ],
+  [
+    "prickle4",
+    "ENSMUST00000152214.4",
+  ],
+]
+`;
+
+exports[`Test a search of test3 ix file > Search for "tim" in test3/out.ix 1`] = `
+[
+  [
+    "timd2",
+    "ENSMUST00000055102.13",
+  ],
+  [
+    "timd2",
+    "ENSMUST00000109225.9",
+  ],
+  [
+    "timd2",
+    "ENSMUST00000125008.2",
+  ],
+  [
+    "timd2",
+    "ENSMUST00000169584.8",
+  ],
+  [
+    "timd4",
+    "ENSMUST00000068877.7",
+  ],
+  [
+    "timeless",
+    "ENSMUST00000055539.11",
+  ],
+  [
+    "timeless",
+    "ENSMUST00000105240.8",
+  ],
+  [
+    "timeless",
+    "ENSMUST00000105242.8",
+  ],
+  [
+    "timeless",
+    "ENSMUST00000105243.9",
+  ],
+  [
+    "timeless",
+    "ENSMUST00000105244.8",
+  ],
+  [
+    "timeless",
+    "ENSMUST00000105245.3",
+  ],
+  [
+    "timeless",
+    "ENSMUST00000125289.8",
+  ],
+  [
+    "timeless",
+    "ENSMUST00000129147.2",
+  ],
+  [
+    "timeless",
+    "ENSMUST00000135376.2",
+  ],
+  [
+    "timeless",
+    "ENSMUST00000135538.2",
+  ],
+  [
+    "timeless",
+    "ENSMUST00000136854.2",
+  ],
+  [
+    "timeless",
+    "ENSMUST00000142149.2",
+  ],
+  [
+    "timeless",
+    "ENSMUST00000142484.2",
+  ],
+  [
+    "timeless",
+    "ENSMUST00000145710.8",
+  ],
+  [
+    "timeless",
+    "ENSMUST00000146945.2",
+  ],
+]
+`;
+
+exports[`Test a search of test3 ix file > Search for "zx" in test3/out.ix 1`] = `
+[
+  [
+    "zxda",
+    "ENSMUST00000117281.2",
+  ],
+  [
+    "zxdb",
+    "ENSMUST00000101388.4",
+  ],
+  [
+    "zxdc",
+    "ENSMUST00000045740.8",
+  ],
+  [
+    "zxdc",
+    "ENSMUST00000075117.10",
+  ],
+  [
+    "zxdc",
+    "ENSMUST00000113539.8",
+  ],
+  [
+    "zxdc",
+    "ENSMUST00000137483.2",
+  ],
+  [
+    "zxdc",
+    "ENSMUST00000203493.2",
+  ],
+]
+`;
+
+exports[`Test a search of test3 ix file > Search for "zzz" in test3/out.ix 1`] = `
+[
+  [
+    "zzz3",
+    "ENSMUST00000089982.11",
+  ],
+  [
+    "zzz3",
+    "ENSMUST00000106100.9",
+  ],
+  [
+    "zzz3",
+    "ENSMUST00000106101.2",
+  ],
+  [
+    "zzz3",
+    "ENSMUST00000106103.8",
+  ],
+  [
+    "zzz3",
+    "ENSMUST00000135044.3",
+  ],
+  [
+    "zzz3",
+    "ENSMUST00000138115.8",
+  ],
+  [
+    "zzz3",
+    "ENSMUST00000150802.8",
+  ],
+  [
+    "zzz3",
+    "ENSMUST00000197987.5",
+  ],
+  [
+    "zzz3",
+    "ENSMUST00000198468.2",
+  ],
+  [
+    "zzz3",
+    "ENSMUST00000200570.5",
+  ],
+]
+`;
+
+exports[`Test a search of test4 ix file > Search for "ek" in test4/out.ix 1`] = `
+[
+  [
+    "ekaa",
+    "id11",
+  ],
+  [
+    "ekaa",
+    "id8",
+  ],
+  [
+    "ekab",
+    "id12",
+  ],
+  [
+    "ekac",
+    "id13",
+  ],
+  [
+    "ekad",
+    "id14",
+  ],
+  [
+    "ekadd",
+    "id46",
+  ],
+  [
+    "ekae",
+    "id39",
+  ],
+  [
+    "ekaf",
+    "id41",
+  ],
+  [
+    "ekag",
+    "id16",
+  ],
+  [
+    "ekah",
+    "id1",
+  ],
+  [
+    "ekah",
+    "id17",
+  ],
+  [
+    "ekah",
+    "id9",
+  ],
+  [
+    "ekai",
+    "id18",
+  ],
+  [
+    "ekaj",
+    "id19",
+  ],
+  [
+    "ekak",
+    "id10",
+  ],
+  [
+    "ekak",
+    "id2",
+  ],
+  [
+    "ekak",
+    "id20",
+  ],
+  [
+    "ekak",
+    "id26",
+  ],
+  [
+    "ekak",
+    "id4",
+  ],
+  [
+    "ekak",
+    "id44",
+  ],
+]
+`;
+
+exports[`Test maxResults for search of test3 ix file > Search for "tim" with a max of 5 results 1`] = `
+[
+  [
+    "timd2",
+    "ENSMUST00000055102.13",
+  ],
+  [
+    "timd2",
+    "ENSMUST00000109225.9",
+  ],
+  [
+    "timd2",
+    "ENSMUST00000125008.2",
+  ],
+  [
+    "timd2",
+    "ENSMUST00000169584.8",
+  ],
+  [
+    "timd4",
+    "ENSMUST00000068877.7",
+  ],
+]
+`;
+
+exports[`Test maxResults for search of test5 ix file > Search for #100 results 1`] = `
+[
+  [
+    "#10000;",
+    "["NC_000011.9%3A45921329..45921623"|"ncbi_gff_hg19"|"tiled%20region%20%2310000%3B%20K562%20Activating%20DNase%20unmatched%20-%20State%201%3ATss%20%20and%20HepG2%20Activating%20DNase%20matched%20-%20State%204%3APromP"]",
+  ],
+  [
+    "#10002;",
+    "["NC_000020.10%3A60346829..60347123"|"ncbi_gff_hg19"|"tiled%20region%20%2310002%3B%20HepG2%20Activating%20DNase%20matched%20-%20State%204%3APromP"]",
+  ],
+  [
+    "#10002;",
+    "["NC_000020.10%3A60346829..60347123"|"ncbi_gff_hg19"|"tiled%20region%20%2310002%3B%20K562%20Repressive%20non-DNase%20unmatched%20-%20State%2021%3ARepr"]",
+  ],
+  [
+    "#1001;",
+    "["NC_000006.11%3A33894269..33894563"|"ncbi_gff_hg19"|"tiled%20region%20%231001%3B%20HepG2%20Activating%20non-DNase%20unmatched%20-%20State%2020%3AReprD%20%20and%20K562%20Activating%20DNase%20unmatched%20-%20State%209%3ADNaseU"]",
+  ],
+  [
+    "#10024;",
+    "["NC_000010.10%3A99534589..99534883"|"ncbi_gff_hg19"|"tiled%20region%20%2310024%3B%20HepG2%20Activating%20DNase%20matched%20-%20State%204%3APromP%20%20and%20K562%20Activating%20non-DNase%20unmatched%20-%20State%207%3AEnhWF"]",
+  ],
+  [
+    "#10040;",
+    "["NC_000012.11%3A4671209..4671503"|"ncbi_gff_hg19"|"tiled%20region%20%2310040%3B%20HepG2%20Repressive%20DNase%20matched%20-%20State%204%3APromP"]",
+  ],
+  [
+    "#10046;",
+    "["NC_000019.9%3A4759809..4760103"|"ncbi_gff_hg19"|"tiled%20region%20%2310046%3B%20HepG2%20Activating%20DNase%20matched%20-%20State%204%3APromP%20%20and%20K562%20Activating%20DNase%20unmatched%20-%20State%208%3AEnhW"]",
+  ],
+  [
+    "#10051;",
+    "["NC_000017.10%3A56381689..56381983"|"ncbi_gff_hg19"|"tiled%20region%20%2310051%3B%20HepG2%20Activating%20DNase%20matched%20-%20State%204%3APromP%20%20and%20K562%20Activating%20DNase%20unmatched%20-%20State%205%3AEnh"]",
+  ],
+  [
+    "#10059;",
+    "["NC_000017.10%3A48258529..48258823"|"ncbi_gff_hg19"|"tiled%20region%20%2310059%3B%20HepG2%20Activating%20DNase%20matched%20-%20State%204%3APromP"]",
+  ],
+  [
+    "#10071;",
+    "["NC_000010.10%3A69523229..69523523"|"ncbi_gff_hg19"|"tiled%20region%20%2310071%3B%20HepG2%20Activating%20DNase%20matched%20-%20State%204%3APromP%20%20and%20K562%20Activating%20non-DNase%20unmatched%20-%20State%202%3ATssF"]",
+  ],
+  [
+    "#10080;",
+    "["NC_000008.10%3A23896849..23897143"|"ncbi_gff_hg19"|"tiled%20region%20%2310080%3B%20HepG2%20Activating%20DNase%20matched%20-%20State%205%3AEnh"]",
+  ],
+  [
+    "#1008;",
+    "["NC_000005.9%3A42950769..42951063"|"ncbi_gff_hg19"|"tiled%20region%20%231008%3B%20HepG2%20Activating%20non-DNase%20unmatched%20-%20State%2020%3AReprD%20%20and%20K562%20Activating%20DNase%20unmatched%20-%20State%208%3AEnhW"]",
+  ],
+  [
+    "#10092;",
+    "["NC_000016.9%3A53915389..53915683"|"ncbi_gff_hg19"|"tiled%20region%20%2310092%3B%20HepG2%20Activating%20DNase%20matched%20-%20State%205%3AEnh%20%20and%20K562%20Activating%20non-DNase%20unmatched%20-%20State%2011%3AFaireW"]",
+  ],
+  [
+    "#10095;",
+    "["NC_000009.11%3A67301289..67301583"|"ncbi_gff_hg19"|"tiled%20region%20%2310095%3B%20HepG2%20Activating%20DNase%20matched%20-%20State%205%3AEnh"]",
+  ],
+  [
+    "#10096;",
+    "["NC_000018.9%3A8730409..8730703"|"ncbi_gff_hg19"|"tiled%20region%20%2310096%3B%20HepG2%20Activating%20DNase%20matched%20-%20State%205%3AEnh%20%20and%20K562%20Activating%20DNase%20unmatched%20-%20State%205%3AEnh"]",
+  ],
+]
+`;
+
+exports[`Test maxResults for search of test5 ix file > Search for vamp results 1`] = `
+[
+  [
+    "vamp",
+    "["NC_000018.9%3A9914013..9960018"|"ncbi_gff_hg19"|"VAPA"|"gene22832"|"VAMP%20associated%20protein%20A"|"hVAP-33%20VAP-33%20VAP-A%20VAP33"]",
+  ],
+  [
+    "vamp",
+    "["NC_000020.10%3A56964285..57026157"|"ncbi_gff_hg19"|"VAPB"|"gene25538"|"VAMP%20associated%20protein%20B%20and%20C"|"ALS8%20VAMP-B%20VAP-B"]",
+  ],
+  [
+    "vamp-1",
+    "["NC_000012.11%3A6571403..6579843"|"ncbi_gff_hg19"|"VAMP1"|"gene16151"|"vesicle%20associated%20membrane%20protein%201"|"CMS25%20SPAX1%20SYB1%20VAMP-1"]",
+  ],
+  [
+    "vamp-2",
+    "["NC_000017.10%3A8062465..8066266"|"ncbi_gff_hg19"|"VAMP2"|"gene21485"|"vesicle%20associated%20membrane%20protein%202"|"NEDHAHM%20SYB2%20VAMP-2"]",
+  ],
+  [
+    "vamp-4",
+    "["NC_000001.10%3A171669300..171711205"|"ncbi_gff_hg19"|"VAMP4"|"gene2056"|"vesicle%20associated%20membrane%20protein%204"|"VAMP-4%20VAMP24"]",
+  ],
+  [
+    "vamp-7",
+    "["NC_000023.10%3A155111008..155173433"|"ncbi_gff_hg19"|"VAMP7"|"gene27779"|"vesicle%20associated%20membrane%20protein%207"|"SYBL1%20TI-VAMP%20TIVAMP%20VAMP-7"]",
+  ],
+  [
+    "vamp-7",
+    "["NC_000024.9%3A59214014..59276439"|"ncbi_gff_hg19"|"VAMP7"|"gene27907"|"vesicle%20associated%20membrane%20protein%207"|"SYBL1%20TI-VAMP%20TIVAMP%20VAMP-7"]",
+  ],
+  [
+    "vamp-8",
+    "["NC_000002.11%3A85804709..85809154"|"ncbi_gff_hg19"|"VAMP8"|"gene3396"|"vesicle%20associated%20membrane%20protein%208"|"EDB%20VAMP-8"]",
+  ],
+  [
+    "vamp3",
+    "["NC_000001.10%3A7831356..7841492"|"ncbi_gff_hg19"|"VAMP3"|"gene151"|"vesicle%20associated%20membrane%20protein%203"|"CEB"]",
+  ],
+  [
+    "vamp5",
+    "["NC_000002.11%3A85811554..85820529"|"ncbi_gff_hg19"|"VAMP5"|"gene3397"|"vesicle%20associated%20membrane%20protein%205"]",
+  ],
+]
+`;

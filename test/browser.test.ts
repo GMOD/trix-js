@@ -1,8 +1,12 @@
-import { createServer, IncomingMessage, ServerResponse } from 'node:http'
 import { readFileSync, statSync } from 'node:fs'
+import { createServer } from 'node:http'
 import { join } from 'node:path'
+
+import puppeteer from 'puppeteer'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
-import puppeteer, { Browser, Page } from 'puppeteer'
+
+import type { IncomingMessage, ServerResponse } from 'node:http'
+import type { Browser, Page } from 'puppeteer'
 
 function createStaticServer(
   port: number,
@@ -157,7 +161,7 @@ describe('Browser tests with Puppeteer', () => {
     page = await browser.newPage()
 
     const errors: string[] = []
-    page.on('pageerror', err => errors.push(err.message))
+    page.on('pageerror', (err: any) => errors.push(err.message))
     page.on('console', msg => {
       if (msg.type() === 'error') {
         errors.push(msg.text())
@@ -168,28 +172,28 @@ describe('Browser tests with Puppeteer', () => {
 
     try {
       await page.waitForFunction('window.ready === true', { timeout: 10000 })
-    } catch (e) {
+    } catch (error) {
       const html = await page.content()
       console.error('Page errors:', errors)
       console.error('Page HTML:', html)
-      throw e
+      throw error
     }
   }, 30000)
 
   afterAll(async () => {
     await browser?.close()
     await Promise.all([
-      new Promise<void>(resolve => corsServer.close(() => resolve())),
-      new Promise<void>(resolve => noCorsServer.close(() => resolve())),
-      new Promise<void>(resolve => appServer.close(() => resolve())),
+      new Promise<void>(resolve => corsServer.close(() => { resolve() })),
+      new Promise<void>(resolve => noCorsServer.close(() => { resolve() })),
+      new Promise<void>(resolve => appServer.close(() => { resolve() })),
     ])
   })
 
   it('searches via HTTP with CORS enabled server', async () => {
     const results = await page.evaluate(async (port: number) => {
-      const trix = new (window as any).Trix(
-        new (window as any).RemoteFile(`http://localhost:${port}/myTrix.ixx`),
-        new (window as any).RemoteFile(`http://localhost:${port}/myTrix.ix`),
+      const trix = new (globalThis as any).Trix(
+        new (globalThis as any).RemoteFile(`http://localhost:${port}/myTrix.ixx`),
+        new (globalThis as any).RemoteFile(`http://localhost:${port}/myTrix.ix`),
       )
       return trix.search('for')
     }, corsPort)
@@ -206,18 +210,18 @@ describe('Browser tests with Puppeteer', () => {
     page.on('console', consoleHandler)
 
     const result = await page.evaluate(async (port: number) => {
-      const trix = new (window as any).Trix(
-        new (window as any).RemoteFile(`http://localhost:${port}/myTrix.ixx`),
-        new (window as any).RemoteFile(`http://localhost:${port}/myTrix.ix`),
+      const trix = new (globalThis as any).Trix(
+        new (globalThis as any).RemoteFile(`http://localhost:${port}/myTrix.ixx`),
+        new (globalThis as any).RemoteFile(`http://localhost:${port}/myTrix.ix`),
       )
       try {
         await trix.search('for')
         return { success: true, error: null, errorName: null }
-      } catch (e: any) {
+      } catch (error: any) {
         return {
           success: false,
-          error: String(e),
-          errorName: e?.name || null,
+          error: String(error),
+          errorName: error?.name || null,
         }
       }
     }, noCorsPort)
@@ -238,9 +242,9 @@ describe('Browser tests with Puppeteer', () => {
 
   it('handles EOF correctly with CORS enabled server', async () => {
     const results = await page.evaluate(async (port: number) => {
-      const trix = new (window as any).Trix(
-        new (window as any).RemoteFile(`http://localhost:${port}/myTrix.ixx`),
-        new (window as any).RemoteFile(`http://localhost:${port}/myTrix.ix`),
+      const trix = new (globalThis as any).Trix(
+        new (globalThis as any).RemoteFile(`http://localhost:${port}/myTrix.ixx`),
+        new (globalThis as any).RemoteFile(`http://localhost:${port}/myTrix.ix`),
       )
       return trix.search('this')
     }, corsPort)
@@ -250,9 +254,9 @@ describe('Browser tests with Puppeteer', () => {
 
   it('returns empty for non-existent search term', async () => {
     const results = await page.evaluate(async (port: number) => {
-      const trix = new (window as any).Trix(
-        new (window as any).RemoteFile(`http://localhost:${port}/myTrix.ixx`),
-        new (window as any).RemoteFile(`http://localhost:${port}/myTrix.ix`),
+      const trix = new (globalThis as any).Trix(
+        new (globalThis as any).RemoteFile(`http://localhost:${port}/myTrix.ixx`),
+        new (globalThis as any).RemoteFile(`http://localhost:${port}/myTrix.ix`),
       )
       return trix.search('zzz')
     }, corsPort)
