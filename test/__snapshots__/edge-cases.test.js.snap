@@ -1,0 +1,18 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Edge case handling > handles search term with trailing spaces 1`] = `
+[
+  [
+    "this",
+    "id1",
+  ],
+  [
+    "this",
+    "id2",
+  ],
+  [
+    "this",
+    "id3",
+  ],
+]
+`;

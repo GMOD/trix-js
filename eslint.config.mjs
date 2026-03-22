@@ -9,10 +9,10 @@ export default defineConfig(
     ignores: [
       'esm/**/*',
       'dist/**/*',
-      '*.js',
-      '*.mjs',
+      '**/*.js',
+      '**/*.mjs',
+      '**/*.d.ts',
       'example/*',
-      'test/browser.test.ts',
     ],
   },
   {
@@ -33,6 +33,7 @@ export default defineConfig(
     rules: {
       'no-underscore-dangle': 'off',
       curly: 'error',
+      eqeqeq: 'error',
       '@typescript-eslint/consistent-type-imports': 'error',
       semi: ['error', 'never'],
       'no-plusplus': 'off',
@@ -45,11 +46,18 @@ export default defineConfig(
       'unicorn/prefer-spread': 'off',
       'unicorn/expiring-todo-comments': 'off',
 
-      '@typescript-eslint/no-explicit-any': 'off',
-      '@typescript-eslint/explicit-module-boundary-types': 'off',
-      '@typescript-eslint/ban-ts-comment': 'off',
+      '@typescript-eslint/restrict-template-expressions': [
+        'error',
+        { allowNumber: true },
+      ],
+      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/ban-ts-comment': [
+        'error',
+        { 'ts-expect-error': 'allow-with-description', 'ts-ignore': true },
+      ],
 
       'import/no-unresolved': 'off',
+      'import/no-named-as-default-member': 'off',
       'import/extensions': ['error', 'ignorePackages'],
       'import/order': [
         'error',

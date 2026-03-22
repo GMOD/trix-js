@@ -1,8 +1,12 @@
-import { createServer, IncomingMessage, ServerResponse } from 'node:http'
 import { readFileSync, statSync } from 'node:fs'
-import { join } from 'node:path'
+import { createServer } from 'node:http'
+import path from 'node:path'
+
+import puppeteer from 'puppeteer'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
-import puppeteer, { Browser, Page } from 'puppeteer'
+
+import type { IncomingMessage, ServerResponse } from 'node:http'
+import type { Browser, ConsoleMessage, Page } from 'puppeteer'
 
 function createStaticServer(
   port: number,
@@ -28,10 +32,10 @@ function createStaticServer(
       return
     }
 
-    const filePath = join(
+    const filePath = path.join(
       process.cwd(),
       'test/testData/test1',
-      req.url === '/' ? 'myTrix.ix' : req.url!,
+      req.url === '/' ? 'myTrix.ix' : (req.url ?? '/'),
     )
 
     try {
@@ -74,13 +78,12 @@ function createStaticServer(
   return createServer(handler)
 }
 
-function createAppServer(port: number): ReturnType<typeof createServer> {
-  const handler = (req: IncomingMessage, res: ServerResponse) => {
-    res.setHeader('Access-Control-Allow-Origin', '*')
+function appHandler(req: IncomingMessage, res: ServerResponse) {
+  res.setHeader('Access-Control-Allow-Origin', '*')
 
-    if (req.url === '/') {
-      res.writeHead(200, { 'Content-Type': 'text/html' })
-      res.end(`<!DOCTYPE html>
+  if (req.url === '/') {
+    res.writeHead(200, { 'Content-Type': 'text/html' })
+    res.end(`<!DOCTYPE html>
 <html>
 <head>
   <script type="importmap">
@@ -101,32 +104,33 @@ function createAppServer(port: number): ReturnType<typeof createServer> {
   </script>
 </body>
 </html>`)
-      return
-    }
-
-    const filePath = join(process.cwd(), req.url!)
-    try {
-      const stat = statSync(filePath)
-      if (stat.isFile()) {
-        const content = readFileSync(filePath)
-        const ext = filePath.split('.').pop()
-        const contentType =
-          ext === 'js' ? 'application/javascript' : 'application/octet-stream'
-        res.writeHead(200, {
-          'Content-Type': contentType,
-          'Content-Length': content.length,
-        })
-        res.end(content)
-        return
-      }
-    } catch {
-      // fall through to 404
-    }
-    res.writeHead(404)
-    res.end('Not found')
+    return
   }
 
-  return createServer(handler)
+  const filePath = path.join(process.cwd(), req.url ?? '/')
+  try {
+    const stat = statSync(filePath)
+    if (stat.isFile()) {
+      const content = readFileSync(filePath)
+      const ext = filePath.split('.').pop()
+      const contentType =
+        ext === 'js' ? 'application/javascript' : 'application/octet-stream'
+      res.writeHead(200, {
+        'Content-Type': contentType,
+        'Content-Length': content.length,
+      })
+      res.end(content)
+      return
+    }
+  } catch {
+    // fall through to 404
+  }
+  res.writeHead(404)
+  res.end('Not found')
+}
+
+function createAppServer() {
+  return createServer(appHandler)
 }
 
 describe('Browser tests with Puppeteer', () => {
@@ -142,7 +146,7 @@ describe('Browser tests with Puppeteer', () => {
   beforeAll(async () => {
     corsServer = createStaticServer(corsPort, true)
     noCorsServer = createStaticServer(noCorsPort, false)
-    appServer = createAppServer(appPort)
+    appServer = createAppServer()
 
     await Promise.all([
       new Promise<void>(resolve => corsServer.listen(corsPort, resolve)),
@@ -157,7 +161,7 @@ describe('Browser tests with Puppeteer', () => {
     page = await browser.newPage()
 
     const errors: string[] = []
-    page.on('pageerror', err => errors.push(err.message))
+    page.on('pageerror', (err: Error) => errors.push(err.message))
     page.on('console', msg => {
       if (msg.type() === 'error') {
         errors.push(msg.text())
@@ -168,30 +172,47 @@ describe('Browser tests with Puppeteer', () => {
 
     try {
       await page.waitForFunction('window.ready === true', { timeout: 10000 })
-    } catch (e) {
+    } catch (error) {
       const html = await page.content()
       console.error('Page errors:', errors)
       console.error('Page HTML:', html)
-      throw e
+      throw error
     }
   }, 30000)
 
   afterAll(async () => {
-    await browser?.close()
+    await browser.close()
     await Promise.all([
-      new Promise<void>(resolve => corsServer.close(() => resolve())),
-      new Promise<void>(resolve => noCorsServer.close(() => resolve())),
-      new Promise<void>(resolve => appServer.close(() => resolve())),
+      new Promise<void>(resolve =>
+        corsServer.close(() => {
+          resolve()
+        }),
+      ),
+      new Promise<void>(resolve =>
+        noCorsServer.close(() => {
+          resolve()
+        }),
+      ),
+      new Promise<void>(resolve =>
+        appServer.close(() => {
+          resolve()
+        }),
+      ),
     ])
   })
 
+  /* eslint-disable @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any */
   it('searches via HTTP with CORS enabled server', async () => {
     const results = await page.evaluate(async (port: number) => {
-      const trix = new (window as any).Trix(
-        new (window as any).RemoteFile(`http://localhost:${port}/myTrix.ixx`),
-        new (window as any).RemoteFile(`http://localhost:${port}/myTrix.ix`),
+      const trix = new (globalThis as any).Trix(
+        new (globalThis as any).RemoteFile(
+          `http://localhost:${port}/myTrix.ixx`,
+        ),
+        new (globalThis as any).RemoteFile(
+          `http://localhost:${port}/myTrix.ix`,
+        ),
       )
-      return trix.search('for')
+      return await trix.search('for')
     }, corsPort)
 
     expect(results.length).toBeGreaterThan(0)
@@ -200,24 +221,29 @@ describe('Browser tests with Puppeteer', () => {
 
   it('fails to search via HTTP without CORS (browser enforces CORS)', async () => {
     const consoleMessages: string[] = []
-    const consoleHandler = (msg: any) => {
+    const consoleHandler = (msg: ConsoleMessage) => {
       consoleMessages.push(msg.text())
     }
     page.on('console', consoleHandler)
 
     const result = await page.evaluate(async (port: number) => {
-      const trix = new (window as any).Trix(
-        new (window as any).RemoteFile(`http://localhost:${port}/myTrix.ixx`),
-        new (window as any).RemoteFile(`http://localhost:${port}/myTrix.ix`),
+      const trix = new (globalThis as any).Trix(
+        new (globalThis as any).RemoteFile(
+          `http://localhost:${port}/myTrix.ixx`,
+        ),
+        new (globalThis as any).RemoteFile(
+          `http://localhost:${port}/myTrix.ix`,
+        ),
       )
       try {
         await trix.search('for')
-        return { success: true, error: null, errorName: null }
-      } catch (e: any) {
+        return { success: true, error: undefined, errorName: undefined }
+      } catch (error: unknown) {
+        const name = error instanceof Error ? error.name : undefined
         return {
           success: false,
-          error: String(e),
-          errorName: e?.name || null,
+          error: String(error),
+          errorName: name,
         }
       }
     }, noCorsPort)
@@ -238,11 +264,15 @@ describe('Browser tests with Puppeteer', () => {
 
   it('handles EOF correctly with CORS enabled server', async () => {
     const results = await page.evaluate(async (port: number) => {
-      const trix = new (window as any).Trix(
-        new (window as any).RemoteFile(`http://localhost:${port}/myTrix.ixx`),
-        new (window as any).RemoteFile(`http://localhost:${port}/myTrix.ix`),
+      const trix = new (globalThis as any).Trix(
+        new (globalThis as any).RemoteFile(
+          `http://localhost:${port}/myTrix.ixx`,
+        ),
+        new (globalThis as any).RemoteFile(
+          `http://localhost:${port}/myTrix.ix`,
+        ),
       )
-      return trix.search('this')
+      return await trix.search('this')
     }, corsPort)
 
     expect(results).toMatchSnapshot()
@@ -250,13 +280,18 @@ describe('Browser tests with Puppeteer', () => {
 
   it('returns empty for non-existent search term', async () => {
     const results = await page.evaluate(async (port: number) => {
-      const trix = new (window as any).Trix(
-        new (window as any).RemoteFile(`http://localhost:${port}/myTrix.ixx`),
-        new (window as any).RemoteFile(`http://localhost:${port}/myTrix.ix`),
+      const trix = new (globalThis as any).Trix(
+        new (globalThis as any).RemoteFile(
+          `http://localhost:${port}/myTrix.ixx`,
+        ),
+        new (globalThis as any).RemoteFile(
+          `http://localhost:${port}/myTrix.ix`,
+        ),
       )
-      return trix.search('zzz')
+      return await trix.search('zzz')
     }, corsPort)
 
     expect(results).toEqual([])
   })
+  /* eslint-enable @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any */
 })
