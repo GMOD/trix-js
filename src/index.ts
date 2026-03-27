@@ -64,10 +64,7 @@ export default class Trix {
           done = true
         }
       } else {
-        const lines = str
-          .slice(0, lastNewline)
-          .split('\n')
-          .filter(Boolean)
+        const lines = str.slice(0, lastNewline).split('\n').filter(Boolean)
 
         for (const line of lines) {
           const word = line.split(' ')[0]
@@ -178,7 +175,10 @@ export default class Trix {
     // or to ensure we have enough data to start with.
     if (end - start < CHUNK_SIZE) {
       const fileSize = await this.getIxFileSize(opts)
-      end = fileSize === undefined ? start + CHUNK_SIZE : Math.min(start + CHUNK_SIZE, fileSize)
+      end =
+        fileSize === undefined
+          ? start + CHUNK_SIZE
+          : Math.min(start + CHUNK_SIZE, fileSize)
     }
 
     const buffer = await this.ixFile.read(end - start, start, opts)

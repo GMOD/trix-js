@@ -33,6 +33,7 @@ export default defineConfig(
     rules: {
       'no-underscore-dangle': 'off',
       curly: 'error',
+      eqeqeq: 'error',
       '@typescript-eslint/consistent-type-imports': 'error',
       semi: ['error', 'never'],
       'no-plusplus': 'off',
@@ -45,6 +46,10 @@ export default defineConfig(
       'unicorn/prefer-spread': 'off',
       'unicorn/expiring-todo-comments': 'off',
 
+      '@typescript-eslint/restrict-template-expressions': [
+        'error',
+        { allowNumber: true },
+      ],
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/ban-ts-comment': [
         'error',
@@ -52,6 +57,7 @@ export default defineConfig(
       ],
 
       'import/no-unresolved': 'off',
+      'import/no-named-as-default-member': 'off',
       'import/extensions': ['error', 'ignorePackages'],
       'import/order': [
         'error',
