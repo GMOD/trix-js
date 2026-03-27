@@ -1,7 +1,10 @@
 {
   "compilerOptions": {
-    "moduleResolution": "bundler",
-    "lib": ["es2019", "dom"],
+    "moduleResolution": "nodenext",
+    "lib": [
+      "es2019",
+      "dom"
+    ],
     "declaration": true,
     "outDir": "dist",
     "rootDir": "src",
@@ -10,7 +13,12 @@
     "allowImportingTsExtensions": true,
     "rewriteRelativeImportExtensions": true,
     "esModuleInterop": true,
-    "types": ["node"]
+    "types": [
+      "node"
+    ],
+    "module": "nodenext"
   },
-  "include": ["src"]
+  "include": [
+    "src"
+  ]
 }
