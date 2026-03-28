@@ -39,7 +39,10 @@
     "postversion": "git push --follow-tags"
   },
   "author": "Matt Morgan",
-  "repository": "GMOD/trix-js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/GMOD/trix-js.git"
+  },
   "devDependencies": {
     "@types/node": "^25.5.0",
     "@typescript-eslint/eslint-plugin": "^8.57.2",
