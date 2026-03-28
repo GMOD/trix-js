@@ -39,20 +39,20 @@ The Trix class constructor accepts arguments:
 
 ### Trix search
 
-**Search the index files for a term and find its keys.**<br>
-**In the case of searching with multiple words, `trix.search()` finds the intersection of the result sets.**<br>
-The Trix search function accepts argument:
+Searches the index files for a term and returns its keys. When searching with multiple words, `trix.search()` finds the intersection of the result sets.
 
-- `searchString` - a string of space-separated words for what to search the index file and find keys for<br>
+The Trix search function accepts arguments:
 
-The Trix search function returns: <br>
+- `searchString` - a string of space-separated words to search the index file for
 
-- `Promise<[term,result][] as [string,string][]>` - an array of [term, result] pairs where each term is the left column in the trix and the right column is the trix match
+The Trix search function returns:
+
+- `Promise<[string, string][]>` - an array of `[term, result]` pairs where `term` is the left column in the trix and `result` is the matching key
 
 ## Examples
 
 ```js
-import { LocalFile } from 'generic-filehandle'
+import { LocalFile } from 'generic-filehandle2'
 import Trix from '@gmod/trix'
 
 const ixxFile = new LocalFile('out.ixx')
@@ -75,27 +75,20 @@ async function doStuff() {
 doStuff()
 ```
 
-<br><br>
-
 ## Development
 
 ### Test trix-js
 
-First, clone this repo and install npm packages. <br>
-Then, run `npm test`. <br>
+Clone this repo, install npm packages, then run `npm test`.
 
-### Test the USCS TrixSearch - Requires Linux
+### Test the UCSC TrixSearch - Requires Linux
 
-First, clone this repo.
-To run test searches on a track hub using the USCS `TrixSearch`, navigate to `tests/testdata/test#` and run `bash test#script.sh` where # is the test number.
-To change search terms, edit `searchterms.txt`.
+Clone this repo. To run test searches on a track hub using the UCSC `TrixSearch`, navigate to `tests/testdata/test#` and run `bash test#script.sh` where `#` is the test number. To change search terms, edit `searchterms.txt`.
 
-**Wondering what to search for?**<br>
-Open up `tests/testdata/test#/input.txt`.
+Wondering what to search for? Open `tests/testdata/test#/input.txt`.
 
-**How to test my own .gff.gz data?**<br>
-Navigate to `/test/rawGenomes` and create a directory with your .gff.gz file in it. From within that directory, run `bash ../../programs/gff3ToInput.sh <.gff3.gz FILE> <OUTPUT NAME>`.
+To test your own .gff.gz data, navigate to `/test/rawGenomes`, create a directory with your .gff.gz file in it, and from within that directory run `bash ../../programs/gff3ToInput.sh <.gff3.gz FILE> <OUTPUT NAME>`.
 
 ## Reference
 
-See https://genome.ucsc.edu/goldenPath/help/trix.html for basic concepts of trix and https://github.com/GMOD/ixixx-js for a javascript implementation of the ixIxx command
+See the [UCSC trix documentation](https://genome.ucsc.edu/goldenPath/help/trix.html) for basic concepts of trix and [ixixx-js](https://github.com/GMOD/ixixx-js) for a JavaScript implementation of the ixIxx command.
