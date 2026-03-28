@@ -75,20 +75,6 @@ async function doStuff() {
 doStuff()
 ```
 
-## Development
-
-### Test trix-js
-
-Clone this repo, install npm packages, then run `npm test`.
-
-### Test the UCSC TrixSearch - Requires Linux
-
-Clone this repo. To run test searches on a track hub using the UCSC `TrixSearch`, navigate to `tests/testdata/test#` and run `bash test#script.sh` where `#` is the test number. To change search terms, edit `searchterms.txt`.
-
-Wondering what to search for? Open `tests/testdata/test#/input.txt`.
-
-To test your own .gff.gz data, navigate to `/test/rawGenomes`, create a directory with your .gff.gz file in it, and from within that directory run `bash ../../programs/gff3ToInput.sh <.gff3.gz FILE> <OUTPUT NAME>`.
-
 ## Reference
 
 See the [UCSC trix documentation](https://genome.ucsc.edu/goldenPath/help/trix.html) for basic concepts of trix and [ixixx-js](https://github.com/GMOD/ixixx-js) for a JavaScript implementation of the ixIxx command.
