@@ -67,7 +67,7 @@ export default class Trix {
         const lines = str.slice(0, lastNewline).split('\n').filter(Boolean)
 
         for (const line of lines) {
-          const word = line.split(' ')[0]
+          const word = line.split(' ')[0]!
 
           if (word.startsWith(searchWord)) {
             const [term, ...parts] = line.split(' ')
@@ -148,7 +148,7 @@ export default class Trix {
 
     while (low <= high) {
       const mid = Math.floor((low + high) / 2)
-      if (indexes[mid][0] <= searchWord) {
+      if (indexes[mid]![0] <= searchWord) {
         bestIndex = mid
         low = mid + 1
       } else {
@@ -160,11 +160,11 @@ export default class Trix {
     let end = CHUNK_SIZE
 
     if (bestIndex !== -1) {
-      start = indexes[bestIndex][1]
+      start = indexes[bestIndex]![1]
       // The end should be the start of the NEXT index entry to cover the full range
       // where the word could exist. If it's the last index, read until EOF or start+CHUNK_SIZE.
       if (bestIndex + 1 < indexes.length) {
-        end = indexes[bestIndex + 1][1]
+        end = indexes[bestIndex + 1]![1]
       } else {
         const fileSize = await this.getIxFileSize(opts)
         end = fileSize ?? start + CHUNK_SIZE
