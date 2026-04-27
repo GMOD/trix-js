@@ -78,3 +78,11 @@ doStuff()
 ## Reference
 
 See the [UCSC trix documentation](https://genome.ucsc.edu/goldenPath/help/trix.html) for basic concepts of trix and [ixixx-js](https://github.com/GMOD/ixixx-js) for a JavaScript implementation of the ixIxx command.
+
+## Publishing
+
+[Trusted publishing](https://docs.npmjs.com/about-trusted-publishing) via GitHub Actions.
+
+```bash
+npm version patch  # or minor/major
+```
