@@ -4,7 +4,6 @@
   "license": "Apache-2.0",
   "type": "module",
   "main": "dist/index.js",
-  "module": "esm/index.js",
   "exports": {
     "import": "./esm/index.js",
     "require": "./dist/index.js"
@@ -16,16 +15,16 @@
   ],
   "scripts": {
     "test": "vitest",
-    "lint": "eslint --report-unused-disable-directives --max-warnings 0",
     "clean": "rimraf dist esm",
     "format": "prettier --write .",
-    "build:esm": "tsc --module nodenext --moduleResolution nodenext --outDir esm",
-    "build:es5": "tsc --module commonjs --moduleResolution bundler --outDir dist",
-    "build": "pnpm build:esm && pnpm build:es5",
+    "lint": "eslint --report-unused-disable-directives --max-warnings 0",
     "prebuild": "pnpm clean",
+    "build:esm": "tsc --outDir esm",
+    "build:es5": "tsc --module commonjs --moduleResolution bundler --outDir dist",
     "postbuild:es5": "echo '{\"type\": \"commonjs\"}' > dist/package.json",
     "preversion": "pnpm lint && pnpm test --run && pnpm build",
-    "postversion": "git push --follow-tags"
+    "postversion": "git push --follow-tags",
+    "build": "pnpm build:esm && pnpm build:es5"
   },
   "author": "Matt Morgan",
   "repository": {
