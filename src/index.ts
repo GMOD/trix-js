@@ -1,18 +1,18 @@
 import { dedupe } from './dedupe.ts'
-import { concatUint8Array } from './util.ts'
 
 import type { GenericFilehandle } from 'generic-filehandle2'
 
 const CHUNK_SIZE = 65536
 
-// this is the number of hex characters to use for the address in ixixx, see
+// number of hex characters used for the address in ixixx, see
 // https://github.com/GMOD/ixixx-js/blob/master/src/index.ts#L182
 const ADDRESS_SIZE = 10
 
 export default class Trix {
-  private decoder = new TextDecoder('utf8')
-  private indexCache?: readonly (readonly [string, number])[]
-  private ixFileSize?: number
+  // promises (not resolved values) so concurrent callers share one in-flight
+  // load, and one caller's signal can't abort another's await
+  private indexCache?: Promise<readonly (readonly [string, number])[]>
+  private ixFileSize?: Promise<number | undefined>
 
   constructor(
     public ixxFile: GenericFilehandle,
@@ -20,168 +20,117 @@ export default class Trix {
     public maxResults = 20,
   ) {}
 
-  private async getIxFileSize(opts?: { signal?: AbortSignal }) {
-    if (this.ixFileSize !== undefined) {
-      return this.ixFileSize
-    }
-    try {
-      // @ts-expect-error - stat is not in the filehandle interface but may exist at runtime
-      const stat = await this.ixFile.stat(opts)
-      this.ixFileSize = stat.size
-      return this.ixFileSize
-    } catch {
-      return undefined
-    }
+  private getIxFileSize() {
+    this.ixFileSize ??= this.ixFile
+      .stat()
+      .then(s => s.size)
+      .catch(() => undefined)
+    return this.ixFileSize
+  }
+
+  private getIndex() {
+    this.indexCache ??= this.ixxFile
+      .readFile({ encoding: 'utf8' })
+      .then(file =>
+        file
+          .split('\n')
+          .filter(Boolean)
+          .map(line => {
+            const p = line.length - ADDRESS_SIZE
+            return [
+              line.slice(0, p),
+              Number.parseInt(line.slice(p), 16),
+            ] as const
+          }),
+      )
+      .catch((error: unknown) => {
+        // clear so the next caller retries instead of getting a stuck rejection
+        this.indexCache = undefined
+        throw error
+      })
+    return this.indexCache
   }
 
   async search(searchString: string, opts?: { signal?: AbortSignal }) {
-    const searchWords = searchString.split(/\s+/)
-    const firstWord = searchWords[0]
-
-    // validate that we have a non-empty search term
+    const firstWord = searchString.split(/\s+/)[0]
     if (!firstWord) {
       return []
     }
-
     const searchWord = firstWord.toLowerCase()
-    const res = await this.getBuffer(searchWord, opts)
 
-    let { end, buffer } = res
-    const { fileSize } = res
-    let resultArr = [] as [string, string][]
-    let done = false
+    // stream:true lets the decoder hold back trailing incomplete UTF-8 bytes
+    // so a multibyte char split across a chunk boundary resolves correctly on
+    // the next chunk
+    const decoder = new TextDecoder('utf8')
+    const initial = await this.getBuffer(searchWord, opts)
+    const { fileSize } = initial
+    const results: [string, string][] = []
+    let buffer = decoder.decode(initial.buffer, { stream: true })
+    let end = initial.end
+    let stop = false
 
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    while (!done) {
-      const str = this.decoder.decode(buffer, { stream: true })
-
-      // slice to lastIndexOf('\n') to make sure we get complete records
-      // since the buffer fetch could get halfway into a record
-      const lastNewline = str.lastIndexOf('\n')
-      if (lastNewline === -1) {
-        // if no newline, we need more data unless we're at EOF
-        if (fileSize !== undefined && end >= fileSize) {
-          done = true
+    while (!stop && results.length < this.maxResults) {
+      const nl = buffer.indexOf('\n')
+      if (nl === -1) {
+        const remaining =
+          fileSize === undefined
+            ? CHUNK_SIZE
+            : Math.min(CHUNK_SIZE, fileSize - end)
+        const next =
+          remaining > 0
+            ? await this.ixFile.read(remaining, end, opts)
+            : undefined
+        if (next && next.length > 0) {
+          end += next.length
+          buffer += decoder.decode(next, { stream: true })
+        } else {
+          stop = true
         }
       } else {
-        const lines = str.slice(0, lastNewline).split('\n').filter(Boolean)
-
-        for (const line of lines) {
-          const word = line.split(' ')[0]!
-
-          if (word.startsWith(searchWord)) {
-            const [term, ...parts] = line.split(' ')
-            const hits = parts
-              .filter(Boolean)
-              .map(elt => [term, elt.split(',')[0]] as [string, string])
-            resultArr = resultArr.concat(hits)
-          } else if (word > searchWord) {
-            // we are done scanning if we are lexicographically greater than
-            // the search string
-            done = true
-            break
+        const line = buffer.slice(0, nl)
+        buffer = buffer.slice(nl + 1)
+        if (line) {
+          const parts = line.split(' ')
+          const term = parts[0]!
+          if (term.startsWith(searchWord)) {
+            for (
+              let i = 1;
+              i < parts.length && results.length < this.maxResults;
+              i++
+            ) {
+              const part = parts[i]!
+              if (part) {
+                const commaIdx = part.indexOf(',')
+                results.push([
+                  term,
+                  commaIdx === -1 ? part : part.slice(0, commaIdx),
+                ])
+              }
+            }
+          } else if (term > searchWord) {
+            // past the lexicographic range where matches could exist
+            stop = true
           }
         }
       }
-
-      // if we are done or have filled up maxResults, break
-      if (done || resultArr.length >= this.maxResults) {
-        break
-      }
-
-      // avoid reading past end of file
-      if (fileSize !== undefined && end >= fileSize) {
-        break
-      }
-
-      // fetch more data, clamping to file size if known
-      let bytesToRead = CHUNK_SIZE
-      if (fileSize !== undefined) {
-        bytesToRead = Math.min(CHUNK_SIZE, fileSize - end)
-      }
-
-      if (bytesToRead <= 0) {
-        break
-      }
-
-      const res2 = await this.ixFile.read(bytesToRead, end, opts)
-      if (res2.length === 0) {
-        break
-      }
-      buffer = concatUint8Array([buffer, res2])
-      end += res2.length
     }
 
-    // de-duplicate results based on the detail column (resultArr[1])
-    return dedupe(resultArr, elt => elt[1]).slice(0, this.maxResults)
-  }
-
-  private async getIndex(opts?: { signal?: AbortSignal }) {
-    if (this.indexCache) {
-      return this.indexCache
-    }
-    const file = await this.ixxFile.readFile({
-      encoding: 'utf8',
-      ...opts,
-    })
-    const result = file
-      .split('\n')
-      .filter(Boolean)
-      .map(line => {
-        const p = line.length - ADDRESS_SIZE
-        const prefix = line.slice(0, p)
-        const posStr = line.slice(p)
-        const pos = Number.parseInt(posStr, 16)
-        return [prefix, pos] as const
-      })
-    this.indexCache = result
-    return result
+    return dedupe(results, elt => elt[1]).slice(0, this.maxResults)
   }
 
   private async getBuffer(searchWord: string, opts?: { signal?: AbortSignal }) {
-    const indexes = await this.getIndex(opts)
+    const [indexes, fileSize] = await Promise.all([
+      this.getIndex(),
+      this.getIxFileSize(),
+    ])
+    const bestIndex = indexes.findLastIndex(([key]) => key <= searchWord)
 
-    // Binary search for the largest key <= searchWord
-    let low = 0
-    let high = indexes.length - 1
-    let bestIndex = -1
-
-    while (low <= high) {
-      const mid = Math.floor((low + high) / 2)
-      if (indexes[mid]![0] <= searchWord) {
-        bestIndex = mid
-        low = mid + 1
-      } else {
-        high = mid - 1
-      }
-    }
-
-    let start = 0
-    let end = CHUNK_SIZE
-
-    if (bestIndex !== -1) {
-      start = indexes[bestIndex]![1]
-      // The end should be the start of the NEXT index entry to cover the full range
-      // where the word could exist. If it's the last index, read until EOF or start+CHUNK_SIZE.
-      if (bestIndex + 1 < indexes.length) {
-        end = indexes[bestIndex + 1]![1]
-      } else {
-        const fileSize = await this.getIxFileSize(opts)
-        end = fileSize ?? start + CHUNK_SIZE
-      }
-    }
-
-    // Ensure we read at least one CHUNK_SIZE to handle cases where index entries are very close
-    // or to ensure we have enough data to start with.
-    if (end - start < CHUNK_SIZE) {
-      const fileSize = await this.getIxFileSize(opts)
-      end =
-        fileSize === undefined
-          ? start + CHUNK_SIZE
-          : Math.min(start + CHUNK_SIZE, fileSize)
-    }
-
-    const buffer = await this.ixFile.read(end - start, start, opts)
-    return { buffer, end, fileSize: await this.getIxFileSize(opts) }
+    const start = bestIndex === -1 ? 0 : indexes[bestIndex]![1]
+    const nextEntryStart = indexes[bestIndex + 1]?.[1]
+    const wantedEnd = Math.max(nextEntryStart ?? 0, start + CHUNK_SIZE)
+    const targetEnd =
+      fileSize === undefined ? wantedEnd : Math.min(wantedEnd, fileSize)
+    const buffer = await this.ixFile.read(targetEnd - start, start, opts)
+    return { buffer, end: start + buffer.length, fileSize }
   }
 }
