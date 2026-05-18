@@ -72,47 +72,69 @@ export default class Trix {
     while (!stop && results.length < this.maxResults) {
       const nl = buffer.indexOf('\n')
       if (nl === -1) {
-        const remaining =
-          fileSize === undefined
-            ? CHUNK_SIZE
-            : Math.min(CHUNK_SIZE, fileSize - end)
-        const next =
-          remaining > 0
-            ? await this.ixFile.read(remaining, end, opts)
-            : undefined
-        if (next && next.length > 0) {
+        const next = await this.readChunk(end, fileSize, opts)
+        if (next === undefined) {
+          stop = true
+        } else {
           end += next.length
           buffer += decoder.decode(next, { stream: true })
-        } else {
-          stop = true
         }
       } else {
         const line = buffer.slice(0, nl)
         buffer = buffer.slice(nl + 1)
-        if (line) {
-          const [term = '', ...rest] = line.split(' ')
-          if (term.startsWith(searchWord)) {
-            for (const part of rest) {
-              if (results.length >= this.maxResults) {
-                break
-              }
-              if (part) {
-                const commaIdx = part.indexOf(',')
-                results.push([
-                  term,
-                  commaIdx === -1 ? part : part.slice(0, commaIdx),
-                ])
-              }
-            }
-          } else if (term > searchWord) {
-            // past the lexicographic range where matches could exist
-            stop = true
-          }
-        }
+        stop = this.scanLine(line, searchWord, results)
       }
     }
 
-    return dedupe(results, elt => elt[1]).slice(0, this.maxResults)
+    return dedupe(results, elt => elt[1])
+  }
+
+  // reads the next chunk from `position`; returns undefined at EOF
+  private async readChunk(
+    position: number,
+    fileSize: number | undefined,
+    opts?: { signal?: AbortSignal },
+  ) {
+    const remaining =
+      fileSize === undefined
+        ? CHUNK_SIZE
+        : Math.min(CHUNK_SIZE, fileSize - position)
+    if (remaining <= 0) {
+      return undefined
+    }
+    const data = await this.ixFile.read(remaining, position, opts)
+    return data.length === 0 ? undefined : data
+  }
+
+  // appends matching hits from `line` to `results`; returns true when the
+  // caller should stop scanning (term is past the searchable range)
+  private scanLine(
+    line: string,
+    searchWord: string,
+    results: [string, string][],
+  ) {
+    let stop = false
+    if (line) {
+      const [term = '', ...rest] = line.split(' ')
+      if (term.startsWith(searchWord)) {
+        for (const part of rest) {
+          if (results.length >= this.maxResults) {
+            break
+          }
+          if (part) {
+            const commaIdx = part.indexOf(',')
+            results.push([
+              term,
+              commaIdx === -1 ? part : part.slice(0, commaIdx),
+            ])
+          }
+        }
+      } else if (term > searchWord) {
+        // past the lexicographic range where matches could exist
+        stop = true
+      }
+    }
+    return stop
   }
 
   private async getBuffer(searchWord: string, opts?: { signal?: AbortSignal }) {
