@@ -90,15 +90,12 @@ export default class Trix {
         const line = buffer.slice(0, nl)
         buffer = buffer.slice(nl + 1)
         if (line) {
-          const parts = line.split(' ')
-          const term = parts[0]!
+          const [term = '', ...rest] = line.split(' ')
           if (term.startsWith(searchWord)) {
-            for (
-              let i = 1;
-              i < parts.length && results.length < this.maxResults;
-              i++
-            ) {
-              const part = parts[i]!
+            for (const part of rest) {
+              if (results.length >= this.maxResults) {
+                break
+              }
               if (part) {
                 const commaIdx = part.indexOf(',')
                 results.push([
