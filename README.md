@@ -1,4 +1,4 @@
-![Build Status](https://img.shields.io/github/actions/workflow/status/GMOD/trix-js/push.yml?branch=main)
+![Build Status](https://img.shields.io/github/actions/workflow/status/GMOD/trix-js/publish.yml?branch=main)
 
 # trix-js
 
