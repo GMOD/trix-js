@@ -9,24 +9,15 @@ const CHUNK_SIZE = 65536
 const ADDRESS_SIZE = 10
 
 export default class Trix {
-  // promises (not resolved values) so concurrent callers share one in-flight
+  // promise (not resolved value) so concurrent callers share one in-flight
   // load, and one caller's signal can't abort another's await
   private indexCache?: Promise<readonly (readonly [string, number])[]>
-  private ixFileSize?: Promise<number | undefined>
 
   constructor(
     public ixxFile: GenericFilehandle,
     public ixFile: GenericFilehandle,
     public maxResults = 20,
   ) {}
-
-  private getIxFileSize() {
-    this.ixFileSize ??= this.ixFile
-      .stat()
-      .then(s => s.size)
-      .catch(() => undefined)
-    return this.ixFileSize
-  }
 
   private getIndex() {
     this.indexCache ??= this.ixxFile
@@ -63,21 +54,26 @@ export default class Trix {
     // the next chunk
     const decoder = new TextDecoder('utf8')
     const initial = await this.getBuffer(searchWord, opts)
-    const { fileSize } = initial
     const results: [string, string][] = []
     let buffer = decoder.decode(initial.buffer, { stream: true })
     let end = initial.end
+    let atEof = initial.atEof
     let stop = false
 
     while (!stop && results.length < this.maxResults) {
       const nl = buffer.indexOf('\n')
       if (nl === -1) {
-        const next = await this.readChunk(end, fileSize, opts)
-        if (next === undefined) {
+        if (atEof) {
           stop = true
         } else {
-          end += next.length
-          buffer += decoder.decode(next, { stream: true })
+          const data = await this.ixFile.read(CHUNK_SIZE, end, opts)
+          end += data.length
+          buffer += decoder.decode(data, { stream: true })
+          // short read (including empty) means we reached EOF — stop without
+          // issuing another request from a position past the file's end
+          if (data.length < CHUNK_SIZE) {
+            atEof = true
+          }
         }
       } else {
         const line = buffer.slice(0, nl)
@@ -87,23 +83,6 @@ export default class Trix {
     }
 
     return dedupe(results, elt => elt[1])
-  }
-
-  // reads the next chunk from `position`; returns undefined at EOF
-  private async readChunk(
-    position: number,
-    fileSize: number | undefined,
-    opts?: { signal?: AbortSignal },
-  ) {
-    const remaining =
-      fileSize === undefined
-        ? CHUNK_SIZE
-        : Math.min(CHUNK_SIZE, fileSize - position)
-    if (remaining <= 0) {
-      return undefined
-    }
-    const data = await this.ixFile.read(remaining, position, opts)
-    return data.length === 0 ? undefined : data
   }
 
   // appends matching hits from `line` to `results`; returns true when the
@@ -138,18 +117,22 @@ export default class Trix {
   }
 
   private async getBuffer(searchWord: string, opts?: { signal?: AbortSignal }) {
-    const [indexes, fileSize] = await Promise.all([
-      this.getIndex(),
-      this.getIxFileSize(),
-    ])
+    const indexes = await this.getIndex()
     const bestIndex = indexes.findLastIndex(([key]) => key <= searchWord)
 
+    // `start` is always a valid ixx checkpoint (or 0), so the range request is
+    // never strictly past EOF. `wantedEnd` may exceed file size — that's a
+    // server-clipped over-read, not a strictly-past-EOF request, and is the
+    // signal we use to detect EOF below.
     const start = bestIndex === -1 ? 0 : indexes[bestIndex]![1]
     const nextEntryStart = indexes[bestIndex + 1]?.[1]
     const wantedEnd = Math.max(nextEntryStart ?? 0, start + CHUNK_SIZE)
-    const targetEnd =
-      fileSize === undefined ? wantedEnd : Math.min(wantedEnd, fileSize)
-    const buffer = await this.ixFile.read(targetEnd - start, start, opts)
-    return { buffer, end: start + buffer.length, fileSize }
+    const length = wantedEnd - start
+    const buffer = await this.ixFile.read(length, start, opts)
+    return {
+      buffer,
+      end: start + buffer.length,
+      atEof: buffer.length < length,
+    }
   }
 }
