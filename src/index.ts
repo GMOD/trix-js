@@ -13,11 +13,19 @@ export default class Trix {
   // load, and one caller's signal can't abort another's await
   private indexCache?: Promise<readonly (readonly [string, number])[]>
 
+  public ixxFile: GenericFilehandle
+  public ixFile: GenericFilehandle
+  public maxResults: number
+
   constructor(
-    public ixxFile: GenericFilehandle,
-    public ixFile: GenericFilehandle,
-    public maxResults = 20,
-  ) {}
+    ixxFile: GenericFilehandle,
+    ixFile: GenericFilehandle,
+    maxResults = 20,
+  ) {
+    this.ixxFile = ixxFile
+    this.ixFile = ixFile
+    this.maxResults = maxResults
+  }
 
   private getIndex() {
     this.indexCache ??= this.ixxFile

@@ -31,6 +31,7 @@ export default defineConfig(
   eslintPluginUnicorn.configs.recommended,
   {
     rules: {
+      '@typescript-eslint/parameter-properties': 'error',
       'no-underscore-dangle': 'off',
       curly: 'error',
       'object-shorthand': 'error',
