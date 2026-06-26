@@ -51,7 +51,7 @@ export default class Trix {
   }
 
   async search(searchString: string, opts?: { signal?: AbortSignal }) {
-    const firstWord = searchString.split(/\s+/)[0]
+    const firstWord = searchString.trim().split(/\s+/)[0]
     if (!firstWord) {
       return []
     }
@@ -72,6 +72,13 @@ export default class Trix {
       const nl = buffer.indexOf('\n')
       if (nl === -1) {
         if (atEof) {
+          // a final record with no trailing newline is still a complete line;
+          // flush any held-back bytes and scan it before stopping
+          buffer += decoder.decode()
+          if (buffer) {
+            this.scanLine(buffer, searchWord, results)
+            buffer = ''
+          }
           stop = true
         } else {
           const data = await this.ixFile.read(CHUNK_SIZE, end, opts)

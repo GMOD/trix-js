@@ -39,11 +39,11 @@ The Trix class constructor accepts arguments:
 
 ### Trix search
 
-Searches the index files for a term and returns its keys. When searching with multiple words, `trix.search()` finds the intersection of the result sets.
+Searches the index files for a term and returns its keys. Only the first whitespace-separated word of `searchString` is searched; any additional words are ignored.
 
 The Trix search function accepts arguments:
 
-- `searchString` - a string of space-separated words to search the index file for
+- `searchString` - the search term; leading/trailing whitespace is trimmed and only the first word is used
 
 The Trix search function returns:
 

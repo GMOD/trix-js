@@ -31,6 +31,6 @@ describe('Edge case handling', () => {
 
   it('handles search term with leading spaces', async () => {
     const result = await trix.search('   this')
-    expect(result).toEqual([])
+    expect(result).toEqual(await trix.search('this'))
   })
 })
