@@ -2,6 +2,9 @@ import { dedupe } from './dedupe.ts'
 
 import type { GenericFilehandle } from 'generic-filehandle2'
 
+// one search hit: the indexed word that matched and the record it points to
+export type TrixHit = [term: string, result: string]
+
 const CHUNK_SIZE = 65536
 
 // number of hex characters used for the address in ixixx, see
@@ -52,52 +55,60 @@ export default class Trix {
 
   async search(searchString: string, opts?: { signal?: AbortSignal }) {
     const firstWord = searchString.trim().split(/\s+/)[0]
-    if (!firstWord) {
-      return []
-    }
-    const searchWord = firstWord.toLowerCase()
-
-    // stream:true lets the decoder hold back trailing incomplete UTF-8 bytes
-    // so a multibyte char split across a chunk boundary resolves correctly on
-    // the next chunk
-    const decoder = new TextDecoder('utf8')
-    const initial = await this.getBuffer(searchWord, opts)
-    const results: [string, string][] = []
-    let buffer = decoder.decode(initial.buffer, { stream: true })
-    let end = initial.end
-    let atEof = initial.atEof
-    let stop = false
-
-    while (!stop && results.length < this.maxResults) {
-      const nl = buffer.indexOf('\n')
-      if (nl === -1) {
-        if (atEof) {
-          // a final record with no trailing newline is still a complete line;
-          // flush any held-back bytes and scan it before stopping
-          buffer += decoder.decode()
-          if (buffer) {
-            this.scanLine(buffer, searchWord, results)
-            buffer = ''
-          }
-          stop = true
-        } else {
-          const data = await this.ixFile.read(CHUNK_SIZE, end, opts)
-          end += data.length
-          buffer += decoder.decode(data, { stream: true })
-          // short read (including empty) means we reached EOF — stop without
-          // issuing another request from a position past the file's end
-          if (data.length < CHUNK_SIZE) {
-            atEof = true
-          }
+    const results: TrixHit[] = []
+    if (firstWord) {
+      const searchWord = firstWord.toLowerCase()
+      const { start, firstLength } = await this.getReadRange(searchWord)
+      for await (const line of this.readLines(start, firstLength, opts)) {
+        const pastRange = this.scanLine(line, searchWord, results)
+        if (pastRange || results.length >= this.maxResults) {
+          break
         }
-      } else {
-        const line = buffer.slice(0, nl)
-        buffer = buffer.slice(nl + 1)
-        stop = this.scanLine(line, searchWord, results)
       }
     }
-
     return dedupe(results, elt => elt[1])
+  }
+
+  // yields newline-delimited lines of the ix file starting at byte `start`,
+  // owning all the chunked reads, UTF-8 stream decoding, and EOF detection so
+  // the search loop only deals in whole lines
+  private async *readLines(
+    start: number,
+    firstLength: number,
+    opts?: { signal?: AbortSignal },
+  ) {
+    // stream:true lets the decoder hold back trailing incomplete UTF-8 bytes so
+    // a multibyte char split across a chunk boundary resolves on the next chunk
+    const decoder = new TextDecoder('utf8')
+    let pos = start
+    let length = firstLength
+    let buffer = ''
+    let eof = false
+    let done = false
+
+    while (!done) {
+      const nl = buffer.indexOf('\n')
+      if (nl !== -1) {
+        yield buffer.slice(0, nl)
+        buffer = buffer.slice(nl + 1)
+      } else if (eof) {
+        // flush any bytes the decoder held back, then emit a final record that
+        // had no trailing newline
+        buffer += decoder.decode()
+        if (buffer) {
+          yield buffer
+        }
+        done = true
+      } else {
+        const data = await this.ixFile.read(length, pos, opts)
+        pos += data.length
+        buffer += decoder.decode(data, { stream: true })
+        // a short read (including empty) means EOF — stop before issuing
+        // another request from a position past the file's end
+        eof = data.length < length
+        length = CHUNK_SIZE
+      }
+    }
   }
 
   // appends matching hits from `line` to `results`; returns true when the
@@ -105,7 +116,7 @@ export default class Trix {
   private scanLine(
     line: string,
     searchWord: string,
-    results: [string, string][],
+    results: TrixHit[],
   ) {
     let stop = false
     if (line) {
@@ -131,23 +142,16 @@ export default class Trix {
     return stop
   }
 
-  private async getBuffer(searchWord: string, opts?: { signal?: AbortSignal }) {
+  // resolves the ixx checkpoint at/just-before `searchWord` into the byte range
+  // to start reading the ix from. `start` is always a valid checkpoint (or 0),
+  // so the first read is never strictly past EOF; `firstLength` reaches at least
+  // the next checkpoint so the whole candidate block usually arrives in one read
+  private async getReadRange(searchWord: string) {
     const indexes = await this.getIndex()
     const bestIndex = indexes.findLastIndex(([key]) => key <= searchWord)
-
-    // `start` is always a valid ixx checkpoint (or 0), so the range request is
-    // never strictly past EOF. `wantedEnd` may exceed file size — that's a
-    // server-clipped over-read, not a strictly-past-EOF request, and is the
-    // signal we use to detect EOF below.
     const start = bestIndex === -1 ? 0 : indexes[bestIndex]![1]
     const nextEntryStart = indexes[bestIndex + 1]?.[1]
-    const wantedEnd = Math.max(nextEntryStart ?? 0, start + CHUNK_SIZE)
-    const length = wantedEnd - start
-    const buffer = await this.ixFile.read(length, start, opts)
-    return {
-      buffer,
-      end: start + buffer.length,
-      atEof: buffer.length < length,
-    }
+    const firstLength = Math.max(nextEntryStart ?? 0, start + CHUNK_SIZE) - start
+    return { start, firstLength }
   }
 }
