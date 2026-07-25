@@ -1,3 +1,4 @@
+import { compareCodePoints } from './compare-code-points.ts'
 import { dedupe } from './dedupe.ts'
 
 import type { GenericFilehandle } from 'generic-filehandle2'
@@ -59,7 +60,7 @@ export default class Trix {
     if (firstWord) {
       const searchWord = firstWord.toLowerCase()
       const { start, firstLength } = await this.getReadRange(searchWord)
-      for await (const line of this.readLines(start, firstLength, opts)) {
+      for await (const line of this.readRecords(start, firstLength, opts)) {
         const pastRange = this.scanLine(line, searchWord, results)
         if (pastRange || results.length >= this.maxResults) {
           break
@@ -67,6 +68,33 @@ export default class Trix {
       }
     }
     return dedupe(results, elt => elt[1])
+  }
+
+  // yields whole ix records from the checkpoint at byte `start`. the read
+  // begins one byte earlier, so the first line is either empty (`start` really
+  // is a line start) or the tail of the record `start` fell inside, and is
+  // dropped either way. ixixx before the byte-offset fix wrote character counts
+  // as addresses, which land mid-record once the ix contains multibyte text,
+  // and a partial record can look lexicographically past the search term and
+  // end the scan before it begins
+  private async *readRecords(
+    start: number,
+    firstLength: number,
+    opts?: { signal?: AbortSignal },
+  ) {
+    const probed = start > 0
+    let dropPartial = probed
+    for await (const line of this.readLines(
+      probed ? start - 1 : 0,
+      probed ? firstLength + 1 : firstLength,
+      opts,
+    )) {
+      if (dropPartial) {
+        dropPartial = false
+      } else {
+        yield line
+      }
+    }
   }
 
   // yields newline-delimited lines of the ix file starting at byte `start`,
@@ -113,11 +141,7 @@ export default class Trix {
 
   // appends matching hits from `line` to `results`; returns true when the
   // caller should stop scanning (term is past the searchable range)
-  private scanLine(
-    line: string,
-    searchWord: string,
-    results: TrixHit[],
-  ) {
+  private scanLine(line: string, searchWord: string, results: TrixHit[]) {
     let stop = false
     if (line) {
       const [term = '', ...rest] = line.split(' ')
@@ -134,8 +158,10 @@ export default class Trix {
             ])
           }
         }
-      } else if (term > searchWord) {
-        // past the lexicographic range where matches could exist
+      } else if (compareCodePoints(term, searchWord) > 0) {
+        // past the range where matches could exist. the comparison follows the
+        // ix's utf-8 byte order, not javascript's utf-16 order, so an astral
+        // term does not look past a 0xE000-0xFFFF search word and stop early
         stop = true
       }
     }
@@ -148,10 +174,13 @@ export default class Trix {
   // the next checkpoint so the whole candidate block usually arrives in one read
   private async getReadRange(searchWord: string) {
     const indexes = await this.getIndex()
-    const bestIndex = indexes.findLastIndex(([key]) => key <= searchWord)
+    const bestIndex = indexes.findLastIndex(
+      ([key]) => compareCodePoints(key, searchWord) <= 0,
+    )
     const start = bestIndex === -1 ? 0 : indexes[bestIndex]![1]
     const nextEntryStart = indexes[bestIndex + 1]?.[1]
-    const firstLength = Math.max(nextEntryStart ?? 0, start + CHUNK_SIZE) - start
+    const firstLength =
+      Math.max(nextEntryStart ?? 0, start + CHUNK_SIZE) - start
     return { start, firstLength }
   }
 }
