@@ -1,1 +1,4 @@
+allowBuilds:
+  puppeteer: true
+  unrs-resolver: true
 minimumReleaseAge: 4320
