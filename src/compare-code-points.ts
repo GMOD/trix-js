@@ -20,5 +20,5 @@ export function compareCodePoints(a: string, b: string) {
   }
   // the loop ends when at least one string runs out, so whichever still has
   // characters left is the larger one
-  return (i < a.length ? 1 : 0) - (j < b.length ? 1 : 0)
+  return i < a.length ? 1 : j < b.length ? -1 : 0
 }

@@ -1,5 +1,5 @@
 import { compareCodePoints } from './compare-code-points.ts'
-import { dedupe } from './dedupe.ts'
+import { LineBuffer } from './line-buffer.ts'
 
 import type { GenericFilehandle } from 'generic-filehandle2'
 
@@ -11,6 +11,22 @@ const CHUNK_SIZE = 65536
 // number of hex characters used for the address in ixixx, see
 // https://github.com/GMOD/ixixx-js/blob/master/src/index.ts#L182
 const ADDRESS_SIZE = 10
+
+// an ixx line is a fixed-width term prefix followed by the hex address of the
+// first ix record carrying that prefix
+function parseIxxLine(line: string) {
+  const addressAt = line.length - ADDRESS_SIZE
+  return [
+    line.slice(0, addressAt),
+    Number.parseInt(line.slice(addressAt), 16),
+  ] as const
+}
+
+// the fields after an ix record's term are `record,hitCount`; the count is unused
+function recordOf(field: string) {
+  const comma = field.indexOf(',')
+  return comma === -1 ? field : field.slice(0, comma)
+}
 
 export default class Trix {
   // promise (not resolved value) so concurrent callers share one in-flight
@@ -34,18 +50,7 @@ export default class Trix {
   private getIndex() {
     this.indexCache ??= this.ixxFile
       .readFile({ encoding: 'utf8' })
-      .then(file =>
-        file
-          .split('\n')
-          .filter(Boolean)
-          .map(line => {
-            const p = line.length - ADDRESS_SIZE
-            return [
-              line.slice(0, p),
-              Number.parseInt(line.slice(p), 16),
-            ] as const
-          }),
-      )
+      .then(file => file.split('\n').filter(Boolean).map(parseIxxLine))
       .catch((error: unknown) => {
         // clear so the next caller retries instead of getting a stuck rejection
         this.indexCache = undefined
@@ -56,18 +61,21 @@ export default class Trix {
 
   async search(searchString: string, opts?: { signal?: AbortSignal }) {
     const firstWord = searchString.trim().split(/\s+/)[0]
-    const results: TrixHit[] = []
+    // keyed by record so several terms pointing at the same record collapse
+    // before they count against maxResults; insertion order keeps the first
+    // term that matched each record
+    const hits = new Map<string, TrixHit>()
     if (firstWord) {
       const searchWord = firstWord.toLowerCase()
       const { start, firstLength } = await this.getReadRange(searchWord)
       for await (const line of this.readRecords(start, firstLength, opts)) {
-        const pastRange = this.scanLine(line, searchWord, results)
-        if (pastRange || results.length >= this.maxResults) {
+        const pastRange = this.scanLine(line, searchWord, hits)
+        if (pastRange || hits.size >= this.maxResults) {
           break
         }
       }
     }
-    return dedupe(results, elt => elt[1])
+    return [...hits.values()]
   }
 
   // yields whole ix records from the checkpoint at byte `start`. the read
@@ -83,87 +91,75 @@ export default class Trix {
     opts?: { signal?: AbortSignal },
   ) {
     const probed = start > 0
-    let dropPartial = probed
-    for await (const line of this.readLines(
+    const lines = this.readLines(
       probed ? start - 1 : 0,
       probed ? firstLength + 1 : firstLength,
       opts,
-    )) {
-      if (dropPartial) {
-        dropPartial = false
-      } else {
-        yield line
-      }
+    )
+    if (probed) {
+      // the extra byte makes this first line either empty or a record tail,
+      // never a record the search needs
+      await lines.next()
     }
+    yield* lines
   }
 
   // yields newline-delimited lines of the ix file starting at byte `start`,
-  // owning all the chunked reads, UTF-8 stream decoding, and EOF detection so
-  // the search loop only deals in whole lines
+  // owning the chunked reads and EOF detection so the search loop only deals in
+  // whole lines
   private async *readLines(
     start: number,
     firstLength: number,
     opts?: { signal?: AbortSignal },
   ) {
-    // stream:true lets the decoder hold back trailing incomplete UTF-8 bytes so
-    // a multibyte char split across a chunk boundary resolves on the next chunk
-    const decoder = new TextDecoder('utf8')
+    const buffer = new LineBuffer()
     let pos = start
     let length = firstLength
-    let buffer = ''
     let eof = false
-    let done = false
 
-    while (!done) {
-      const nl = buffer.indexOf('\n')
-      if (nl !== -1) {
-        yield buffer.slice(0, nl)
-        buffer = buffer.slice(nl + 1)
-      } else if (eof) {
-        // flush any bytes the decoder held back, then emit a final record that
-        // had no trailing newline
-        buffer += decoder.decode()
-        if (buffer) {
-          yield buffer
-        }
-        done = true
-      } else {
-        const data = await this.ixFile.read(length, pos, opts)
-        pos += data.length
-        buffer += decoder.decode(data, { stream: true })
-        // a short read (including empty) means EOF — stop before issuing
-        // another request from a position past the file's end
-        eof = data.length < length
-        length = CHUNK_SIZE
-      }
+    while (!eof) {
+      const data = await this.ixFile.read(length, pos, opts)
+      pos += data.length
+      // a short read (including empty) means EOF — stop before issuing another
+      // request from a position past the file's end
+      eof = data.length < length
+      length = CHUNK_SIZE
+      buffer.push(data)
+      yield* buffer.takeLines()
+    }
+
+    const lastLine = buffer.takeRest()
+    if (lastLine) {
+      yield lastLine
     }
   }
 
-  // appends matching hits from `line` to `results`; returns true when the
+  // adds hits from `line` for records not already found; returns true when the
   // caller should stop scanning (term is past the searchable range)
-  private scanLine(line: string, searchWord: string, results: TrixHit[]) {
+  private scanLine(
+    line: string,
+    searchWord: string,
+    hits: Map<string, TrixHit>,
+  ) {
     let stop = false
-    if (line) {
-      const [term = '', ...rest] = line.split(' ')
-      if (term.startsWith(searchWord)) {
-        for (const part of rest) {
-          if (results.length >= this.maxResults) {
-            break
-          }
-          if (part) {
-            const commaIdx = part.indexOf(',')
-            results.push([
-              term,
-              commaIdx === -1 ? part : part.slice(0, commaIdx),
-            ])
+    const [term = '', ...rest] = line.split(' ')
+    if (term.startsWith(searchWord)) {
+      for (const part of rest) {
+        if (hits.size >= this.maxResults) {
+          break
+        }
+        if (part) {
+          const record = recordOf(part)
+          if (!hits.has(record)) {
+            hits.set(record, [term, record])
           }
         }
-      } else if (compareCodePoints(term, searchWord) > 0) {
-        // past the range where matches could exist. the comparison follows the
-        // ix's utf-8 byte order, not javascript's utf-16 order, so an astral
-        // term does not look past a 0xE000-0xFFFF search word and stop early
-        stop = true
       }
+    } else if (compareCodePoints(term, searchWord) > 0) {
+      // past the range where matches could exist. the comparison follows the
+      // ix's utf-8 byte order, not javascript's utf-16 order, so an astral
+      // term does not look past a 0xE000-0xFFFF search word and stop early
+      stop = true
     }
     return stop
   }
@@ -177,10 +173,9 @@ export default class Trix {
     const bestIndex = indexes.findLastIndex(
       ([key]) => compareCodePoints(key, searchWord) <= 0,
     )
-    const start = bestIndex === -1 ? 0 : indexes[bestIndex]![1]
-    const nextEntryStart = indexes[bestIndex + 1]?.[1]
-    const firstLength =
-      Math.max(nextEntryStart ?? 0, start + CHUNK_SIZE) - start
+    const start = indexes[bestIndex]?.[1] ?? 0
+    const nextStart = indexes[bestIndex + 1]?.[1] ?? start
+    const firstLength = Math.max(nextStart - start, CHUNK_SIZE)
     return { start, firstLength }
   }
 }

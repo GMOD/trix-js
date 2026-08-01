@@ -43,11 +43,12 @@ function createStaticServer(
 
       const rangeHeader = req.headers.range
       if (rangeHeader) {
-        const match = /bytes=(\d+)-(\d*)?/.exec(rangeHeader)
-        if (match) {
-          const start = Number.parseInt(match[1], 10)
-          const end = match[2]
-            ? Number.parseInt(match[2], 10)
+        const [, startText, endText] =
+          /bytes=(\d+)-(\d*)/.exec(rangeHeader) ?? []
+        if (startText) {
+          const start = Number.parseInt(startText, 10)
+          const end = endText
+            ? Number.parseInt(endText, 10)
             : content.length - 1
           const clampedEnd = Math.min(end, content.length - 1)
           const chunk = content.subarray(start, clampedEnd + 1)
@@ -161,7 +162,9 @@ describe('Browser tests with Puppeteer', () => {
     page = await browser.newPage()
 
     const errors: string[] = []
-    page.on('pageerror', (err: Error) => errors.push(err.message))
+    page.on('pageerror', err => {
+      errors.push(err instanceof Error ? err.message : String(err))
+    })
     page.on('console', msg => {
       if (msg.type() === 'error') {
         errors.push(msg.text())

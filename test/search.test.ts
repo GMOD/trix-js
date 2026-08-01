@@ -88,6 +88,21 @@ describe('Test maxResults for search of test3 ix file', () => {
   })
 })
 
+describe('maxResults counts distinct records', () => {
+  // 'vdac' matches 39 term/record pairs but only 20 distinct records within the
+  // first 39; collapsing the repeats must not eat into the maxResults budget
+  it('fills maxResults with unique records', async () => {
+    const trix5 = new Trix(
+      new LocalFile('./test/testData/test5/hg19.ixx'),
+      new LocalFile('./test/testData/test5/hg19.ix'),
+      20,
+    )
+    const hitList = await trix5.search('vdac')
+    expect(hitList).toHaveLength(20)
+    expect(new Set(hitList.map(([, record]) => record)).size).toBe(20)
+  })
+})
+
 describe('Test maxResults for search of test5 ix file', () => {
   const searchTerms = ['vamp', '#100']
   for (const searchTerm of searchTerms) {
