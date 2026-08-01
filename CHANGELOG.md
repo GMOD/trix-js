@@ -1,3 +1,26 @@
+## [3.0.19](https://github.com/GMOD/trix-js/compare/v3.0.18...v3.0.19) (2026-08-01)
+
+### Bug Fixes
+
+- Count distinct records against maxResults in search()
+
+### Chores
+
+- Sha-pin actions, take pnpm version from packageManager, node 24
+- Pin pnpm via the `packageManager` field, so local pnpm and CI agree
+- Share one eslint-plugin-unicorn opt-out list across the repos
+- Drop redundant @typescript-eslint/{eslint-plugin,parser}
+- Turn off unicorn/prefer-early-return across the repos
+- Add git-cliff for changelog generation
+
+### Documentation
+
+- Backfill CHANGELOG.md for v2.0.7 through v3.0.18
+
+### Refactoring
+
+- Name the ixx checkpoint fields, drop redundant scanning state
+
 # v3.0.18
 
 - Fix incorrect or missing results for search terms outside the Basic
