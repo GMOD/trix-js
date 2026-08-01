@@ -5,13 +5,41 @@ import path from 'node:path'
 import puppeteer from 'puppeteer'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
-import type { IncomingMessage, ServerResponse } from 'node:http'
+import type { IncomingMessage, Server, ServerResponse } from 'node:http'
 import type { Browser, ConsoleMessage, Page } from 'puppeteer'
 
-function createStaticServer(
-  port: number,
-  cors: boolean,
-): ReturnType<typeof createServer> {
+// the page's globals are installed at runtime by the bootstrap script below, so
+// they have to be described here rather than inferred
+interface PageGlobals {
+  Trix: new (
+    ixxFile: object,
+    ixFile: object,
+  ) => { search: (query: string) => Promise<[string, string][]> }
+  RemoteFile: new (url: string) => object
+}
+
+// let the OS pick the port, so a test run can't collide with whatever else on
+// the machine happens to be listening
+async function listenOnFreePort(server: Server) {
+  await new Promise<void>(resolve => {
+    server.listen(0, resolve)
+  })
+  const address = server.address()
+  if (typeof address !== 'object' || address === null) {
+    throw new Error(`expected a TCP address, got ${String(address)}`)
+  }
+  return address.port
+}
+
+function close(server: Server) {
+  return new Promise<void>(resolve => {
+    server.close(() => {
+      resolve()
+    })
+  })
+}
+
+function createStaticServer(cors: boolean): Server {
   const handler = (req: IncomingMessage, res: ServerResponse) => {
     if (cors) {
       res.setHeader('Access-Control-Allow-Origin', '*')
@@ -130,30 +158,39 @@ function appHandler(req: IncomingMessage, res: ServerResponse) {
   res.end('Not found')
 }
 
-function createAppServer() {
-  return createServer(appHandler)
+// runs a search in the page against one of the static servers
+function searchInPage(page: Page, port: number, query: string) {
+  return page.evaluate(
+    async (port, query) => {
+      const { Trix, RemoteFile } = globalThis as unknown as PageGlobals
+      const trix = new Trix(
+        new RemoteFile(`http://localhost:${port}/myTrix.ixx`),
+        new RemoteFile(`http://localhost:${port}/myTrix.ix`),
+      )
+      return await trix.search(query)
+    },
+    port,
+    query,
+  )
 }
 
 describe('Browser tests with Puppeteer', () => {
-  let browser: Browser
+  let browser: Browser | undefined
   let page: Page
-  let corsServer: ReturnType<typeof createServer>
-  let noCorsServer: ReturnType<typeof createServer>
-  let appServer: ReturnType<typeof createServer>
-  const corsPort = 9877
-  const noCorsPort = 9876
-  const appPort = 9875
+  let corsServer: Server
+  let noCorsServer: Server
+  let appServer: Server
+  let corsPort: number
+  let noCorsPort: number
 
   beforeAll(async () => {
-    corsServer = createStaticServer(corsPort, true)
-    noCorsServer = createStaticServer(noCorsPort, false)
-    appServer = createAppServer()
+    corsServer = createStaticServer(true)
+    noCorsServer = createStaticServer(false)
+    appServer = createServer(appHandler)
 
-    await Promise.all([
-      new Promise<void>(resolve => corsServer.listen(corsPort, resolve)),
-      new Promise<void>(resolve => noCorsServer.listen(noCorsPort, resolve)),
-      new Promise<void>(resolve => appServer.listen(appPort, resolve)),
-    ])
+    corsPort = await listenOnFreePort(corsServer)
+    noCorsPort = await listenOnFreePort(noCorsServer)
+    const appPort = await listenOnFreePort(appServer)
 
     browser = await puppeteer.launch({
       headless: true,
@@ -184,39 +221,17 @@ describe('Browser tests with Puppeteer', () => {
   }, 30000)
 
   afterAll(async () => {
-    await browser.close()
+    // browser is undefined if beforeAll failed; closing it would mask that error
+    await browser?.close()
     await Promise.all([
-      new Promise<void>(resolve =>
-        corsServer.close(() => {
-          resolve()
-        }),
-      ),
-      new Promise<void>(resolve =>
-        noCorsServer.close(() => {
-          resolve()
-        }),
-      ),
-      new Promise<void>(resolve =>
-        appServer.close(() => {
-          resolve()
-        }),
-      ),
+      close(corsServer),
+      close(noCorsServer),
+      close(appServer),
     ])
   })
 
-  /* eslint-disable @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any */
   it('searches via HTTP with CORS enabled server', async () => {
-    const results = await page.evaluate(async (port: number) => {
-      const trix = new (globalThis as any).Trix(
-        new (globalThis as any).RemoteFile(
-          `http://localhost:${port}/myTrix.ixx`,
-        ),
-        new (globalThis as any).RemoteFile(
-          `http://localhost:${port}/myTrix.ix`,
-        ),
-      )
-      return await trix.search('for')
-    }, corsPort)
+    const results = await searchInPage(page, corsPort, 'for')
 
     expect(results.length).toBeGreaterThan(0)
     expect(results).toMatchSnapshot()
@@ -230,24 +245,16 @@ describe('Browser tests with Puppeteer', () => {
     page.on('console', consoleHandler)
 
     const result = await page.evaluate(async (port: number) => {
-      const trix = new (globalThis as any).Trix(
-        new (globalThis as any).RemoteFile(
-          `http://localhost:${port}/myTrix.ixx`,
-        ),
-        new (globalThis as any).RemoteFile(
-          `http://localhost:${port}/myTrix.ix`,
-        ),
+      const { Trix, RemoteFile } = globalThis as unknown as PageGlobals
+      const trix = new Trix(
+        new RemoteFile(`http://localhost:${port}/myTrix.ixx`),
+        new RemoteFile(`http://localhost:${port}/myTrix.ix`),
       )
       try {
         await trix.search('for')
-        return { success: true, error: undefined, errorName: undefined }
+        return { success: true, error: undefined }
       } catch (error: unknown) {
-        const name = error instanceof Error ? error.name : undefined
-        return {
-          success: false,
-          error: String(error),
-          errorName: name,
-        }
+        return { success: false, error: String(error) }
       }
     }, noCorsPort)
 
@@ -266,35 +273,10 @@ describe('Browser tests with Puppeteer', () => {
   })
 
   it('handles EOF correctly with CORS enabled server', async () => {
-    const results = await page.evaluate(async (port: number) => {
-      const trix = new (globalThis as any).Trix(
-        new (globalThis as any).RemoteFile(
-          `http://localhost:${port}/myTrix.ixx`,
-        ),
-        new (globalThis as any).RemoteFile(
-          `http://localhost:${port}/myTrix.ix`,
-        ),
-      )
-      return await trix.search('this')
-    }, corsPort)
-
-    expect(results).toMatchSnapshot()
+    expect(await searchInPage(page, corsPort, 'this')).toMatchSnapshot()
   })
 
   it('returns empty for non-existent search term', async () => {
-    const results = await page.evaluate(async (port: number) => {
-      const trix = new (globalThis as any).Trix(
-        new (globalThis as any).RemoteFile(
-          `http://localhost:${port}/myTrix.ixx`,
-        ),
-        new (globalThis as any).RemoteFile(
-          `http://localhost:${port}/myTrix.ix`,
-        ),
-      )
-      return await trix.search('zzz')
-    }, corsPort)
-
-    expect(results).toEqual([])
+    expect(await searchInPage(page, corsPort, 'zzz')).toEqual([])
   })
-  /* eslint-enable @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any */
 })

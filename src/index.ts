@@ -6,20 +6,30 @@ import type { GenericFilehandle } from 'generic-filehandle2'
 // one search hit: the indexed word that matched and the record it points to
 export type TrixHit = [term: string, result: string]
 
+interface ReadOpts {
+  signal?: AbortSignal
+}
+
+// an ixx entry: a term prefix and the byte address of the first ix record
+// carrying it
+interface Checkpoint {
+  prefix: string
+  address: number
+}
+
 const CHUNK_SIZE = 65536
 
 // number of hex characters used for the address in ixixx, see
 // https://github.com/GMOD/ixixx-js/blob/master/src/index.ts#L182
 const ADDRESS_SIZE = 10
 
-// an ixx line is a fixed-width term prefix followed by the hex address of the
-// first ix record carrying that prefix
-function parseIxxLine(line: string) {
+// an ixx line is a fixed-width term prefix followed by the hex address
+function parseIxxLine(line: string): Checkpoint {
   const addressAt = line.length - ADDRESS_SIZE
-  return [
-    line.slice(0, addressAt),
-    Number.parseInt(line.slice(addressAt), 16),
-  ] as const
+  return {
+    prefix: line.slice(0, addressAt),
+    address: Number.parseInt(line.slice(addressAt), 16),
+  }
 }
 
 // the fields after an ix record's term are `record,hitCount`; the count is unused
@@ -31,7 +41,7 @@ function recordOf(field: string) {
 export default class Trix {
   // promise (not resolved value) so concurrent callers share one in-flight
   // load, and one caller's signal can't abort another's await
-  private indexCache?: Promise<readonly (readonly [string, number])[]>
+  private indexCache?: Promise<Checkpoint[]>
 
   public ixxFile: GenericFilehandle
   public ixFile: GenericFilehandle
@@ -59,8 +69,9 @@ export default class Trix {
     return this.indexCache
   }
 
-  async search(searchString: string, opts?: { signal?: AbortSignal }) {
-    const firstWord = searchString.trim().split(/\s+/)[0]
+  async search(searchString: string, opts?: ReadOpts) {
+    // only the first word is searched; undefined when the query is all whitespace
+    const firstWord = /\S+/.exec(searchString)?.[0]
     // keyed by record so several terms pointing at the same record collapse
     // before they count against maxResults; insertion order keeps the first
     // term that matched each record
@@ -88,14 +99,11 @@ export default class Trix {
   private async *readRecords(
     start: number,
     firstLength: number,
-    opts?: { signal?: AbortSignal },
+    opts?: ReadOpts,
   ) {
     const probed = start > 0
-    const lines = this.readLines(
-      probed ? start - 1 : 0,
-      probed ? firstLength + 1 : firstLength,
-      opts,
-    )
+    const probe = probed ? 1 : 0
+    const lines = this.readLines(start - probe, firstLength + probe, opts)
     if (probed) {
       // the extra byte makes this first line either empty or a record tail,
       // never a record the search needs
@@ -110,7 +118,7 @@ export default class Trix {
   private async *readLines(
     start: number,
     firstLength: number,
-    opts?: { signal?: AbortSignal },
+    opts?: ReadOpts,
   ) {
     const buffer = new LineBuffer()
     let pos = start
@@ -169,12 +177,14 @@ export default class Trix {
   // so the first read is never strictly past EOF; `firstLength` reaches at least
   // the next checkpoint so the whole candidate block usually arrives in one read
   private async getReadRange(searchWord: string) {
-    const indexes = await this.getIndex()
-    const bestIndex = indexes.findLastIndex(
-      ([key]) => compareCodePoints(key, searchWord) <= 0,
+    const checkpoints = await this.getIndex()
+    // -1 when the word sorts before every checkpoint, and checkpoints[-1] is
+    // undefined, so both fall back to the start of the file
+    const at = checkpoints.findLastIndex(
+      ({ prefix }) => compareCodePoints(prefix, searchWord) <= 0,
     )
-    const start = indexes[bestIndex]?.[1] ?? 0
-    const nextStart = indexes[bestIndex + 1]?.[1] ?? start
+    const start = checkpoints[at]?.address ?? 0
+    const nextStart = checkpoints[at + 1]?.address ?? start
     const firstLength = Math.max(nextStart - start, CHUNK_SIZE)
     return { start, firstLength }
   }
