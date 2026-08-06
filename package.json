@@ -34,7 +34,7 @@
   "author": "Matt Morgan",
   "repository": {
     "type": "git",
-    "url": "https://github.com/GMOD/trix-js.git"
+    "url": "git+https://github.com/GMOD/trix-js.git"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
