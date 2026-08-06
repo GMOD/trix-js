@@ -18,6 +18,10 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: npx puppeteer browsers install chrome
       - run: pnpm lint
+      # eslint doesn't enforce formatting, so without this the tree drifts out
+      # of prettier's shape silently and the next person to touch a file gets
+      # unrelated reformatting mixed into their diff.
+      - run: pnpm format:check
       - run: pnpm typecheck
       - run: pnpm build
       - run: pnpm test
