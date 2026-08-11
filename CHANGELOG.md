@@ -1,3 +1,15 @@
+## [3.0.21](https://github.com/GMOD/trix-js/compare/v3.0.20...v3.0.21) (2026-08-11)
+
+### Chores
+
+- Render only the commit subject, and link the commit ([2a43595](https://github.com/GMOD/trix-js/commit/2a43595610097dc3b60338f545005973689f2722))
+- Create a GitHub release for each published tag ([34a4436](https://github.com/GMOD/trix-js/commit/34a4436c59cc3e4ea6b96767451a83b340391f00))
+- Enforce type strippability in tsconfig ([1f21488](https://github.com/GMOD/trix-js/commit/1f21488cc4791d3e8537b976bdea47d6fffe52fb))
+
+### Performance Improvements
+
+- A hot term made both the read and the scan quadratic ([c86d2d0](https://github.com/GMOD/trix-js/commit/c86d2d0a4cc1864281c5461f6d74339402be1348))
+
 ## [3.0.20](https://github.com/GMOD/trix-js/compare/v3.0.19...v3.0.20) (2026-08-10)
 
 ### Chores
