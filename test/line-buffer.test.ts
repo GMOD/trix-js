@@ -69,6 +69,24 @@ describe('LineBuffer', () => {
     expect(buffer.takeRest()).toBe('€')
   })
 
+  it('assembles a line spread over many chunks', () => {
+    // the case a hot term produces: one line far longer than a read, arriving a
+    // chunk at a time and joined once at the end rather than on every chunk
+    const line = Array.from(
+      { length: 5000 },
+      (_, i) => `rec${i},${i + 1}`,
+    ).join(' ')
+    const all = bytes(`hot ${line}\ntail t1\n`)
+    const buffer = new LineBuffer()
+    const lines: string[] = []
+    for (let i = 0; i < all.length; i += 997) {
+      buffer.push(all.subarray(i, i + 997))
+      lines.push(...buffer.takeLines())
+    }
+    expect(lines).toEqual([`hot ${line}`, 'tail t1'])
+    expect(buffer.takeRest()).toBe('')
+  })
+
   it('resolves a multibyte char split across chunks mid-line', () => {
     // 'test' is 4 bytes and U+20AC is 3, so a split at byte 5 cuts the
     // multibyte sequence in half

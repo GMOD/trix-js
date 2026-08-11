@@ -149,27 +149,31 @@ export default class Trix {
     searchWord: string,
     hits: Map<string, TrixHit>,
   ) {
-    let stop = false
-    const [term = '', ...rest] = line.split(' ')
-    if (term.startsWith(searchWord)) {
-      for (const part of rest) {
-        if (hits.size >= this.maxResults) {
-          break
-        }
-        if (part) {
-          const record = recordOf(part)
-          if (!hits.has(record)) {
-            hits.set(record, [term, record])
-          }
-        }
-      }
-    } else if (compareCodePoints(term, searchWord) > 0) {
+    const firstSpace = line.indexOf(' ')
+    const term = firstSpace === -1 ? line : line.slice(0, firstSpace)
+    if (!term.startsWith(searchWord)) {
       // past the range where matches could exist. the comparison follows the
       // ix's utf-8 byte order, not javascript's utf-16 order, so an astral
       // term does not look past a 0xE000-0xFFFF search word and stop early
-      stop = true
+      return compareCodePoints(term, searchWord) > 0
     }
-    return stop
+    // the records are walked one at a time rather than split out of the line in
+    // one go: a term shared by many features carries all of them, so a line can
+    // run to megabytes while maxResults asks for twenty. the scan stops at the
+    // cap, and a line that did not match cost only the term
+    let at = firstSpace
+    while (at !== -1 && hits.size < this.maxResults) {
+      const next = line.indexOf(' ', at + 1)
+      const field = line.slice(at + 1, next === -1 ? line.length : next)
+      if (field) {
+        const record = recordOf(field)
+        if (!hits.has(record)) {
+          hits.set(record, [term, record])
+        }
+      }
+      at = next
+    }
+    return false
   }
 
   // resolves the ixx checkpoint at/just-before `searchWord` into the byte range
