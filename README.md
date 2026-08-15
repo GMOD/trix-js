@@ -4,85 +4,50 @@
 
 Read UCSC Trix indexes in pure JavaScript
 
+## Install
+
+```bash
+npm install @gmod/trix
+```
+
 ## Usage
 
 ```js
 import Trix from '@gmod/trix'
 import { RemoteFile } from 'generic-filehandle2'
 
-// We use generic-filehandle2 here to demonstrate searching files on remote servers.
-const ixxFile = new RemoteFile(
-  'https://hgdownload.soe.ucsc.edu/gbdb/hg38/knownGene.ixx',
-)
-const ixFile = new RemoteFile(
-  'https://hgdownload.soe.ucsc.edu/gbdb/hg38/knownGene.ix',
+// generic-filehandle2 also has LocalFile for files on disk
+const trix = new Trix(
+  new RemoteFile('https://hgdownload.soe.ucsc.edu/gbdb/hg38/knownGene.ixx'),
+  new RemoteFile('https://hgdownload.soe.ucsc.edu/gbdb/hg38/knownGene.ix'),
 )
 
-const trix = new Trix(ixxFile, ixFile)
-
-async function doStuff() {
-  const results = await trix.search('oca')
-  console.log(results)
-}
-doStuff()
+const results = await trix.search('oca')
+// => [[term, record], ...]
 ```
 
-## Documentation
+## API
 
-### Trix constructor
+### `new Trix(ixxFile, ixFile, maxResults?)`
 
-The Trix class constructor accepts arguments:
+- `ixxFile` - filehandle for the `.ixx` file
+- `ixFile` - filehandle for the `.ix` file
+- `maxResults` - most results a search returns, default 20. Also settable
+  afterwards as `trix.maxResults`
 
-- `ixxFile` - a filehandle object for the trix .ixx file
-- `ixFile` - a filehandle object for the trix .ix file
-- `maxResults = 20` - an optional number specifying the maximum number of results to return on `trix.search()`
+### `trix.search(searchString, opts?)`
 
-### Trix search
+Prefix-searches the index and resolves to `[term, record][]`, where `term` is
+the indexed word that matched and `record` is the key it points to. Records are
+deduplicated, so two terms hitting the same record yield one result.
 
-Searches the index files for a term and returns its keys. Only the first whitespace-separated word of `searchString` is searched; any additional words are ignored.
-
-The Trix search function accepts arguments:
-
-- `searchString` - the search term; leading/trailing whitespace is trimmed and only the first word is used
-
-The Trix search function returns:
-
-- `Promise<[string, string][]>` - an array of `[term, result]` pairs where `term` is the left column in the trix and `result` is the matching key
-
-## Examples
-
-```js
-import { LocalFile } from 'generic-filehandle2'
-import Trix from '@gmod/trix'
-
-const ixxFile = new LocalFile('out.ixx')
-const ixFile = new LocalFile('out.ix')
-
-// limit maxResults to 5
-const trix = new Trix(ixxFile, ixFile, 5)
-
-async function doStuff() {
-  const results1 = await trix.search('herc')
-  console.log(results1)
-
-  // increase maxResults to 30
-  trix.maxResults = 30
-
-  const results2 = await trix.search('linc')
-  console.log(results2)
-}
-
-doStuff()
-```
+- `searchString` - the query; only its first whitespace-separated word is used
+- `opts.signal` - an `AbortSignal` to cancel the underlying reads
 
 ## Reference
 
-See the [UCSC trix documentation](https://genome.ucsc.edu/goldenPath/help/trix.html) for basic concepts of trix and [ixixx-js](https://github.com/GMOD/ixixx-js) for a JavaScript implementation of the ixIxx command.
+See the [UCSC trix documentation](https://genome.ucsc.edu/goldenPath/help/trix.html)
+for the concepts, and [ixixx-js](https://github.com/GMOD/ixixx-js) for a
+JavaScript implementation of the `ixIxx` command that builds these indexes.
 
-## Publishing
-
-[Trusted publishing](https://docs.npmjs.com/about-trusted-publishing) via GitHub Actions.
-
-```bash
-pnpm version patch  # or minor/major
-```
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development and release steps.
