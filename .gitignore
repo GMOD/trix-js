@@ -4,3 +4,5 @@ node_modules
 dist/
 esm/
 .eslintcache
+.claude/settings.local.json
+.claude/worktrees/
