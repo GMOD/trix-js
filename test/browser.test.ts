@@ -1,3 +1,4 @@
+import { spawnSync } from 'node:child_process'
 import { readFileSync, statSync } from 'node:fs'
 import { createServer } from 'node:http'
 import path from 'node:path'
@@ -7,6 +8,25 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
 import type { IncomingMessage, Server, ServerResponse } from 'node:http'
 import type { Browser, ConsoleMessage, Page } from 'puppeteer'
+
+// this is the one test that runs the built esm/ rather than src/, since what it
+// checks is that the published entry point works in a browser. so it has to
+// build it: preversion runs the tests before the build, so left to find esm/ on
+// disk it reads whatever the last build put there — the previous release's
+// code, which passes and says nothing about the one being cut
+function buildEsm() {
+  const { error, status, stderr } = spawnSync(
+    'npx',
+    ['tsc', '--outDir', 'esm'],
+    { cwd: process.cwd(), encoding: 'utf8' },
+  )
+  if (error) {
+    throw error
+  }
+  if (status !== 0) {
+    throw new Error(`building esm/ failed: ${stderr}`)
+  }
+}
 
 // the page's globals are installed at runtime by the bootstrap script below, so
 // they have to be described here rather than inferred
@@ -184,6 +204,7 @@ describe('Browser tests with Puppeteer', () => {
   let noCorsPort: number
 
   beforeAll(async () => {
+    buildEsm()
     corsServer = createStaticServer(true)
     noCorsServer = createStaticServer(false)
     appServer = createServer(appHandler)
