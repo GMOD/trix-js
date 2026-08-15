@@ -16,8 +16,9 @@ implementation.
 
 ## Releasing
 
-`pnpm version patch/minor/major` runs lint, format, typecheck, tests, and build,
-then pushes the version tag, which triggers the publish workflow.
+`pnpm version patch/minor/major` runs lint, format, types, tests and build,
+regenerates CHANGELOG.md with git-cliff, then pushes the version tag, which
+triggers the publish workflow.
 
 Releases publish via GitHub Actions using npm trusted publishing (OIDC, no
 stored token), which attaches provenance given `id-token: write`. This repo is
