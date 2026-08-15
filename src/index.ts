@@ -1,5 +1,4 @@
 import { compareCodePoints } from './compare-code-points.ts'
-import { LineBuffer } from './line-buffer.ts'
 
 import type { GenericFilehandle } from 'generic-filehandle2'
 
@@ -17,7 +16,17 @@ interface Checkpoint {
   address: number
 }
 
+// what the token about to be read means: a line opens with its term, the rest
+// of the line is that term's records, and a line whose term did not match is
+// skipped without looking at the records at all
+type Expect = 'term' | 'record' | 'skip'
+
+// reads start at CHUNK_SIZE and double up to the cap. a search that stops early
+// — the usual one, since maxResults is small — pays only the first read, while
+// one that has to cross a term carrying megabytes of records still gets past it
+// in a handful of round trips rather than hundreds
 const CHUNK_SIZE = 65536
+const MAX_CHUNK_SIZE = 4 * 1024 * 1024
 
 // number of hex characters used for the address in ixixx, see
 // https://github.com/GMOD/ixixx-js/blob/master/src/index.ts#L182
@@ -77,52 +86,38 @@ export default class Trix {
     // term that matched each record
     const hits = new Map<string, TrixHit>()
     if (firstWord) {
-      const searchWord = firstWord.toLowerCase()
-      const { start, firstLength } = await this.getReadRange(searchWord)
-      for await (const line of this.readRecords(start, firstLength, opts)) {
-        const pastRange = this.scanLine(line, searchWord, hits)
-        if (pastRange || hits.size >= this.maxResults) {
-          break
-        }
-      }
+      await this.scan(firstWord.toLowerCase(), hits, opts)
     }
     return [...hits.values()]
   }
 
-  // yields whole ix records from the checkpoint at byte `start`. the read
-  // begins one byte earlier, so the first line is either empty (`start` really
-  // is a line start) or the tail of the record `start` fell inside, and is
-  // dropped either way. ixixx before the byte-offset fix wrote character counts
-  // as addresses, which land mid-record once the ix contains multibyte text,
-  // and a partial record can look lexicographically past the search term and
-  // end the scan before it begins
-  private async *readRecords(
-    start: number,
-    firstLength: number,
+  // walks the ix from the checkpoint for `searchWord`, filling `hits` until it
+  // holds maxResults or the terms sort past the word. the ix is whitespace
+  // delimited — a newline opens a term, spaces separate the records it carries
+  // — so the scan reads one token at a time and never holds more than one. an
+  // ix has one line per term, so a term shared by 200k features is a single
+  // 16mb line: a search wanting twenty records off the front of it stops after
+  // the first read instead of assembling the whole line first
+  private async scan(
+    searchWord: string,
+    hits: Map<string, TrixHit>,
     opts?: ReadOpts,
   ) {
+    const start = await this.getStart(searchWord)
+    // read one byte early, so what precedes the first newline is either nothing
+    // or the tail of the record `start` fell inside, and skip it either way.
+    // ixixx before the byte-offset fix wrote character counts as addresses,
+    // which land mid-record once the ix contains multibyte text, and a partial
+    // record can look lexicographically past the search term and end the scan
+    // before it begins
     const probed = start > 0
-    const probe = probed ? 1 : 0
-    const lines = this.readLines(start - probe, firstLength + probe, opts)
-    if (probed) {
-      // the extra byte makes this first line either empty or a record tail,
-      // never a record the search needs
-      await lines.next()
-    }
-    yield* lines
-  }
-
-  // yields newline-delimited lines of the ix file starting at byte `start`,
-  // owning the chunked reads and EOF detection so the search loop only deals in
-  // whole lines
-  private async *readLines(
-    start: number,
-    firstLength: number,
-    opts?: ReadOpts,
-  ) {
-    const buffer = new LineBuffer()
-    let pos = start
-    let length = firstLength
+    const decoder = new TextDecoder('utf8')
+    let pos = start - (probed ? 1 : 0)
+    let length = CHUNK_SIZE
+    let expect: Expect = probed ? 'skip' : 'term'
+    let term = ''
+    // the token straddling the end of the last chunk, never more than one
+    let carry = ''
     let eof = false
 
     while (!eof) {
@@ -131,65 +126,86 @@ export default class Trix {
       // a short read (including empty) means EOF — stop before issuing another
       // request from a position past the file's end
       eof = data.length < length
-      length = CHUNK_SIZE
-      buffer.push(data)
-      yield* buffer.takeLines()
-    }
+      length = Math.min(length * 2, MAX_CHUNK_SIZE)
+      // the appended newline lets a final record with no trailing one be read
+      // like any other; on a file that does end in a newline it just opens an
+      // empty line, which the scan passes over
+      const text =
+        carry +
+        decoder.decode(data, { stream: true }) +
+        (eof ? decoder.decode() + '\n' : '')
+      carry = ''
 
-    const lastLine = buffer.takeRest()
-    if (lastLine) {
-      yield lastLine
-    }
-  }
+      let at = 0
+      // looked up once per line rather than once per token, so a line carrying
+      // 200k records is scanned linearly rather than quadratically
+      let lineEnd = text.indexOf('\n')
 
-  // adds hits from `line` for records not already found; returns true when the
-  // caller should stop scanning (term is past the searchable range)
-  private scanLine(
-    line: string,
-    searchWord: string,
-    hits: Map<string, TrixHit>,
-  ) {
-    const firstSpace = line.indexOf(' ')
-    const term = firstSpace === -1 ? line : line.slice(0, firstSpace)
-    if (!term.startsWith(searchWord)) {
-      // past the range where matches could exist. the comparison follows the
-      // ix's utf-8 byte order, not javascript's utf-16 order, so an astral
-      // term does not look past a 0xE000-0xFFFF search word and stop early
-      return compareCodePoints(term, searchWord) > 0
-    }
-    // the records are walked one at a time rather than split out of the line in
-    // one go: a term shared by many features carries all of them, so a line can
-    // run to megabytes while maxResults asks for twenty. the scan stops at the
-    // cap, and a line that did not match cost only the term
-    let at = firstSpace
-    while (at !== -1 && hits.size < this.maxResults) {
-      const next = line.indexOf(' ', at + 1)
-      const field = line.slice(at + 1, next === -1 ? line.length : next)
-      if (field) {
-        const record = recordOf(field)
-        if (!hits.has(record)) {
-          hits.set(record, [term, record])
+      while (at < text.length) {
+        if (expect === 'skip') {
+          if (lineEnd === -1) {
+            break
+          }
+          at = lineEnd + 1
+          lineEnd = text.indexOf('\n', at)
+          expect = 'term'
+          continue
+        }
+        // the token runs to the next space, or to the end of the line if that
+        // comes first
+        const space = text.indexOf(' ', at)
+        const end =
+          space === -1 || (lineEnd !== -1 && lineEnd < space) ? lineEnd : space
+        if (end === -1) {
+          carry = text.slice(at)
+          break
+        }
+        const token = text.slice(at, end)
+        const lineEnded = end === lineEnd
+        at = end + 1
+        if (lineEnded) {
+          lineEnd = text.indexOf('\n', at)
+        }
+
+        if (expect === 'term') {
+          if (token.startsWith(searchWord)) {
+            term = token
+            expect = 'record'
+          } else if (compareCodePoints(token, searchWord) > 0) {
+            // past the range where matches could exist. the comparison follows
+            // the ix's utf-8 byte order, not javascript's utf-16 order, so an
+            // astral term does not look past a 0xE000-0xFFFF search word and
+            // stop early
+            return
+          } else {
+            expect = 'skip'
+          }
+        } else if (token) {
+          if (hits.size >= this.maxResults) {
+            return
+          }
+          const record = recordOf(token)
+          if (!hits.has(record)) {
+            hits.set(record, [term, record])
+          }
+        }
+        if (lineEnded) {
+          expect = 'term'
         }
       }
-      at = next
     }
-    return false
   }
 
-  // resolves the ixx checkpoint at/just-before `searchWord` into the byte range
-  // to start reading the ix from. `start` is always a valid checkpoint (or 0),
-  // so the first read is never strictly past EOF; `firstLength` reaches at least
-  // the next checkpoint so the whole candidate block usually arrives in one read
-  private async getReadRange(searchWord: string) {
+  // the address of the ixx checkpoint at or just before `searchWord`, which is
+  // where the first record that could match lives. always a record start (or
+  // 0), so the first read is never strictly past EOF
+  private async getStart(searchWord: string) {
     const checkpoints = await this.getIndex()
     // -1 when the word sorts before every checkpoint, and checkpoints[-1] is
     // undefined, so both fall back to the start of the file
     const at = checkpoints.findLastIndex(
       ({ prefix }) => compareCodePoints(prefix, searchWord) <= 0,
     )
-    const start = checkpoints[at]?.address ?? 0
-    const nextStart = checkpoints[at + 1]?.address ?? start
-    const firstLength = Math.max(nextStart - start, CHUNK_SIZE)
-    return { start, firstLength }
+    return checkpoints[at]?.address ?? 0
   }
 }
