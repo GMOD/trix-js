@@ -1,6 +1,7 @@
 {
   "name": "@gmod/trix",
   "version": "3.0.22",
+  "description": "Read UCSC Trix indexes in pure JavaScript",
   "packageManager": "pnpm@11.15.1",
   "license": "Apache-2.0",
   "type": "module",
