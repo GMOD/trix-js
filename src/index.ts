@@ -32,11 +32,16 @@ const MAX_CHUNK_SIZE = 4 * 1024 * 1024
 // https://github.com/GMOD/ixixx-js/blob/master/src/index.ts#L182
 const ADDRESS_SIZE = 10
 
-// an ixx line is a fixed-width term prefix followed by the hex address
+// an ixx line is a fixed-width term prefix followed by the hex address. ixixx
+// right-pads the prefix when the term it came from was shorter than the field,
+// and a term never holds a space, so trimming recovers the term itself. left
+// padded it sorts below every search word that extends it — `brca1` followed by
+// 35 spaces reads as less than `brca1` — and the checkpoint is passed over in
+// favour of the one before it, putting the scan at the start of the previous bin
 function parseIxxLine(line: string): Checkpoint {
   const addressAt = line.length - ADDRESS_SIZE
   return {
-    prefix: line.slice(0, addressAt),
+    prefix: line.slice(0, addressAt).trimEnd(),
     address: Number.parseInt(line.slice(addressAt), 16),
   }
 }

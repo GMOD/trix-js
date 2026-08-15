@@ -89,6 +89,14 @@ describe('what a search reads', () => {
     expect(ix.reads).toBeLessThan(hotLength / CHUNK_SIZE)
   })
 
+  it('starts at the checkpoint whose padded prefix is the term itself', async () => {
+    const { ix, results } = search('zzzzz')
+    expect(await results).toEqual([['zzzzz', 'z1']])
+    // the checkpoint before it opens the hot line, so falling back to it would
+    // read the whole thing
+    expect(ix.bytes).toBeLessThan(100)
+  })
+
   it('reads every record of a hot line when asked for them all', async () => {
     const { results } = search('hot', HOT_RECORDS.length)
     expect((await results).map(([, record]) => record)).toEqual(
