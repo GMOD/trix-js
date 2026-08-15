@@ -1,3 +1,17 @@
+## [3.0.22](https://github.com/GMOD/trix-js/compare/v3.0.21...v3.0.22) (2026-08-15)
+
+### Bug Fixes
+
+- A padded ixx prefix sent the scan to the previous checkpoint ([f91af92](https://github.com/GMOD/trix-js/commit/f91af9268715ff39b3554a8329808658179a1985))
+
+### Performance Improvements
+
+- Stop reading a hot line once maxResults is reached ([12e2f7f](https://github.com/GMOD/trix-js/commit/12e2f7fcdf96a736429a43d87aa60c770dab8387))
+
+### Tests
+
+- Build the esm the browser test loads, rather than finding it ([f93a323](https://github.com/GMOD/trix-js/commit/f93a3235bedacb8e2543bfa7e40f87b1ffb48e19))
+
 ## [3.0.21](https://github.com/GMOD/trix-js/compare/v3.0.20...v3.0.21) (2026-08-11)
 
 ### Chores
