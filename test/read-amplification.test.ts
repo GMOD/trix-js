@@ -17,11 +17,13 @@ const PREFIX_SIZE = 5
 class CountingFile extends LocalFile {
   bytes = 0
   reads = 0
+  positions: number[] = []
 
   override async read(length: number, position = 0) {
     const data = await super.read(length, position)
     this.bytes += data.length
     this.reads++
+    this.positions.push(position)
     return data
   }
 }
@@ -102,5 +104,36 @@ describe('what a search reads', () => {
     expect((await results).map(([, record]) => record)).toEqual(
       HOT_RECORDS.map(record => record.slice(0, -2)),
     )
+  })
+})
+
+// The `.ix` this repo ships as a search fixture, used here for the numbers the
+// README's "Reading over HTTP" section quotes.
+const REAL_IX = 'test/testData/D39V_annotation_coding_features_sorted.gff.ix'
+const REAL_IXX = 'test/testData/D39V_annotation_coding_features_sorted.gff.ixx'
+const CACHE_CHUNK = 256 * 1024
+
+describe('what a typeahead reads', () => {
+  it('lands six keystrokes on three offsets, inside three cache chunks', async () => {
+    const ix = new CountingFile(REAL_IX)
+    const trix = new Trix(new LocalFile(REAL_IXX), ix)
+    for (const prefix of ['s', 'sp', 'spd', 'spd_', 'spd_0', 'spd_00']) {
+      expect(await trix.search(prefix)).toHaveLength(20)
+    }
+
+    expect(ix.reads).toBe(6)
+    expect(ix.bytes).toBe(6 * CHUNK_SIZE)
+    expect(new Set(ix.positions).size).toBe(3)
+
+    const chunks = new Set(
+      ix.positions.flatMap(position => {
+        const last = Math.floor((position + CHUNK_SIZE - 1) / CACHE_CHUNK)
+        return Array.from(
+          { length: last - Math.floor(position / CACHE_CHUNK) + 1 },
+          (_, i) => Math.floor(position / CACHE_CHUNK) + i,
+        )
+      }),
+    )
+    expect(chunks.size).toBe(3)
   })
 })

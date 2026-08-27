@@ -18,8 +18,8 @@ import { RemoteFile } from 'generic-filehandle2'
 
 // generic-filehandle2 also has LocalFile for files on disk
 const trix = new Trix(
-  new RemoteFile('https://hgdownload.soe.ucsc.edu/gbdb/hg38/knownGene.ixx'),
-  new RemoteFile('https://hgdownload.soe.ucsc.edu/gbdb/hg38/knownGene.ix'),
+  new RemoteFile('https://jbrowse.org/genomes/GRCh38/trix/hg38.ixx'),
+  new RemoteFile('https://jbrowse.org/genomes/GRCh38/trix/hg38.ix'),
 )
 
 const results = await trix.search('oca')
@@ -43,6 +43,27 @@ deduplicated, so two terms hitting the same record yield one result.
 
 - `searchString` - the query; only its first whitespace-separated word is used
 - `opts.signal` - an `AbortSignal` to cancel the underlying reads
+
+## Reading over HTTP
+
+A search fetches the `.ixx` once, then reads the `.ix` in 64 KiB pieces from
+wherever the checkpoint lands, so the reads are small and land at scattered
+offsets in much the larger of the two files. A typeahead makes one search per
+keystroke, and consecutive keystrokes land close together: typing `spd_00` into
+this repo's 1.7 MB test index is six searches and six 64 KiB reads, but only
+three distinct offsets. Putting
+[`@gmod/range-cache-filehandle`](https://github.com/GMOD/range-cache-filehandle)
+under both filehandles serves those six reads out of three 256 KiB chunks, and
+a prefix the user backspaces to costs nothing:
+
+```js
+import { RemoteFileWithRangeCache } from '@gmod/range-cache-filehandle'
+
+const trix = new Trix(
+  new RemoteFileWithRangeCache(`${url}.ixx`),
+  new RemoteFileWithRangeCache(`${url}.ix`),
+)
+```
 
 ## Reference
 
