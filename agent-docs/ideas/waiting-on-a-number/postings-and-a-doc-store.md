@@ -181,12 +181,12 @@ sit in [postings-and-a-doc-store/](postings-and-a-doc-store/); download the data
 outside the repo and point them at it:
 
 ```sh
-d=<path to agent-docs/ideas/postings-and-a-doc-store>
+d=<path to agent-docs/ideas/waiting-on-a-number/postings-and-a-doc-store>
 curl -O https://jbrowse.org/ucsc/hg38/hg38.gff.gz   # 113,917,951 bytes, modified 2026-06-26
 curl -O https://jbrowse.org/ucsc/hg38/trix/hg38.ix  # 186,356,176 bytes, modified 2026-09-07
 curl -O https://jbrowse.org/ucsc/hg38/trix/hg38.ixx
 node $d/profile-trix.mjs hg38.ix hg38.ixx
-node $d/profile-trix.mjs $d/../../../test/testData/D39V_annotation_coding_features_sorted.gff.ix{,x} spv_05
+node $d/profile-trix.mjs $d/../../../../test/testData/D39V_annotation_coding_features_sorted.gff.ix{,x} spv_05
 node --max-old-space-size=8000 $d/model-sizes.mjs hg38.gff.gz
 node $d/fts5.mjs build hg38.gff.gz hg38-4k.db 4096 && $d/fts5-reads.sh hg38-4k.db
 node $d/fts5.mjs build hg38.gff.gz hg38-64k.db 65536 && $d/fts5-reads.sh hg38-64k.db

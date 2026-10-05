@@ -7,7 +7,7 @@ import readline from 'node:readline'
 
 import { LocalFile } from 'generic-filehandle2'
 
-import Trix from '../../../src/index.ts'
+import Trix from '../../../../src/index.ts'
 
 const [ixPath, ixxPath, ...args] = process.argv.slice(2)
 const queries = args.length
