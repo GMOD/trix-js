@@ -37,9 +37,9 @@ dependent on the one before:
 
 The trigram tokenizer turns `nm_000546.6` into a phrase of trigrams such as
 `000` and `_00`, whose doclists span most of RefSeq, so long IDs are its worst
-case. Matching the phrase also needs positions. Adding `detail='none'` to the
-trigram table in `fts5.mjs` halves the database to 78 MB, but then every query
-longer than three characters matches nothing. FTS5 also leaves these hits
+case. Because matching the phrase also needs positions, adding `detail='none'`
+to the trigram table in `fts5.mjs` halves the database to 78 MB but leaves every
+query longer than three characters matching nothing. FTS5 also leaves these hits
 unranked, so the first two for `p53` are LNCTAM34A and RNA5SP53, and ordering by
 `bm25` means reading every match.
 
