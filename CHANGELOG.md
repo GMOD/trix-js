@@ -1,3 +1,38 @@
+## [3.1.0](https://github.com/GMOD/trix-js/compare/v3.0.22...v3.1.0) (2026-10-14)
+
+### Chores
+
+- Keep agent worktrees out of the toolchain's way ([194b3bd](https://github.com/GMOD/trix-js/commit/194b3bd894683ce9e5388162d0732b8896dfd964))
+
+### Documentation
+
+- Trim the readme to install, usage, and api ([679f609](https://github.com/GMOD/trix-js/commit/679f609adca433f854dc479c8ff5b2bdeb369d04))
+- Drop contributing steps for tooling removed in 2022 ([c7c345f](https://github.com/GMOD/trix-js/commit/c7c345f768011799771fcec9d5a9f5040b815fd4))
+- Correct the release command in CONTRIBUTING, and its voice ([e202273](https://github.com/GMOD/trix-js/commit/e20227303b2e092a3bb0c837caafce94171228e5))
+- Describe the release gate CONTRIBUTING actually runs ([dd7b591](https://github.com/GMOD/trix-js/commit/dd7b591166c5da3c44e221d459bf0c1a4b07124c))
+- Recommend a byte-range cache, and test what a typeahead reads ([07f7428](https://github.com/GMOD/trix-js/commit/07f74285445b47e7dc90a56b07a8bfe7891a3e53))
+- Fix anti-AI writing tropes in README ([5f438e3](https://github.com/GMOD/trix-js/commit/5f438e377ef4ab23d038b54a23c01edb505db4e9))
+- Park the postings-and-doc-store search index as an idea ([74992ab](https://github.com/GMOD/trix-js/commit/74992abb4e564274932af4318691a1c3f9852192))
+
+### Other Changes
+
+- Triage agent-docs to the ideas/handoffs convention, add agent-docs/CLAUDE.md ([4e0f289](https://github.com/GMOD/trix-js/commit/4e0f2892c1cda696c817e77e1d21bc4a96ba4786))
+- Fix moved paths in the postings idea and add agent-docs/CLAUDE.md ([997f82f](https://github.com/GMOD/trix-js/commit/997f82fe84d17625a0596b9a7b784b2ea1bd539e))
+- Rewrite AI-writing tropes in README and agent docs ([9d66753](https://github.com/GMOD/trix-js/commit/9d66753c3f72a0c37a33129ed42d75b71694e858))
+- Fold short verdict sentences into their neighbours ([9c57e0a](https://github.com/GMOD/trix-js/commit/9c57e0a3f99087cc063d30850e24d36c4fefa031))
+- Restore wording the tropes rewrite changed without a trope ([03f48c9](https://github.com/GMOD/trix-js/commit/03f48c9cb661ce2a59787c55cefa9f7216654439))
+- Name the mechanism in the record-copying heading ([0073d33](https://github.com/GMOD/trix-js/commit/0073d339827221496c7128def605e59780ed244b))
+- Credit the record copying to jbrowse text-index, not trix ([493be3c](https://github.com/GMOD/trix-js/commit/493be3cfd6b8cb205bd4b45609075b80338cf702))
+- State what the trix section keeps in its heading ([4b972ab](https://github.com/GMOD/trix-js/commit/4b972ab2a468dc03aa2ee948ef6d2393ce4a3bba))
+- Trim README wordiness ([a9ed68a](https://github.com/GMOD/trix-js/commit/a9ed68a5ae1281dd58d73e59f8310321f99977df))
+- Stop scanning as soon as maxResults fills ([7cfe30b](https://github.com/GMOD/trix-js/commit/7cfe30bfb649c8f2ff4590ff5aadacbd83dedbc2))
+- Type filehandles with a local interface ([41d6421](https://github.com/GMOD/trix-js/commit/41d6421fd048dfcbd6d986b1967ebee03b1c2f0b))
+- Label TrixHit's second element record, as the README does ([b1b428c](https://github.com/GMOD/trix-js/commit/b1b428c6545002a08e62afbb5ebeda977e32de74))
+
+### Tests
+
+- Drop fixtures left behind by the removed UCSC tooling ([657d55f](https://github.com/GMOD/trix-js/commit/657d55fbf8a82517b8a0bb7d49ba38910d48eff3))
+
 ## [3.0.22](https://github.com/GMOD/trix-js/compare/v3.0.21...v3.0.22) (2026-08-15)
 
 ### Bug Fixes
