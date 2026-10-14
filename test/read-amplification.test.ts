@@ -107,6 +107,30 @@ describe('what a search reads', () => {
   })
 })
 
+describe('stopping at maxResults', () => {
+  it('does not read on once the last wanted record ends a chunk', async () => {
+    const records = Array.from({ length: 20 }, (_, i) => `r${i}`)
+    const head = `hot ${records.join(' ')}`
+    records[19] = `r19${'x'.repeat(CHUNK_SIZE - head.length - 1)}`
+    const dir = mkdtempSync(path.join(tmpdir(), 'trix-stop-'))
+    writeFileSync(
+      path.join(dir, 'a.ix'),
+      `hot ${records.join(' ')} more\nzzz q\n`,
+    )
+    writeFileSync(path.join(dir, 'a.ixx'), 'hot  0000000000\n')
+    const ix = new CountingFile(path.join(dir, 'a.ix'))
+    const trix = new Trix(new LocalFile(path.join(dir, 'a.ixx')), ix)
+    expect(await trix.search('hot')).toHaveLength(20)
+    expect(ix.reads).toBe(1)
+  })
+
+  it('reads nothing when maxResults is 0', async () => {
+    const { ix, results } = search('hot', 0)
+    expect(await results).toEqual([])
+    expect(ix.reads).toBe(0)
+  })
+})
+
 // The `.ix` this repo ships as a search fixture, used here for the numbers the
 // README's "Reading over HTTP" section quotes.
 const REAL_IX = 'test/testData/D39V_annotation_coding_features_sorted.gff.ix'

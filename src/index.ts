@@ -90,7 +90,7 @@ export default class Trix {
     // before they count against maxResults; insertion order keeps the first
     // term that matched each record
     const hits = new Map<string, TrixHit>()
-    if (firstWord) {
+    if (firstWord && this.maxResults > 0) {
       await this.scan(firstWord.toLowerCase(), hits, opts)
     }
     return [...hits.values()]
@@ -186,12 +186,12 @@ export default class Trix {
             expect = 'skip'
           }
         } else if (token) {
-          if (hits.size >= this.maxResults) {
-            return
-          }
           const record = recordOf(token)
           if (!hits.has(record)) {
             hits.set(record, [term, record])
+            if (hits.size >= this.maxResults) {
+              return
+            }
           }
         }
         if (lineEnded) {
