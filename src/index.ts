@@ -1,7 +1,7 @@
 import { compareCodePoints } from './compare-code-points.ts'
 
 // one search hit: the indexed word that matched and the record it points to
-export type TrixHit = [term: string, result: string]
+export type TrixHit = [term: string, record: string]
 
 export interface ReadOpts {
   signal?: AbortSignal
