@@ -43,7 +43,7 @@ query longer than three characters matching nothing. FTS5 also leaves these hits
 unranked, so the first two for `p53` are LNCTAM34A and RNA5SP53, and ordering by
 `bm25` means reading every match.
 
-## Trix copies the whole record onto every indexed word
+## `jbrowse text-index` copies the whole record onto every indexed word
 
 `gff3Adapter` writes one record per feature, `["loc"|"trackId"|attr…]`
 URI-encoded, and ixixx's `TrixInputTransform` copies that record onto every
