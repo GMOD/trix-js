@@ -39,7 +39,7 @@ const results = await trix.search('oca')
 
 Prefix-searches the index and resolves to `[term, record][]`, where `term` is
 the indexed word that matched and `record` is the key it points to. Records are
-deduplicated, so two terms hitting the same record yield one result.
+deduplicated, so two terms that match the same record yield one result.
 
 - `searchString` - the query; only its first whitespace-separated word is used
 - `opts.signal` - an `AbortSignal` to cancel the underlying reads
@@ -48,13 +48,13 @@ deduplicated, so two terms hitting the same record yield one result.
 
 A search fetches the `.ixx` once, then reads the `.ix` in 64 KiB pieces starting
 at the checkpoint's offset, so the reads are small and scattered across much of
-the larger of the two files. A typeahead makes one search per keystroke, and
-consecutive keystrokes read from nearby offsets: typing `spd_00` into this
-repo's 1.7 MB test index is six searches and six 64 KiB reads, but only three
-distinct offsets. Putting
+the larger of the two files. A typeahead makes one search per keystroke, and the
+searches for consecutive keystrokes read from nearby offsets. When a user types
+`spd_00` into this repo's 1.7 MB test index, the typeahead makes six searches
+and six 64 KiB reads, but at only three distinct offsets. With
 [`@gmod/range-cache-filehandle`](https://github.com/GMOD/range-cache-filehandle)
-under both filehandles serves those six reads out of three 256 KiB chunks, so a
-prefix the user backspaces to needs no new fetch:
+under both filehandles, the cache serves those six reads from three 256 KiB
+chunks, so a prefix the user backspaces to needs no new fetch:
 
 ```js
 import { RemoteFileWithRangeCache } from '@gmod/range-cache-filehandle'

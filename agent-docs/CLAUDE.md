@@ -1,16 +1,19 @@
 # Agent documentation
 
-Top level is only this file. Everything else is filed:
+`agent-docs/CLAUDE.md` is the only file at the top level of `agent-docs/`.
+Other agent notes go in these places:
 
-- `ideas/` — a proposal parked, one per file, in the subfolder naming what it
-  waits on: `waiting-on-a-number/` (a measurement that decides whether to
-  build). Each file carries `name:` and `description:` frontmatter, the
-  description written as the hook someone picks the idea up by. A verdict
-  leaves `ideas/`: an ADR if the decision deserves a record, otherwise deleted.
-  Moving a file between folders is how its status changes.
-- Tried and declined → a sentence at the code that would re-try it, with the
-  number. There is no rejected-ideas shelf.
-- What a session did and which commits → git already holds it.
+- `ideas/` holds parked proposals, one per file, each in a subfolder named for
+  what the proposal waits on. `waiting-on-a-number/` holds proposals that wait
+  on a measurement to decide whether to build them. Each file has `name:` and
+  `description:` frontmatter; write the description as the sentence that would
+  make someone pick the idea up. Once a proposal has a verdict, turn it into an
+  ADR if the decision deserves a record, or delete it. To change a proposal's
+  status, move its file to another folder.
+- For an idea we tried and declined, write a sentence with the measurement in a
+  comment at the code that would retry it. Don't start a folder of rejected
+  ideas.
+- Leave the record of what a session did, and in which commits, to git.
 
-Cite a doc by its path, so a move is a grep. "State as of \<date\>" in a doc
-means split it into the homes above.
+Cite a doc by its path, so that after a move a grep finds every reference. A doc
+that needs a "State as of \<date\>" line should be split into the places above.
