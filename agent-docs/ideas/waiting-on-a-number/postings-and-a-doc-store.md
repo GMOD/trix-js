@@ -11,7 +11,7 @@ given here for the new layout come from a model, not a built file. The work
 would span ixixx-js (the builder), trix-js (the reader) and jbrowse-components
 (`text-indexing-core` and `TrixTextSearchAdapter`).
 
-## Trix's one-read range scan
+## What trix gets right
 
 A trix `.ix` holds one sorted line per lowercased word, listing every record
 indexed under that word, and its `.ixx` holds a checkpoint (word prefix, byte
@@ -22,7 +22,7 @@ and `brca1` each take one 64 KiB read, and `ca`, which fills the 1500-result
 cap, takes three reads and 448 KiB.
 
 The one-read range scan is the part to keep, and the alternative most often
-suggested, SQLite FTS5 with the trigram tokenizer, gives it up. Node 24's
+suggested, SQLite FTS5 with the trigram tokenizer, loses it. Node 24's
 `node:sqlite` includes FTS5, so a builder would need no dependency, and an FTS5
 database does substring and free-text search over the same features in 148 MB.
 Over HTTP, every page SQLite reads becomes a range request, most of them
@@ -43,21 +43,20 @@ query longer than three characters matching nothing. FTS5 also leaves these hits
 unranked, so the first two for `p53` are LNCTAM34A and RNA5SP53, and ordering by
 `bm25` means reading every match.
 
-## The cost of copying records
+## What copying records costs
 
 `gff3Adapter` writes one record per feature, `["loc"|"trackId"|attr…]`
 URI-encoded, and ixixx's `TrixInputTransform` copies that record onto every
 whitespace-separated word in it. The live
 `jbrowse.org/ucsc/hg38/trix/hg38.ix` (186.4 MB, two tracks) is 90% record bytes,
-holding each record 2.6 times, and the trackId strings alone take 29 MB. This
-repo's D39V fixture, where every gene has half a dozen locus-tag aliases, holds
+storing each record 2.6 times, and the trackId strings alone take 29 MB. This
+repo's D39V fixture, where every gene has half a dozen locus-tag aliases, stores
 each record 5.3 times.
 
 Each word added to a trix index adds a copy of a whole record, so each kind of
-search people ask for multiplies the file size. `model-sizes.mjs` gives these
-sizes for the RefSeq GFF behind that index (274,695 features after the hub's
-exclude list), and its first row matches that track's 63.8 MB share of the live
-file:
+query multiplies the file size. `model-sizes.mjs` gives these sizes for the
+RefSeq GFF behind that index (274,695 features after the hub's exclude list),
+and its first row matches that track's 63.8 MB share of the live file:
 
 | Trix, indexing                                                 | Size     |
 | -------------------------------------------------------------- | -------- |
@@ -98,9 +97,9 @@ Keep the sorted range scan and stop copying records.
 
 1. **A doc store holding each record once**, in gzipped blocks of about 500, with
    doc ids assigned in static rank order: genes, then transcripts, then the
-   rest. Genes then fill the first blocks, which hold most top hits and which a
-   range cache keeps. Track ids become a table in the header rather than a
-   string in every record.
+   rest. Genes then cluster in the first blocks, which hold most top hits and
+   which a range cache keeps. Track ids become a table in the header rather
+   than a string in every record.
 2. **A sorted term dictionary pointing at postings** of delta-varint doc ids,
    each tagged with the field it came from (name, ID, synonym, Dbxref,
    description). Short lists are stored inline in the dictionary block.
@@ -112,11 +111,11 @@ Keep the sorted range scan and stop copying records.
 5. **A symbol dictionary for substrings and typos.** Every Name and
    gene_synonym in hg38 comes to 312,368 entries and 1.18 MB gzipped. The client
    fetches it when the search box first takes focus, runs uFuzzy over it (already
-   a dependency) and looks up the chosen symbol in the term dictionary. The
+   a dependency) and resolves the chosen symbol through the term dictionary. The
    same code can index a GFF a user opens on the web, where no CLI runs
-   ([#4409](https://github.com/GMOD/jbrowse-components/issues/4409)). The
-   alternative is suffix terms in the dictionary, which take 20.6 MB for hg38
-   and tolerate no typos.
+   ([#4409](https://github.com/GMOD/jbrowse-components/issues/4409)). Suffix
+   terms in the dictionary are the alternative: 20.6 MB for hg38, with no typo
+   tolerance.
 6. **Ranking by match kind, then field, then doc rank**: exact before prefix
    before fragment before substring, and name before ID before description.
    Multi-word queries intersect postings, treating the last word as a prefix,
@@ -159,9 +158,9 @@ affordable, since fragments alone triple a trix index.
 - ixixx writes each checkpoint's full term instead of a fixed-width prefix.
   trix-js already trims the padding; whether UCSC's C reader accepts the result
   is untested.
-- Each record holds a track index, which the reader looks up in the
-  `_meta.json` the CLI already writes, in place of the trackId string (the
-  29 MB above), plus the feature type, so the adapter can rank genes first.
+- Records hold a track index, resolved through the `_meta.json` the CLI already
+  writes, in place of the trackId string (the 29 MB above), and the feature
+  type, so the adapter can rank genes first.
 - trix-js searches every query word and intersects the records, as UCSC's
   `trixSearch` does.
 - A text search adapter searches bigBed extraIndex. bbi-js has

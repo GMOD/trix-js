@@ -27,6 +27,6 @@ already configured; to set up a new package, run
 `>=11.10.0` and 2FA).
 
 Once npm publish succeeds, the `release` job creates the GitHub release for the
-tag, with that version's CHANGELOG.md section as its notes.
+tag, taking its notes from that version's CHANGELOG.md section.
 `scripts/release-notes.sh` extracts the section, so run the script with a
 version to preview a release's notes.

@@ -39,7 +39,7 @@ const results = await trix.search('oca')
 
 Prefix-searches the index and resolves to `[term, record][]`, where `term` is
 the indexed word that matched and `record` is the key it points to. Records are
-deduplicated, so two terms that match the same record yield one result.
+deduplicated, so two terms hitting the same record yield one result.
 
 - `searchString` - the query; only its first whitespace-separated word is used
 - `opts.signal` - an `AbortSignal` to cancel the underlying reads
@@ -53,7 +53,7 @@ searches for consecutive keystrokes read from nearby offsets. When a user types
 `spd_00` into this repo's 1.7 MB test index, the typeahead makes six searches
 and six 64 KiB reads, but at only three distinct offsets. With
 [`@gmod/range-cache-filehandle`](https://github.com/GMOD/range-cache-filehandle)
-under both filehandles, the cache serves those six reads from three 256 KiB
+under both filehandles, the cache serves those six reads out of three 256 KiB
 chunks, so a prefix the user backspaces to needs no new fetch:
 
 ```js
