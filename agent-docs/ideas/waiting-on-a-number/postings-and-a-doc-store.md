@@ -11,7 +11,7 @@ given here for the new layout come from a model, not a built file. The work
 would span ixixx-js (the builder), trix-js (the reader) and jbrowse-components
 (`text-indexing-core` and `TrixTextSearchAdapter`).
 
-## What trix gets right
+## Keep the one-read range scan, which FTS5 loses
 
 A trix `.ix` holds one sorted line per lowercased word, listing every record
 indexed under that word, and its `.ixx` holds a checkpoint (word prefix, byte
