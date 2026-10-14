@@ -35,6 +35,10 @@ const results = await trix.search('oca')
 - `maxResults` - most results a search returns, default 20. Also settable
   afterwards as `trix.maxResults`
 
+Any object with `read(length, position, opts?)` resolving to a `Uint8Array` and
+`readFile({ encoding: 'utf8' })` resolving to a string works, which includes
+every `generic-filehandle2` handle. The exported `Filehandle` type describes it.
+
 ### `trix.search(searchString, opts?)`
 
 Prefix-searches the index and resolves to `[term, record][]`, where `term` is

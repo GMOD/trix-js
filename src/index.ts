@@ -1,12 +1,17 @@
 import { compareCodePoints } from './compare-code-points.ts'
 
-import type { GenericFilehandle } from 'generic-filehandle2'
-
 // one search hit: the indexed word that matched and the record it points to
 export type TrixHit = [term: string, result: string]
 
-interface ReadOpts {
+export interface ReadOpts {
   signal?: AbortSignal
+}
+
+// the two methods a search calls, so any generic-filehandle2 handle fits
+// without this package depending on it
+export interface Filehandle {
+  read(length: number, position: number, opts?: ReadOpts): Promise<Uint8Array>
+  readFile(opts: { encoding: 'utf8' }): Promise<string>
 }
 
 // an ixx entry: a term prefix and the byte address of the first ix record
@@ -57,15 +62,11 @@ export default class Trix {
   // load, and one caller's signal can't abort another's await
   private indexCache?: Promise<Checkpoint[]>
 
-  public ixxFile: GenericFilehandle
-  public ixFile: GenericFilehandle
+  public ixxFile: Filehandle
+  public ixFile: Filehandle
   public maxResults: number
 
-  constructor(
-    ixxFile: GenericFilehandle,
-    ixFile: GenericFilehandle,
-    maxResults = 20,
-  ) {
+  constructor(ixxFile: Filehandle, ixFile: Filehandle, maxResults = 20) {
     this.ixxFile = ixxFile
     this.ixFile = ixFile
     this.maxResults = maxResults
