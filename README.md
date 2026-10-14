@@ -46,15 +46,13 @@ deduplicated, so two terms hitting the same record yield one result.
 
 ## Reading over HTTP
 
-A search fetches the `.ixx` once, then reads the `.ix` in 64 KiB pieces starting
-at the checkpoint's offset, so the reads are small and scattered across much of
-the larger of the two files. A typeahead makes one search per keystroke, and the
-searches for consecutive keystrokes read from nearby offsets. When a user types
-`spd_00` into this repo's 1.7 MB test index, the typeahead makes six searches
-and six 64 KiB reads, but at only three distinct offsets. With
+A search fetches the `.ixx` once, then reads the `.ix` in 64 KiB pieces from the
+matching checkpoint. A typeahead's consecutive keystrokes read nearby offsets, so
+typing `spd_00` into the 1.7 MB test index makes six reads at three distinct
+offsets. With
 [`@gmod/range-cache-filehandle`](https://github.com/GMOD/range-cache-filehandle)
-under both filehandles, the cache serves those six reads out of three 256 KiB
-chunks, so a prefix the user backspaces to needs no new fetch:
+under both filehandles, three 256 KiB chunks serve all six, and backspacing
+needs no new fetch:
 
 ```js
 import { RemoteFileWithRangeCache } from '@gmod/range-cache-filehandle'
