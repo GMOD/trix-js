@@ -1,3 +1,10 @@
+## [3.2.0](https://github.com/GMOD/trix-js/compare/v3.1.0...v3.2.0) (2026-11-10)
+
+### Other Changes
+
+- Bump deps ([45e6dfd](https://github.com/GMOD/trix-js/commit/45e6dfd0f1fb3fae959a295ca3bd476d3532769c))
+- Search every word of a query and keep the records all of them find ([17249de](https://github.com/GMOD/trix-js/commit/17249de3df8d9ceb239d2bf51a7393f7ca381e8c))
+
 ## [3.1.0](https://github.com/GMOD/trix-js/compare/v3.0.22...v3.1.0) (2026-10-14)
 
 ### Chores
