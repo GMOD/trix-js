@@ -116,3 +116,36 @@ describe('Test maxResults for search of test5 ix file', () => {
     })
   }
 })
+
+describe('a query of several words', () => {
+  const open = (maxResults?: number) =>
+    new Trix(
+      new LocalFile('./test/testData/test1/myTrix.ixx'),
+      new LocalFile('./test/testData/test1/myTrix.ix'),
+      maxResults,
+    )
+  const records = async (trix: Trix, query: string) =>
+    (await trix.search(query)).map(([, record]) => record)
+
+  it('keeps the records every word finds', async () => {
+    expect(await records(open(), 'this id2')).toEqual(['id2'])
+  })
+
+  it('answers the same whichever word comes first', async () => {
+    expect(await records(open(), 'id2 this')).toEqual(['id2'])
+  })
+
+  it('finds nothing when one word matches nothing', async () => {
+    expect(await records(open(), 'this nope')).toEqual([])
+  })
+
+  it('lets a word cut off before its last record rule nothing out', async () => {
+    // `this` carries three records and is cut off at two, which do not include
+    // id3; `id3` is read whole and seeds the answer
+    expect(await records(open(2), 'this id3')).toEqual(['id3'])
+  })
+
+  it('falls back to the first word when every word is cut off', async () => {
+    expect(await records(open(2), 'this text')).toEqual(['id1', 'id2'])
+  })
+})

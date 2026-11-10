@@ -45,7 +45,11 @@ Prefix-searches the index and resolves to `[term, record][]`, where `term` is
 the indexed word that matched and `record` is the key it points to. Records are
 deduplicated, so two terms hitting the same record yield one result.
 
-- `searchString` - the query; only its first whitespace-separated word is used
+- `searchString` - the query. Each whitespace-separated word is prefix-searched
+  and a record is returned when every word finds it, in any order. Each word of
+  a multi-word query gets one read, and a word that read does not finish (or
+  that has more than `maxResults` records) cannot rule a record out: `b brca2`
+  answers with the `brca2` records
 - `opts.signal` - an `AbortSignal` to cancel the underlying reads
 
 ## Reading over HTTP

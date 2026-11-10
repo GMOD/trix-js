@@ -65,16 +65,8 @@ exports[`Test a search of test1 ix file > Search for "nope" in test1/myTrix.ix 1
 exports[`Test a search of test1 ix file > Search for "this is for id2" in test1/myTrix.ix 1`] = `
 [
   [
-    "this",
-    "id1",
-  ],
-  [
-    "this",
     "id2",
-  ],
-  [
-    "this",
-    "id3",
+    "id2",
   ],
 ]
 `;
@@ -282,84 +274,48 @@ exports[`Test a search of test2 ix file > Search for "enst ac" in test2/out.ix 1
 exports[`Test a search of test2 ix file > Search for "enst alg" in test2/out.ix 1`] = `
 [
   [
-    "enst00000229465.10",
-    "ENST00000229465.10",
+    "alg13-as1",
+    "ENST00000430794.1",
   ],
   [
-    "enst00000230113.5",
-    "ENST00000230113.5",
+    "alg1l9p",
+    "ENST00000508969.2",
   ],
   [
-    "enst00000235290.7",
-    "ENST00000235290.7",
+    "alg1l9p",
+    "ENST00000511954.5",
   ],
   [
-    "enst00000242109.5",
-    "ENST00000242109.5",
+    "alg1l9p",
+    "ENST00000524714.1",
   ],
   [
-    "enst00000244820.2",
-    "ENST00000244820.2",
+    "alg1l9p",
+    "ENST00000525473.1",
   ],
   [
-    "enst00000244906.6",
-    "ENST00000244906.6",
+    "alg1l9p",
+    "ENST00000657407.1",
   ],
   [
-    "enst00000248980.9",
-    "ENST00000248980.9",
+    "alg1l9p",
+    "ENST00000661578.1",
   ],
   [
-    "enst00000250776.5",
-    "ENST00000250776.5",
+    "alg1l9p",
+    "ENST00000664227.1",
   ],
   [
-    "enst00000250805.5",
-    "ENST00000250805.5",
+    "alg1l9p",
+    "ENST00000665956.1",
   ],
   [
-    "enst00000253838.3",
-    "ENST00000253838.3",
+    "alg1l9p",
+    "ENST00000670269.1",
   ],
   [
-    "enst00000253848.3",
-    "ENST00000253848.3",
-  ],
-  [
-    "enst00000255183.8",
-    "ENST00000255183.8",
-  ],
-  [
-    "enst00000262354.5",
-    "ENST00000262354.5",
-  ],
-  [
-    "enst00000276770.8",
-    "ENST00000276770.8",
-  ],
-  [
-    "enst00000276779.8",
-    "ENST00000276779.8",
-  ],
-  [
-    "enst00000279067.3",
-    "ENST00000279067.3",
-  ],
-  [
-    "enst00000289890.7",
-    "ENST00000289890.7",
-  ],
-  [
-    "enst00000291374.11",
-    "ENST00000291374.11",
-  ],
-  [
-    "enst00000292748.7",
-    "ENST00000292748.7",
-  ],
-  [
-    "enst00000294715.6",
-    "ENST00000294715.6",
+    "alg9-it1",
+    "ENST00000531305.1",
   ],
 ]
 `;

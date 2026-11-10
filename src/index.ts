@@ -85,30 +85,48 @@ export default class Trix {
   }
 
   async search(searchString: string, opts?: ReadOpts) {
-    // only the first word is searched; undefined when the query is all whitespace
-    const firstWord = /\S+/.exec(searchString)?.[0]
-    // keyed by record so several terms pointing at the same record collapse
-    // before they count against maxResults; insertion order keeps the first
-    // term that matched each record
-    const hits = new Map<string, TrixHit>()
-    if (firstWord && this.maxResults > 0) {
-      await this.scan(firstWord.toLowerCase(), hits, opts)
-    }
-    return [...hits.values()]
+    const words = [...new Set(searchString.toLowerCase().match(/\S+/g))]
+    const [first, ...others] = words
+    return first === undefined || this.maxResults <= 0
+      ? []
+      : others.length === 0
+        ? [...(await this.scan(first, opts)).hits.values()]
+        : this.searchWords(words, opts)
   }
 
-  // walks the ix from the checkpoint for `searchWord`, filling `hits` until it
-  // holds maxResults or the terms sort past the word. the ix is whitespace
+  // every word gets one read, in parallel, and the ones that single read
+  // answers in full decide the result: the smallest seeds it and the rest
+  // narrow it. a word still unfinished after one read is a common one, which
+  // would cost megabytes to read whole and can neither seed the answer nor
+  // rule a record out. when no word finishes, the first answers alone, read as
+  // far as maxResults
+  private async searchWords(words: string[], opts?: ReadOpts) {
+    const [seed, ...narrowing] = (
+      await Promise.all(words.map(word => this.scan(word, opts, 1)))
+    )
+      .filter(scan => scan.complete)
+      .sort((a, b) => a.hits.size - b.hits.size)
+    return seed
+      ? [...seed.hits.values()].filter(([, record]) =>
+          narrowing.every(scan => scan.hits.has(record)),
+        )
+      : [...(await this.scan(words[0]!, opts)).hits.values()]
+  }
+
+  // walks the ix from the checkpoint for `searchWord`, collecting hits until
+  // there are maxResults of them, `maxReads` reads have gone by, or the terms
+  // sort past the word. `complete` means every record under the word was read. hits are
+  // keyed by record so several terms pointing at the same record collapse
+  // before they count against maxResults; insertion order keeps the first term
+  // that matched each record. the ix is whitespace
   // delimited — a newline opens a term, spaces separate the records it carries
   // — so the scan reads one token at a time and never holds more than one. an
   // ix has one line per term, so a term shared by 200k features is a single
   // 16mb line: a search wanting twenty records off the front of it stops after
   // the first read instead of assembling the whole line first
-  private async scan(
-    searchWord: string,
-    hits: Map<string, TrixHit>,
-    opts?: ReadOpts,
-  ) {
+  private async scan(searchWord: string, opts?: ReadOpts, maxReads = Infinity) {
+    const hits = new Map<string, TrixHit>()
+    let reads = 0
     const start = await this.getStart(searchWord)
     // read one byte early, so what precedes the first newline is either nothing
     // or the tail of the record `start` fell inside, and skip it either way.
@@ -182,7 +200,7 @@ export default class Trix {
             // the ix's utf-8 byte order, not javascript's utf-16 order, so an
             // astral term does not look past a 0xE000-0xFFFF search word and
             // stop early
-            return
+            return { hits, complete: true }
           } else {
             expect = 'skip'
           }
@@ -191,7 +209,7 @@ export default class Trix {
           if (!hits.has(record)) {
             hits.set(record, [term, record])
             if (hits.size >= this.maxResults) {
-              return
+              return { hits, complete: false }
             }
           }
         }
@@ -199,7 +217,12 @@ export default class Trix {
           expect = 'term'
         }
       }
+      reads++
+      if (!eof && reads >= maxReads) {
+        return { hits, complete: false }
+      }
     }
+    return { hits, complete: true }
   }
 
   // the address of the ixx checkpoint at or just before `searchWord`, which is
