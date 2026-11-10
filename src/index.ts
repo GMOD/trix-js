@@ -33,6 +33,11 @@ type Expect = 'term' | 'record' | 'skip'
 const CHUNK_SIZE = 65536
 const MAX_CHUNK_SIZE = 4 * 1024 * 1024
 
+// the most records one word of a multi-word query is read for. 200 records the
+// size jbrowse writes are about 20 KiB, so a common word stops inside its first
+// read
+const WORD_LIMIT = 200
+
 // number of hex characters used for the address in ixixx, see
 // https://github.com/GMOD/ixixx-js/blob/master/src/index.ts#L182
 const ADDRESS_SIZE = 10
@@ -94,15 +99,19 @@ export default class Trix {
         : this.searchWords(words, opts)
   }
 
-  // every word gets one read, in parallel, and the ones that single read
-  // answers in full decide the result: the smallest seeds it and the rest
-  // narrow it. a word still unfinished after one read is a common one, which
-  // would cost megabytes to read whole and can neither seed the answer nor
-  // rule a record out. when no word finishes, the first answers alone, read as
-  // far as maxResults
+  // every word is scanned in parallel, as far as WORD_LIMIT records. the words
+  // read whole decide the result: the smallest seeds it and the rest narrow
+  // it. a word with more records than that is a common one, which would cost
+  // hundreds of kilobytes to read whole and can neither seed the answer nor
+  // rule a record out. when no word is read whole, the first answers alone,
+  // read as far as maxResults
   private async searchWords(words: string[], opts?: ReadOpts) {
     const [seed, ...narrowing] = (
-      await Promise.all(words.map(word => this.scan(word, opts, 1)))
+      await Promise.all(
+        words.map(word =>
+          this.scan(word, opts, Math.min(this.maxResults, WORD_LIMIT)),
+        ),
+      )
     )
       .filter(scan => scan.complete)
       .sort((a, b) => a.hits.size - b.hits.size)
@@ -114,8 +123,7 @@ export default class Trix {
   }
 
   // walks the ix from the checkpoint for `searchWord`, collecting hits until
-  // there are maxResults of them, `maxReads` reads have gone by, or the terms
-  // sort past the word. `complete` means every record under the word was read. hits are
+  // there are `limit` of them or the terms sort past the word. `complete` means every record under the word was read. hits are
   // keyed by record so several terms pointing at the same record collapse
   // before they count against maxResults; insertion order keeps the first term
   // that matched each record. the ix is whitespace
@@ -124,9 +132,12 @@ export default class Trix {
   // ix has one line per term, so a term shared by 200k features is a single
   // 16mb line: a search wanting twenty records off the front of it stops after
   // the first read instead of assembling the whole line first
-  private async scan(searchWord: string, opts?: ReadOpts, maxReads = Infinity) {
+  private async scan(
+    searchWord: string,
+    opts?: ReadOpts,
+    limit = this.maxResults,
+  ) {
     const hits = new Map<string, TrixHit>()
-    let reads = 0
     const start = await this.getStart(searchWord)
     // read one byte early, so what precedes the first newline is either nothing
     // or the tail of the record `start` fell inside, and skip it either way.
@@ -208,7 +219,7 @@ export default class Trix {
           const record = recordOf(token)
           if (!hits.has(record)) {
             hits.set(record, [term, record])
-            if (hits.size >= this.maxResults) {
+            if (hits.size >= limit) {
               return { hits, complete: false }
             }
           }
@@ -216,10 +227,6 @@ export default class Trix {
         if (lineEnded) {
           expect = 'term'
         }
-      }
-      reads++
-      if (!eof && reads >= maxReads) {
-        return { hits, complete: false }
       }
     }
     return { hits, complete: true }
