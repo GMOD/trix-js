@@ -1,3 +1,9 @@
+## [3.2.1](https://github.com/GMOD/trix-js/compare/v3.2.0...v3.2.1) (2026-11-10)
+
+### Other Changes
+
+- Cut a word of a multi-word query off by records, not reads ([ffdd2bb](https://github.com/GMOD/trix-js/commit/ffdd2bb12ccd44ab512b46ab8d7cb9c6975d1e8c))
+
 ## [3.2.0](https://github.com/GMOD/trix-js/compare/v3.1.0...v3.2.0) (2026-11-10)
 
 ### Other Changes
