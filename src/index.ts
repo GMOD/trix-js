@@ -29,8 +29,11 @@ type Expect = 'term' | 'record' | 'skip'
 // reads start at CHUNK_SIZE and double up to the cap. a search that stops early
 // — the usual one, since maxResults is small — pays only the first read, while
 // one that has to cross a term carrying megabytes of records still gets past it
-// in a handful of round trips rather than hundreds
-const CHUNK_SIZE = 65536
+// in a handful of round trips rather than hundreds. the first read is four
+// ixixx bins long: a checkpoint is written every 64 KiB or more, so a 64 KiB
+// read from one stopped short of a word typed in full about one time in six and
+// of a three-letter prefix one time in three, each costing a second round trip
+const CHUNK_SIZE = 262144
 const MAX_CHUNK_SIZE = 4 * 1024 * 1024
 
 // the most records one word of a multi-word query is read for. 200 records the

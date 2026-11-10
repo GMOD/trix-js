@@ -53,12 +53,12 @@ deduplicated, so two terms hitting the same record yield one result.
 
 ## Reading over HTTP
 
-A search fetches the `.ixx` once, then reads the `.ix` in 64 KiB pieces from the
-matching checkpoint. A typeahead's consecutive keystrokes read nearby offsets, so
+A search fetches the `.ixx` once, then reads the `.ix` from the matching checkpoint, 256 KiB first
+and doubling after that. A typeahead's consecutive keystrokes read nearby offsets, so
 typing `spd_00` into the 1.7 MB test index makes six reads at three distinct
 offsets. With
 [`@gmod/range-cache-filehandle`](https://github.com/GMOD/range-cache-filehandle)
-under both filehandles, three 256 KiB chunks serve all six, and backspacing
+under both filehandles, four 256 KiB chunks serve all six, and backspacing
 needs no new fetch:
 
 ```js

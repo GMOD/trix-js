@@ -8,7 +8,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import Trix from '../src/index.ts'
 
 // matches CHUNK_SIZE in src/index.ts
-const CHUNK_SIZE = 65536
+const CHUNK_SIZE = 262144
 
 describe('UTF-8 multibyte char straddling a chunk boundary', () => {
   let dir: string

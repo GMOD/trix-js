@@ -8,7 +8,7 @@ import { beforeAll, describe, expect, it } from 'vitest'
 import Trix from '../src/index.ts'
 
 // matches src/index.ts
-const CHUNK_SIZE = 65536
+const CHUNK_SIZE = 262144
 const ADDRESS_SIZE = 10
 const PREFIX_SIZE = 5
 
@@ -30,7 +30,7 @@ class CountingFile extends LocalFile {
 
 // 10 bytes each, so no read boundary lands between two of them
 const HOT_RECORDS = Array.from(
-  { length: 20_000 },
+  { length: 100_000 },
   (_, i) => `r${String(i).padStart(6, '0')},1`,
 )
 
@@ -138,7 +138,7 @@ const REAL_IXX = 'test/testData/D39V_annotation_coding_features_sorted.gff.ixx'
 const CACHE_CHUNK = 256 * 1024
 
 describe('what a typeahead reads', () => {
-  it('lands six keystrokes on three offsets, inside three cache chunks', async () => {
+  it('lands six keystrokes on three offsets, inside four cache chunks', async () => {
     const ix = new CountingFile(REAL_IX)
     const trix = new Trix(new LocalFile(REAL_IXX), ix)
     for (const prefix of ['s', 'sp', 'spd', 'spd_', 'spd_0', 'spd_00']) {
@@ -158,6 +158,6 @@ describe('what a typeahead reads', () => {
         )
       }),
     )
-    expect(chunks.size).toBe(3)
+    expect(chunks.size).toBe(4)
   })
 })
