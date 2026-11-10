@@ -1,3 +1,9 @@
+## [3.2.2](https://github.com/GMOD/trix-js/compare/v3.2.1...v3.2.2) (2026-11-10)
+
+### Other Changes
+
+- Read 256 KiB first, so a typed word is answered in one read ([c547982](https://github.com/GMOD/trix-js/commit/c5479827cce9ed3513ab81651644d9c3e6ee1094))
+
 ## [3.2.1](https://github.com/GMOD/trix-js/compare/v3.2.0...v3.2.1) (2026-11-10)
 
 ### Other Changes
