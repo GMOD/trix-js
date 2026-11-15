@@ -1,14 +1,13 @@
-import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
-import { tmpdir } from 'node:os'
+import { readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 
 import { LocalFile } from 'generic-filehandle2'
 import { beforeAll, describe, expect, it } from 'vitest'
 
 import Trix from '../src/index.ts'
+import { makeIxx, tempDir } from './make-ixx.ts'
 
 const ADDRESS_SIZE = 10
-const PREFIX_SIZE = 5
 const NEWLINE = 10
 
 // terms are multibyte, so a character-counted address drifts further from the
@@ -19,41 +18,19 @@ const records = Array.from(
   (_, i) => `記述${String(i).padStart(4, '0')} gene${i},1`,
 ).toSorted()
 
-function address(n: number) {
-  return n.toString(16).toUpperCase().padStart(ADDRESS_SIZE, '0')
-}
-
-function prefixOf(record: string) {
-  return record.split(' ')[0]!.slice(0, PREFIX_SIZE).padEnd(PREFIX_SIZE, ' ')
-}
-
-// like makeIxx in ixixx: one entry per prefix, addressing the first record that
-// carries it, counting either bytes (correct) or characters (what ixixx wrote
-// before the fix)
-function makeIxx(inBytes: boolean) {
-  const lines: string[] = []
-  let pos = 0
-  let lastPrefix = ''
-  for (const record of records) {
-    const prefix = prefixOf(record)
-    if (prefix !== lastPrefix) {
-      lines.push(`${prefix}${address(pos)}`)
-      lastPrefix = prefix
-    }
-    pos += (inBytes ? Buffer.byteLength(record) : record.length) + 1
-  }
-  return lines.join('\n') + '\n'
-}
-
-const dir = mkdtempSync(path.join(tmpdir(), 'trix-stale-'))
+const dir = tempDir()
 const ixFile = path.join(dir, 'test.ix')
 const byteIxx = path.join(dir, 'bytes.ixx')
 const charIxx = path.join(dir, 'chars.ixx')
 
 beforeAll(() => {
   writeFileSync(ixFile, records.join('\n') + '\n')
-  writeFileSync(byteIxx, makeIxx(true))
-  writeFileSync(charIxx, makeIxx(false))
+  writeFileSync(byteIxx, makeIxx(records))
+  // counting characters, as ixixx did before the byte-offset fix
+  writeFileSync(
+    charIxx,
+    makeIxx(records, 5, record => record.length),
+  )
 })
 
 function search(ixx: string, term: string) {

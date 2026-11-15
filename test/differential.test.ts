@@ -1,5 +1,4 @@
-import { mkdtempSync, writeFileSync } from 'node:fs'
-import { tmpdir } from 'node:os'
+import { writeFileSync } from 'node:fs'
 import path from 'node:path'
 
 import { LocalFile } from 'generic-filehandle2'
@@ -7,8 +6,10 @@ import { describe, expect, it } from 'vitest'
 
 import { compareCodePoints } from '../src/compare-code-points.ts'
 import Trix from '../src/index.ts'
+import { makeIxx, tempDir } from './make-ixx.ts'
 
-const ADDRESS_SIZE = 10
+// matches src/index.ts
+const WORD_LIMIT = 200
 
 // search reads the ix through checkpoints, chunked reads and an early stop, so
 // most of what it does is invisible to a test that only checks a known answer.
@@ -54,70 +55,59 @@ function makeCorpus(seed: number) {
     terms.add(t)
   }
   const sorted = [...terms].toSorted(compareCodePoints)
-  const lines = sorted.map((t, i) => {
-    const n = 1 + Math.floor(r() * 5)
-    const recs = Array.from({ length: n }, (_, j) => `r${i}_${j},${j + 1}`)
+  // records drawn from a shared pool, so terms share records and words of a
+  // query overlap; the occasional term with many records cuts a word off
+  const lines = sorted.map(t => {
+    const n = r() < 0.1 ? 150 + Math.floor(r() * 150) : 1 + Math.floor(r() * 5)
+    const recs = Array.from(
+      { length: n },
+      (_, j) => `r${Math.floor(r() * 1000)},${j + 1}`,
+    )
     return `${t} ${recs.join(' ')}`
   })
   return { lines, sorted, prefixSize: 1 + Math.floor(r() * 5) }
 }
 
-// like makeIxx in ixixx: one entry per prefix, space-padded to a fixed width,
-// addressing the first record that carries it. the prefix size varies per
-// corpus so a query is sometimes shorter than the prefix, sometimes longer, and
-// sometimes exactly the padded term
-function makeIxx(lines: string[], prefixSize: number) {
-  const out: string[] = []
-  let pos = 0
-  let last = ''
-  for (const line of lines) {
-    const prefix = line
-      .split(' ')[0]!
-      .slice(0, prefixSize)
-      .padEnd(prefixSize, ' ')
-    if (prefix !== last) {
-      out.push(
-        `${prefix}${pos.toString(16).toUpperCase().padStart(ADDRESS_SIZE, '0')}`,
-      )
-      last = prefix
-    }
-    pos += Buffer.byteLength(line) + 1
-  }
-  return out.join('\n') + '\n'
-}
-
-// the answer with no index involved: read every line, keep the records of the
-// ones whose term matches, deduplicated and capped the way search documents
-function reference(lines: string[], word: string, maxResults: number) {
+// the answer with no index involved: every record each word finds, in ix
+// order. the words found whole narrow the answer and the smallest seeds it; a
+// word that reaches the limit is cut off and rules nothing out, and when every
+// word is, the first answers alone
+function recordsOf(lines: string[], word: string) {
   const hits = new Map<string, [string, string]>()
   for (const line of lines) {
-    const sp = line.indexOf(' ')
-    const term = sp === -1 ? line : line.slice(0, sp)
-    if (!term.startsWith(word)) {
-      continue
-    }
-    for (const field of line.slice(sp + 1).split(' ')) {
-      if (!field) {
-        continue
+    const [term = '', ...fields] = line.split(' ')
+    if (term.startsWith(word)) {
+      for (const field of fields.filter(Boolean)) {
+        const rec = field.split(',')[0]!
+        if (!hits.has(rec)) {
+          hits.set(rec, [term, rec])
+        }
       }
-      const rec = field.includes(',')
-        ? field.slice(0, field.indexOf(','))
-        : field
-      if (!hits.has(rec) && hits.size < maxResults) {
-        hits.set(rec, [term, rec])
-      }
-    }
-    if (hits.size >= maxResults) {
-      break
     }
   }
   return [...hits.values()]
 }
 
+function reference(lines: string[], query: string, maxResults: number) {
+  const words = [...new Set(query.split(' '))]
+  const limit = words.length > 1 ? Math.max(maxResults, WORD_LIMIT) : maxResults
+  const found = words.map(word => recordsOf(lines, word))
+  const [seed = found[0]!, ...narrowing] = found
+    .filter(hits => hits.length < limit)
+    .toSorted((a, b) => a.length - b.length)
+  return seed
+    .filter(([, rec]) =>
+      narrowing.every(hits => hits.some(([, r]) => r === rec)),
+    )
+    .slice(0, maxResults)
+}
+
 describe('search against a brute-force scan of the whole ix', () => {
-  it('agrees on random corpora, for every prefix of every term', async () => {
-    const dir = mkdtempSync(path.join(tmpdir(), 'trix-fuzz-'))
+  const dir = tempDir()
+
+  it('agrees on random corpora, for every prefix of every term and pairs of them', async () => {
     for (let seed = 1; seed <= 50; seed++) {
+      const r = rng(seed + 1000)
       const { lines, sorted, prefixSize } = makeCorpus(seed)
       const ixPath = path.join(dir, `${seed}.ix`)
       const ixxPath = path.join(dir, `${seed}.ixx`)
@@ -136,6 +126,14 @@ describe('search against a brute-force scan of the whole ix', () => {
       }
       // and one that matches nothing and sorts past everything
       queries.add('zzzz')
+      const words = [...queries]
+      const pick = () => words[Math.floor(r() * words.length)]!
+      for (let i = 0; i < 40; i++) {
+        queries.add(`${pick()} ${pick()}`)
+      }
+      for (let i = 0; i < 10; i++) {
+        queries.add(`${pick()} ${pick()} ${pick()}`)
+      }
 
       for (const q of queries) {
         for (const maxResults of [1, 3, 20, 1000]) {

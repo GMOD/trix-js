@@ -1,14 +1,11 @@
-import { mkdtempSync, writeFileSync } from 'node:fs'
-import { tmpdir } from 'node:os'
+import { writeFileSync } from 'node:fs'
 import path from 'node:path'
 
 import { LocalFile } from 'generic-filehandle2'
 import { beforeAll, describe, expect, it } from 'vitest'
 
 import Trix from '../src/index.ts'
-
-const ADDRESS_SIZE = 10
-const PREFIX_SIZE = 5
+import { makeIxx, tempDir } from './make-ixx.ts'
 
 // terms spanning the range where utf-8 byte order and utf-16 order disagree:
 // the astral terms sort last in the ix, but their surrogates compare below the
@@ -21,24 +18,13 @@ const records = [
   '🎉party gene5,1',
 ]
 
-const dir = mkdtempSync(path.join(tmpdir(), 'trix-astral-'))
+const dir = tempDir()
 const ixFile = path.join(dir, 'test.ix')
 const ixxFile = path.join(dir, 'test.ixx')
 
 beforeAll(() => {
   writeFileSync(ixFile, records.join('\n') + '\n')
-
-  const lines: string[] = []
-  let pos = 0
-  for (const record of records) {
-    const word = record.split(' ')[0]!
-    const prefix = word.slice(0, PREFIX_SIZE).padEnd(PREFIX_SIZE, ' ')
-    lines.push(
-      `${prefix}${pos.toString(16).toUpperCase().padStart(ADDRESS_SIZE, '0')}`,
-    )
-    pos += Buffer.byteLength(record) + 1
-  }
-  writeFileSync(ixxFile, lines.join('\n') + '\n')
+  writeFileSync(ixxFile, makeIxx(records))
 })
 
 describe('astral characters in a byte-sorted ix', () => {

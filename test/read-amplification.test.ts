@@ -1,16 +1,14 @@
-import { mkdtempSync, writeFileSync } from 'node:fs'
-import { tmpdir } from 'node:os'
+import { writeFileSync } from 'node:fs'
 import path from 'node:path'
 
 import { LocalFile } from 'generic-filehandle2'
 import { beforeAll, describe, expect, it } from 'vitest'
 
 import Trix from '../src/index.ts'
+import { makeIxx, tempDir } from './make-ixx.ts'
 
 // matches src/index.ts
 const CHUNK_SIZE = 262144
-const ADDRESS_SIZE = 10
-const PREFIX_SIZE = 5
 
 // counts what the search actually pulls off disk, which is the point of these
 // tests: over http every one of these is a range request
@@ -41,29 +39,13 @@ const lines = [
   'zzzzz z1,1',
 ]
 
-const dir = mkdtempSync(path.join(tmpdir(), 'trix-amp-'))
+const dir = tempDir()
 const ixFile = path.join(dir, 'amp.ix')
 const ixxFile = path.join(dir, 'amp.ixx')
 
 beforeAll(() => {
   writeFileSync(ixFile, lines.join('\n') + '\n')
-  let pos = 0
-  let lastPrefix = ''
-  const ixx: string[] = []
-  for (const line of lines) {
-    const prefix = line
-      .split(' ')[0]!
-      .slice(0, PREFIX_SIZE)
-      .padEnd(PREFIX_SIZE, ' ')
-    if (prefix !== lastPrefix) {
-      ixx.push(
-        `${prefix}${pos.toString(16).toUpperCase().padStart(ADDRESS_SIZE, '0')}`,
-      )
-      lastPrefix = prefix
-    }
-    pos += Buffer.byteLength(line) + 1
-  }
-  writeFileSync(ixxFile, ixx.join('\n') + '\n')
+  writeFileSync(ixxFile, makeIxx(lines))
 })
 
 function search(term: string, maxResults = 20) {
@@ -112,14 +94,13 @@ describe('stopping at maxResults', () => {
     const records = Array.from({ length: 20 }, (_, i) => `r${i}`)
     const head = `hot ${records.join(' ')}`
     records[19] = `r19${'x'.repeat(CHUNK_SIZE - head.length - 1)}`
-    const dir = mkdtempSync(path.join(tmpdir(), 'trix-stop-'))
     writeFileSync(
-      path.join(dir, 'a.ix'),
+      path.join(dir, 'stop.ix'),
       `hot ${records.join(' ')} more\nzzz q\n`,
     )
-    writeFileSync(path.join(dir, 'a.ixx'), 'hot  0000000000\n')
-    const ix = new CountingFile(path.join(dir, 'a.ix'))
-    const trix = new Trix(new LocalFile(path.join(dir, 'a.ixx')), ix)
+    writeFileSync(path.join(dir, 'stop.ixx'), 'hot  0000000000\n')
+    const ix = new CountingFile(path.join(dir, 'stop.ix'))
+    const trix = new Trix(new LocalFile(path.join(dir, 'stop.ixx')), ix)
     expect(await trix.search('hot')).toHaveLength(20)
     expect(ix.reads).toBe(1)
   })

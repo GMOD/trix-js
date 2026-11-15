@@ -1,14 +1,11 @@
-import { mkdtempSync, writeFileSync } from 'node:fs'
-import { tmpdir } from 'node:os'
+import { writeFileSync } from 'node:fs'
 import path from 'node:path'
 
 import { LocalFile } from 'generic-filehandle2'
 import { beforeAll, describe, expect, it } from 'vitest'
 
 import Trix from '../src/index.ts'
-
-const ADDRESS_SIZE = 10
-const PREFIX_SIZE = 5
+import { makeIxx, tempDir } from './make-ixx.ts'
 
 // a term shared by every feature: one ix line carrying 50k records, several MB
 // long, of which a search wants the first twenty
@@ -24,24 +21,13 @@ const lines = [
   `zebra recZ,1`,
 ]
 
-const dir = mkdtempSync(path.join(tmpdir(), 'trix-hot-'))
+const dir = tempDir()
 const ixFile = path.join(dir, 'hot.ix')
 const ixxFile = path.join(dir, 'hot.ixx')
 
 beforeAll(() => {
   writeFileSync(ixFile, lines.join('\n') + '\n')
-  // one checkpoint per line, the way makeIxx would if every line opened a bin
-  let pos = 0
-  const ixx = lines.map(line => {
-    const prefix = line
-      .split(' ')[0]!
-      .slice(0, PREFIX_SIZE)
-      .padEnd(PREFIX_SIZE, ' ')
-    const entry = `${prefix}${pos.toString(16).toUpperCase().padStart(ADDRESS_SIZE, '0')}`
-    pos += Buffer.byteLength(line) + 1
-    return entry
-  })
-  writeFileSync(ixxFile, ixx.join('\n') + '\n')
+  writeFileSync(ixxFile, makeIxx(lines))
 })
 
 function search(term: string, maxResults = 20) {
