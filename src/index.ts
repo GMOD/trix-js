@@ -36,9 +36,10 @@ type Expect = 'term' | 'record' | 'skip'
 const CHUNK_SIZE = 262144
 const MAX_CHUNK_SIZE = 4 * 1024 * 1024
 
-// the most records one word of a multi-word query is read for. 200 records the
-// size jbrowse writes are about 20 KiB, so a common word stops inside its first
-// read
+// the most records one word of a multi-word query is read for, unless
+// maxResults is larger. a word with more is a common one and can rule no record
+// out. 200 records the size jbrowse writes are about 20 KiB, so a common word
+// stops inside its first read
 const WORD_LIMIT = 200
 
 // number of hex characters used for the address in ixixx, see
@@ -92,49 +93,37 @@ export default class Trix {
     return this.indexCache
   }
 
+  // the words read whole decide the result: the smallest seeds it and the rest
+  // narrow it. when none is, the first answers alone
   async search(searchString: string, opts?: ReadOpts) {
-    const words = [...new Set(searchString.toLowerCase().match(/\S+/g))]
-    const [first, ...others] = words
-    return first === undefined || this.maxResults <= 0
-      ? []
-      : others.length === 0
-        ? [...(await this.scan(first, opts)).hits.values()]
-        : this.searchWords(words, opts)
-  }
-
-  // every word is scanned in parallel, as far as WORD_LIMIT records. the words
-  // read whole decide the result: the smallest seeds it and the rest narrow
-  // it. a word with more records than that is a common one, which would cost
-  // hundreds of kilobytes to read whole and can neither seed the answer nor
-  // rule a record out. when no word is read whole, the first answers alone,
-  // read as far as maxResults
-  private async searchWords(words: string[], opts?: ReadOpts) {
-    const [seed, ...narrowing] = (
-      await Promise.all(
-        words.map(word =>
-          this.scan(word, opts, Math.min(this.maxResults, WORD_LIMIT)),
-        ),
-      )
+    const words =
+      this.maxResults > 0
+        ? [...new Set(searchString.toLowerCase().match(/\S+/g))]
+        : []
+    const limit =
+      words.length > 1 ? Math.max(this.maxResults, WORD_LIMIT) : this.maxResults
+    const scans = await Promise.all(
+      words.map(word => this.scan(word, opts, limit)),
     )
+    const [seed = scans[0], ...narrowing] = scans
       .filter(scan => scan.complete)
       .sort((a, b) => a.hits.size - b.hits.size)
-    return seed
-      ? [...seed.hits.values()].filter(([, record]) =>
-          narrowing.every(scan => scan.hits.has(record)),
-        )
-      : [...(await this.scan(words[0]!, opts)).hits.values()]
+    return [...(seed?.hits.values() ?? [])]
+      .filter(([, record]) => narrowing.every(scan => scan.hits.has(record)))
+      .slice(0, this.maxResults)
   }
 
   // walks the ix from the checkpoint for `searchWord`, collecting hits until
-  // there are `limit` of them or the terms sort past the word. `complete` means every record under the word was read. hits are
-  // keyed by record so several terms pointing at the same record collapse
-  // before they count against maxResults; insertion order keeps the first term
-  // that matched each record. the ix is whitespace
-  // delimited — a newline opens a term, spaces separate the records it carries
-  // — so the scan reads one token at a time and never holds more than one. an
-  // ix has one line per term, so a term shared by 200k features is a single
-  // 16mb line: a search wanting twenty records off the front of it stops after
-  // the first read instead of assembling the whole line first
+  // there are `limit` of them or the terms sort past the word. `complete` means
+  // every record under the word was read. hits are keyed by record so several
+  // terms pointing at the same record collapse before they count against the
+  // limit; insertion order keeps the first term that matched each record. the
+  // ix is whitespace delimited — a newline opens a term, spaces separate the
+  // records it carries — so the scan reads one token at a time and never holds
+  // more than one. an ix has one line per term, so a term shared by 200k
+  // features is a single 16mb line: a search wanting twenty records off the
+  // front of it stops after the first read instead of assembling the whole
+  // line first
   private async scan(
     searchWord: string,
     opts?: ReadOpts,

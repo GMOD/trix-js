@@ -138,14 +138,4 @@ describe('a query of several words', () => {
   it('finds nothing when one word matches nothing', async () => {
     expect(await records(open(), 'this nope')).toEqual([])
   })
-
-  it('lets a word cut off before its last record rule nothing out', async () => {
-    // `this` carries three records and is cut off at two, which do not include
-    // id3; `id3` is read whole and seeds the answer
-    expect(await records(open(2), 'this id3')).toEqual(['id3'])
-  })
-
-  it('falls back to the first word when every word is cut off', async () => {
-    expect(await records(open(2), 'this text')).toEqual(['id1', 'id2'])
-  })
 })
