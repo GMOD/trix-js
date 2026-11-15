@@ -2,7 +2,8 @@
   "extends": "./tsconfig",
   "compilerOptions": {
     "rootDir": ".",
-    "noEmit": true
+    "noEmit": true,
+    "types": ["node"]
   },
   "include": ["src", "test"]
 }
