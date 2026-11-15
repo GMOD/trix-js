@@ -1,3 +1,15 @@
+## [3.2.3](https://github.com/GMOD/trix-js/compare/v3.2.2...v3.2.3) (2026-11-15)
+
+### Chores
+
+- Drop persisted checkout credentials and the publish job's cache ([fe8d13a](https://github.com/GMOD/trix-js/commit/fe8d13afac931b35c251b85fc63070a62203ad95))
+
+### Other Changes
+
+- Bump deps, drop unused dev deps and stale ignores ([f8ff2aa](https://github.com/GMOD/trix-js/commit/f8ff2aa7cab848425ebb0ff8ffe45b1b3249d09b))
+- Read each word of a multi-word query to 200 records, as documented ([d5291af](https://github.com/GMOD/trix-js/commit/d5291af6a79c1648cab2ee563d8c58656d085648))
+- Fuzz multi-word queries and share the tests' ixx builder ([2993ec9](https://github.com/GMOD/trix-js/commit/2993ec905f868b00fa8a25a11660bd7fd7679fe8))
+
 ## [3.2.2](https://github.com/GMOD/trix-js/compare/v3.2.1...v3.2.2) (2026-11-10)
 
 ### Other Changes
